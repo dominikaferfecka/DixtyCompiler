@@ -57,7 +57,12 @@ class TokenType(Enum):
     # others
     IDENTIFIER  = auto()   
     END_OF_TEXT = auto()
-    COMMENT     = auto()                # #
+    COMMENT     = auto()                # # tekst
+
+    # const
+    STRING      = auto()                # "tekst"
+    INT         = auto()
+    FLOAT       = auto()
 
 
 

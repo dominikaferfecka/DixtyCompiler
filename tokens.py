@@ -14,10 +14,10 @@ class Token:
         else:
             raise ValueError("Invalid position type. Must be Position object.")
         
-        if isinstance(value, str) or value is None:
+        if isinstance(value, str) or isinstance(value, int) or value is None:
             self._value = value
         else:
-            raise ValueError("Invalid token value. Must be string")
+            raise ValueError("Invalid token value. Must be string or int")
     
     def __str__(self):
         return f"TokenType: [ {self._token_type} ], position: [ {self._position} ], value: [ {self._value} ]"

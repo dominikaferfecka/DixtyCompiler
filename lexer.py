@@ -23,14 +23,14 @@ class Lexer:
 
       self.skip_whites()
 
-      position = self._reader.get_position()
+      position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
 
       if self._reader.get_character() == EOT:
          return Token(TokenType.END_OF_TEXT, position)
 
       # try to build tokens 
       token = self.build_number()
-      print(token)
+      return token
 
 
 
@@ -40,8 +40,7 @@ class Lexer:
 
    def build_number(self):
       character = self._reader.get_character()
-      position = self._reader.get_position()
-      print(position)
+      position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
       if (not character.isdecimal()):
          return None
       
@@ -72,7 +71,7 @@ class Lexer:
       fraction = 0
       digits = 0
       while character.isdecimal():
-            new_decimal = character - 48
+            new_decimal = int(character)
             
             # correct later - it should check with integer value
             if ( fraction >= (sys.maxsize - new_decimal)/10 ):

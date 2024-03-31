@@ -15,6 +15,12 @@ EOT = "EOT" # change later
 class IntLimitExceeded:
    pass
 
+class StringLimitExceeded:
+   pass
+
+class StringNotFinished:
+   pass
+
 class Lexer:
    def __init__(self, source):
       self._reader = Reader(source)
@@ -29,7 +35,7 @@ class Lexer:
          return Token(TokenType.END_OF_TEXT, position)
 
       # try to build tokens 
-      token = self.build_number()
+      token = self.build_number() or self.build_string()
       return token
 
 
@@ -87,7 +93,40 @@ class Lexer:
 
 
    def build_string(self):
-      pass
+      STRING_MAX_LIMIT = 10**10 # ?
+
+      if self._reader.get_character() != '"':
+         return None
+      
+      position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
+      self._reader.next_character()
+      
+      StringBuilder = ['"']
+
+      character = self._reader.get_character()
+
+      while character not in ('"', EOT): # $ też?
+         if len(StringBuilder) >= STRING_MAX_LIMIT:
+            raise StringLimitExceeded(position)
+         StringBuilder.append(character)
+         self._reader.next_character()
+         character = self._reader.get_character()
+
+      if character == EOT:
+         raise StringNotFinished()
+      
+      if character == '"':
+         StringBuilder.append('"')
+         value = "".join(StringBuilder)
+         self._reader.next_character()
+         return Token(TokenType.STRING, position, value)
+
+      # if character == '$':
+      #    StringBuilder.append('"')
+      #    value = StringBuilder.join(",")
+      #    return Token(TokenType.STRING, position, value)
+
+
    
    def build_identifier_or_keyword(self):
       pass

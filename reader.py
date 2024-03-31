@@ -44,3 +44,9 @@ class Reader:
             self.read_character()
 
 
+# dodać obsługę znaku nowej lini 
+# może być \n ale też \r\n -> i wtedy zamienić to na \n
+            
+# musi też ogarnąć koniec, wystawia znak ETX, niezależnie od tego czym się kończy naprawdę
+            
+# daje kod znaku w unicode

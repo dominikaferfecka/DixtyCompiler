@@ -1,5 +1,6 @@
 from reader import Reader, Position
 from tokens import Token, TokenType
+from keywords import KEYWORDS
 import sys
 
 EOT = "EOT" # change later
@@ -21,6 +22,9 @@ class StringLimitExceeded:
 class StringNotFinished:
    pass
 
+class IdentifierLimitExceeded:
+   pass
+
 class Lexer:
    def __init__(self, source):
       self._reader = Reader(source)
@@ -35,7 +39,7 @@ class Lexer:
          return Token(TokenType.END_OF_TEXT, position)
 
       # try to build tokens 
-      token = self.build_number() or self.build_string()
+      token = self.build_number() or self.build_string() or self.build_identifier_or_keyword()
       return token
 
 
@@ -105,7 +109,7 @@ class Lexer:
 
       character = self._reader.get_character()
 
-      while character not in ('"', EOT): # $ też?
+      while character not in ('"', EOT): # $ też?, chyba nie, na wykładzie tylko " EOT
          if len(StringBuilder) >= STRING_MAX_LIMIT:
             raise StringLimitExceeded(position)
          StringBuilder.append(character)
@@ -129,12 +133,43 @@ class Lexer:
 
    
    def build_identifier_or_keyword(self):
-      pass
-      # powinien być to maks limit identifiera
+      IDENTIFIER_MAX_LIMIT = 10**10
+      character = self._reader.get_character()
+      if not character.isalpha():
+         return None
+      
+      position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
+      StringBuilder = [character]
+
+      self._reader.next_character()
+      character = self._reader.get_character()
+
+      while (character.isalpha() or character.isdecimal() or character == "_"):
+         
+         if len(StringBuilder) >= IDENTIFIER_MAX_LIMIT:
+            raise IdentifierLimitExceeded(position)
+         
+         StringBuilder.append(character)
+         self._reader.next_character()
+         character = self._reader.get_character()
+
+      value = "".join(StringBuilder)
+
+      if value in KEYWORDS.keys():
+         return Token( KEYWORDS[value], position)
+
+      return Token(TokenType.IDENTIFIER, position, value)
+      
+
+      
 
    def build_two_letters_operators(self):
       pass
    # operators
+
+   def build_comment(self):
+      pass
+      # kończy się EOL lub ETX
 
 
 

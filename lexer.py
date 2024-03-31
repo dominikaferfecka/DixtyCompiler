@@ -5,6 +5,7 @@ from operators import OPERATORS
 import sys
 
 EOT = "EOT" # change later
+EOL = '\n'
 
 # FOR TEST OTHER PARTS
 # if __name__ == "__main__":
@@ -39,7 +40,7 @@ class Lexer:
       if self._reader.get_character() == EOT:
          return Token(TokenType.END_OF_TEXT, position)
 
-      token = self.build_number() or self.build_string() or self.build_identifier_or_keyword() or self.build_one_or_two_chars_operators() or self.build_one_char_operators()
+      token = self.build_number() or self.build_string() or self.build_identifier_or_keyword() or self.build_one_or_two_chars_operators() or self.build_one_char_operators() or self.build_comment()
       return token
 
 
@@ -209,7 +210,28 @@ class Lexer:
    # operators
 
    def build_comment(self):
-      pass
+      if self._reader.get_character() != "#":
+         return None
+      
+      position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
+      StringBuilder = []
+
+      self._reader.next_character()
+      character = self._reader.get_character()
+      while character != EOL and character != EOT:
+         StringBuilder.append(character)
+         self._reader.next_character()
+         character = self._reader.get_character()
+      
+      value = "".join(StringBuilder)
+      self._reader.next_character()
+
+      return Token( TokenType.COMMENT, position, value)
+
+         
+
+
+
       # kończy się EOL lub ETX
    
    def build_EOF(self):

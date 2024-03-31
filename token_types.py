@@ -43,7 +43,7 @@ class TokenType(Enum):
     MORE = auto()                       # >
     LESS_OR_EQUAL = auto()              # <=
     MORE_OR_EQUAL = auto()              # >=
-    EQAUL = auto()                      # ==
+    EQUAL = auto()                      # ==
     NOT_EQUAL = auto()                  # !=    
 
     # brackets

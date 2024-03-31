@@ -1,6 +1,7 @@
 from reader import Reader, Position
 from tokens import Token, TokenType
 from keywords import KEYWORDS
+from operators import OPERATORS
 import sys
 
 EOT = "EOT" # change later
@@ -39,7 +40,7 @@ class Lexer:
          return Token(TokenType.END_OF_TEXT, position)
 
       # try to build tokens 
-      token = self.build_number() or self.build_string() or self.build_identifier_or_keyword()
+      token = self.build_number() or self.build_string() or self.build_identifier_or_keyword() or self.build_one_or_two_chars_operators()
       return token
 
 
@@ -131,7 +132,6 @@ class Lexer:
       #    return Token(TokenType.STRING, position, value)
 
 
-   
    def build_identifier_or_keyword(self):
       IDENTIFIER_MAX_LIMIT = 10**10
       character = self._reader.get_character()
@@ -160,11 +160,56 @@ class Lexer:
 
       return Token(TokenType.IDENTIFIER, position, value)
       
+   # def build_operators(self):
+   #    character = self._reader.get_character()
 
+   #    if character not in ("<", ">", "="):
+   #       return None
+      
+   #    if character == "<":
+   #       return self.build_two_letters_operators("<", TokenType.LESS, TokenType.LESS_OR_EQUAL)
+      
+   #    if character == ">":
+   #       return self.build_two_letters_operators(">", TokenType.MORE, TokenType.MORE_OR_EQUAL)
+      
+   #    if character == "=":
+   #       return self.build_two_letters_operators("=", TokenType.ASSIGN, TokenType.EQUAL)
+      
       
 
-   def build_two_letters_operators(self):
-      pass
+   # def build_two_letters_operators(self, character, one_char_token, two_chars_token):
+   #    position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
+   #    self._reader.next_character()
+   #    character = self._reader.get_character()
+
+   #    if character == "=":
+   #       self._reader.next_character()
+   #       return Token(two_chars_token, position)
+   #    else:
+   #       self._reader.next_character()
+   #       return Token(one_char_token, position)
+
+
+   def build_one_or_two_chars_operators(self):
+      character = self._reader.get_character()
+
+      if character not in ("<", ">", "="):
+         return None
+      
+      position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
+      first_character = character
+
+      self._reader.next_character()
+      character = self._reader.get_character()
+
+
+      if character == "=":
+         self._reader.next_character()
+         return Token(OPERATORS[first_character + "="], position)
+      else:
+         return Token(OPERATORS[first_character], position)
+
+
    # operators
 
    def build_comment(self):

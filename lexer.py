@@ -4,7 +4,7 @@ from keywords import KEYWORDS
 from operators import OPERATORS
 import sys
 
-EOT = "EOT" # change later
+EOT = "EOF" # change later
 EOL = '\n'
 
 # FOR TEST OTHER PARTS
@@ -144,7 +144,7 @@ class Lexer:
       self._reader.next_character()
       character = self._reader.get_character()
 
-      while (character.isalpha() or character.isdecimal() or character == "_"):
+      while (character.isalpha() or character.isdecimal() or character == "_") and character != EOT:
          
          if len(StringBuilder) >= IDENTIFIER_MAX_LIMIT:
             raise IdentifierLimitExceeded(position)

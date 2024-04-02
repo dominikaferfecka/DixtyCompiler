@@ -3,6 +3,13 @@ from tokens import Token, TokenType
 from keywords import KEYWORDS
 from operators import OPERATORS
 import sys
+from errors import (
+   IntLimitExceeded, 
+   StringLimitExceeded,
+   IdentifierLimitExceeded,
+   StringNotFinished,
+   TokenNotRecognized
+)
 
 EOT = "EOF" # change later
 EOL = '\n'
@@ -14,18 +21,7 @@ EOL = '\n'
 #         print(reader.get_character())
 #         current_position = reader.get_position()
 #         print(current_position)
-#         reader.next_character()
-class IntLimitExceeded:
-   pass
-
-class StringLimitExceeded:
-   pass
-
-class StringNotFinished:
-   pass
-
-class IdentifierLimitExceeded:
-   pass
+#         reader.next_character(
 
 class Lexer:
    def __init__(self, source):
@@ -41,9 +37,9 @@ class Lexer:
          return Token(TokenType.END_OF_TEXT, position)
 
       token = self.build_number() or self.build_string() or self.build_identifier_or_keyword() or self.build_one_or_two_chars_operators() or self.build_one_char_operators() or self.build_comment()
+      if not token:
+         raise TokenNotRecognized(position)
       return token
-
-
 
    def skip_whites(self):
       while (self._reader.get_character()).isspace():
@@ -98,7 +94,7 @@ class Lexer:
 
 
    def build_string(self):
-      STRING_MAX_LIMIT = 10**10 # ?
+      STRING_MAX_LIMIT = 10**7 # ?
 
       if self._reader.get_character() != '"':
          return None
@@ -106,7 +102,8 @@ class Lexer:
       position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
       self._reader.next_character()
       
-      StringBuilder = ['"']
+      #StringBuilder = ['"']
+      StringBuilder = ['']
 
       character = self._reader.get_character()
 
@@ -118,10 +115,10 @@ class Lexer:
          character = self._reader.get_character()
 
       if character == EOT:
-         raise StringNotFinished()
+         raise StringNotFinished(position)
       
       if character == '"':
-         StringBuilder.append('"')
+         #StringBuilder.append('"')
          value = "".join(StringBuilder)
          self._reader.next_character()
          return Token(TokenType.STRING, position, value)

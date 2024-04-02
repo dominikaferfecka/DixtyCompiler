@@ -1,13 +1,59 @@
 from lexer import Lexer, Reader, TokenType
-import io
+import io, sys
+import pytest
 
+from errors import (
+   IntLimitExceeded, 
+   StringLimitExceeded,
+   IdentifierLimitExceeded,
+   StringNotFinished,
+   TokenNotRecognized
+)
 # different source
 
 # lots of rows
+def test_tokens_in_different_rows():
+    lexer = Lexer(io.StringIO(
+""" And Or
+123
+12.02
+fun
+aaa89
+"""))
+    
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.AND)
+    assert(token._position._row == 1)
+    assert(token._position._column == 2)
 
-# errors
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.OR)
+    assert(token._position._row == 1)
+    assert(token._position._column == 6)
 
-# duże liczby poza limit
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.INT)
+    assert(token._value == 123)
+    assert(token._position._row == 2)
+    assert(token._position._column == 1)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.FLOAT)
+    assert(token._value == 12.02)
+    assert(token._position._row == 3)
+    assert(token._position._column == 1)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.FUN)
+    assert(token._position._row == 4)
+    assert(token._position._column == 1)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.IDENTIFIER)
+    assert(token._value == "aaa89")
+    assert(token._position._row == 5)
+    assert(token._position._column == 1)
+
 
 # INTEGER
 def test_integer():
@@ -65,6 +111,11 @@ def test_float():
     assert(token._position._row == 1)
     assert(token._position._column == 10)
 
+def test_integer_to_big():
+    with pytest.raises(IntLimitExceeded):
+        lexer = Lexer(io.StringIO("92233720368547758070"))
+        token = lexer.get_next_token() 
+
 
 def test_float_invalid():
     lexer = Lexer(io.StringIO("1.0.5.2"))
@@ -107,7 +158,10 @@ def test_float_invalid_comma():
     assert(token._position._column == 3)
 
 
-
+def test_float_to_big():
+    with pytest.raises(IntLimitExceeded):
+        lexer = Lexer(io.StringIO("0.92233720368547758070"))
+        token = lexer.get_next_token() 
 
 
 
@@ -142,3 +196,187 @@ def test_identifier_starting_from_number():
     assert(token._value == "sd2")
     assert(token._position._row == 1)
     assert(token._position._column == 2)
+
+def test_keyword():
+    lexer = Lexer(io.StringIO("if else else_if while for in fun return"))
+    
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.IF)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.ELSE)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.ELSE_IF)
+    
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.WHILE)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.FOR)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.IN)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.FUN)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.RETURN)
+
+def test_keyword_logical_operators():
+    lexer = Lexer(io.StringIO("And Or Not"))
+    
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.AND)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.OR)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.NOT)
+
+def test_keyword_logical_operators():
+    lexer = Lexer(io.StringIO("SELECT FROM WHERE ORDER_BY ASC DESC"))
+    
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.SELECT)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.FROM)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.WHERE)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.ORDER_BY)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.ASC)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.DESC)
+
+def test_keyword_values():
+    lexer = Lexer(io.StringIO("True False"))
+    
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.TRUE)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.FALSE)
+
+
+def test_string():
+    lexer = Lexer(io.StringIO("\"test\" \"1234\" "))
+    
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.STRING)
+    assert(token._value == "test")
+    assert(token._position._row == 1)
+    assert(token._position._column == 1)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.STRING)
+    assert(token._value == "1234")
+    assert(token._position._row == 1)
+    assert(token._position._column == 8)
+
+def test_string_not_finished():
+    with pytest.raises(StringNotFinished):
+        lexer = Lexer(io.StringIO(" \"test"))
+        token = lexer.get_next_token() 
+
+def test_string_to_big():
+    with pytest.raises(StringLimitExceeded):
+        a = "a" * 10**5
+        print(a)
+        lexer = Lexer(io.StringIO(" \" "+ "a" * 10**8 + "\" "))
+        token = lexer.get_next_token() 
+
+def test_operators_comparison():
+    lexer = Lexer(io.StringIO("< > <= >= =="))
+    
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.LESS)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.MORE)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.LESS_OR_EQUAL)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.MORE_OR_EQUAL)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.EQUAL)
+
+def test_operators():
+    lexer = Lexer(io.StringIO("= + - * / . , ;"))
+    
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.ASSIGN)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.PLUS)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.MINUS)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.ASTERISK)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.SLASH)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.DOT)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.COMMA)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.SEMICOLON)
+
+def test_brackets():
+    lexer = Lexer(io.StringIO("( ) [ ] { }"))
+    
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.BRACKET_OPENING)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.BRACKET_CLOSING)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.SQUARE_BRACKET_OPENING)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.SQUARE_BRACKET_CLOSING)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.BRACE_OPENING)
+
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.BRACE_CLOSING)
+
+def test_EOF_EOT():
+    lexer = Lexer(io.StringIO(""))
+    
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.END_OF_TEXT)    
+
+def test_comment():
+    lexer = Lexer(io.StringIO("# some comment"))
+    
+    token = lexer.get_next_token()
+    assert(token._token_type == TokenType.COMMENT)    
+    assert(token._value == " some comment")    
+
+def test_invalid_token():
+    with pytest.raises(TokenNotRecognized):
+        lexer = Lexer(io.StringIO("%"))
+        token = lexer.get_next_token() 
+    
+
+

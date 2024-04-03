@@ -21,5 +21,13 @@ class Token:
     
     def __str__(self):
         return f"TokenType: [ {self._token_type} ], position: [ {self._position} ], value: [ {self._value} ]"
+    
 
+    def get_token_type(self):
+        return self._token_type
 
+    def get_position(self):
+        return self._position
+    
+    def get_value(self):
+        return self._value

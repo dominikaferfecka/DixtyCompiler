@@ -22,37 +22,37 @@ aaa89
 """))
     
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.AND)
-    assert(token._position._row == 1)
-    assert(token._position._column == 2)
+    assert(token.get_token_type() == TokenType.AND)
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 2)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.OR)
-    assert(token._position._row == 1)
-    assert(token._position._column == 6)
+    assert(token.get_token_type() == TokenType.OR)
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 6)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.INT)
-    assert(token._value == 123)
-    assert(token._position._row == 2)
-    assert(token._position._column == 1)
+    assert(token.get_token_type() == TokenType.INT)
+    assert(token.get_value() == 123)
+    assert(token.get_position().get_row() == 2)
+    assert(token.get_position().get_column() == 1)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.FLOAT)
-    assert(token._value == 12.02)
-    assert(token._position._row == 3)
-    assert(token._position._column == 1)
+    assert(token.get_token_type() == TokenType.FLOAT)
+    assert(token.get_value() == 12.02)
+    assert(token.get_position().get_row() == 3)
+    assert(token.get_position().get_column() == 1)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.FUN)
-    assert(token._position._row == 4)
-    assert(token._position._column == 1)
+    assert(token.get_token_type() == TokenType.FUN)
+    assert(token.get_position().get_row() == 4)
+    assert(token.get_position().get_column() == 1)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.IDENTIFIER)
-    assert(token._value == "aaa89")
-    assert(token._position._row == 5)
-    assert(token._position._column == 1)
+    assert(token.get_token_type() == TokenType.IDENTIFIER)
+    assert(token.get_value() == "aaa89")
+    assert(token.get_position().get_row() == 5)
+    assert(token.get_position().get_column() == 1)
 
 
 # INTEGER
@@ -60,56 +60,56 @@ def test_integer():
     lexer = Lexer(io.StringIO("12 0 03 232322"))
     
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.INT)
-    assert(token._value == 12)
-    assert(token._position._row == 1)
-    assert(token._position._column == 1)
+    assert(token.get_token_type() == TokenType.INT)
+    assert(token.get_value() == 12)
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 1)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.INT)
-    assert(token._value == 0)
-    assert(token._position._row == 1)
-    assert(token._position._column == 4)
+    assert(token.get_token_type() == TokenType.INT)
+    assert(token.get_value() == 0)
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 4)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.INT)
-    assert(token._value == 0)
-    assert(token._position._row == 1)
-    assert(token._position._column == 6)
+    assert(token.get_token_type() == TokenType.INT)
+    assert(token.get_value() == 0)
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 6)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.INT)
-    assert(token._value == 3)
-    assert(token._position._row == 1)
-    assert(token._position._column == 7)
+    assert(token.get_token_type() == TokenType.INT)
+    assert(token.get_value() == 3)
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 7)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.INT)
-    assert(token._value == 232322)
-    assert(token._position._row == 1)
-    assert(token._position._column == 9)
+    assert(token.get_token_type() == TokenType.INT)
+    assert(token.get_value() == 232322)
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 9)
 
 # FLOAT
 def test_float():
     lexer = Lexer(io.StringIO("1.5 0.23 5.0023202"))
     
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.FLOAT)
-    assert(token._value == 1.5)
-    assert(token._position._row == 1)
-    assert(token._position._column == 1)
+    assert(token.get_token_type() == TokenType.FLOAT)
+    assert(token.get_value() == 1.5)
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 1)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.FLOAT)
-    assert(token._value == 0.23)
-    assert(token._position._row == 1)
-    assert(token._position._column == 5)
+    assert(token.get_token_type() == TokenType.FLOAT)
+    assert(token.get_value() == 0.23)
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 5)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.FLOAT)
-    assert(token._value == 5.0023202)
-    assert(token._position._row == 1)
-    assert(token._position._column == 10)
+    assert(token.get_token_type() == TokenType.FLOAT)
+    assert(token.get_value() == 5.0023202)
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 10)
 
 def test_integer_to_big():
     with pytest.raises(IntLimitExceeded):
@@ -121,41 +121,41 @@ def test_float_invalid():
     lexer = Lexer(io.StringIO("1.0.5.2"))
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.FLOAT)
-    assert(token._value == 1.0)
-    assert(token._position._row == 1)
-    assert(token._position._column == 1)
+    assert(token.get_token_type() == TokenType.FLOAT)
+    assert(token.get_value() == 1.0)
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 1)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.DOT)
-    assert(token._position._row == 1)
-    assert(token._position._column == 4)
+    assert(token.get_token_type() == TokenType.DOT)
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 4)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.FLOAT)
-    assert(token._value == 5.2)
-    assert(token._position._row == 1)
-    assert(token._position._column == 5)
+    assert(token.get_token_type() == TokenType.FLOAT)
+    assert(token.get_value() == 5.2)
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 5)
 
 def test_float_invalid_comma():
     lexer = Lexer(io.StringIO("1,2"))
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.INT)
-    assert(token._value == 1)
-    assert(token._position._row == 1)
-    assert(token._position._column == 1)
+    assert(token.get_token_type() == TokenType.INT)
+    assert(token.get_value() == 1)
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 1)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.COMMA)
-    assert(token._position._row == 1)
-    assert(token._position._column == 2)
+    assert(token.get_token_type() == TokenType.COMMA)
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 2)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.INT)
-    assert(token._value == 2)
-    assert(token._position._row == 1)
-    assert(token._position._column == 3)
+    assert(token.get_token_type() == TokenType.INT)
+    assert(token.get_value() == 2)
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 3)
 
 
 def test_float_to_big():
@@ -171,116 +171,116 @@ def test_identifier():
     lexer = Lexer(io.StringIO("a bc334_dfs"))
     
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.IDENTIFIER)
-    assert(token._value == "a")
-    assert(token._position._row == 1)
-    assert(token._position._column == 1)
+    assert(token.get_token_type() == TokenType.IDENTIFIER)
+    assert(token.get_value() == "a")
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 1)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.IDENTIFIER)
-    assert(token._value == "bc334_dfs")
-    assert(token._position._row == 1)
-    assert(token._position._column == 3)    
+    assert(token.get_token_type() == TokenType.IDENTIFIER)
+    assert(token.get_value() == "bc334_dfs")
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 3)    
 
 def test_identifier_starting_from_number():
     lexer = Lexer(io.StringIO("1sd2"))
     
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.INT)
-    assert(token._value == 1)
-    assert(token._position._row == 1)
-    assert(token._position._column == 1)
+    assert(token.get_token_type() == TokenType.INT)
+    assert(token.get_value() == 1)
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 1)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.IDENTIFIER)
-    assert(token._value == "sd2")
-    assert(token._position._row == 1)
-    assert(token._position._column == 2)
+    assert(token.get_token_type() == TokenType.IDENTIFIER)
+    assert(token.get_value() == "sd2")
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 2)
 
 def test_keyword():
     lexer = Lexer(io.StringIO("if else else_if while for in fun return"))
     
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.IF)
+    assert(token.get_token_type() == TokenType.IF)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.ELSE)
+    assert(token.get_token_type() == TokenType.ELSE)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.ELSE_IF)
+    assert(token.get_token_type() == TokenType.ELSE_IF)
     
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.WHILE)
+    assert(token.get_token_type() == TokenType.WHILE)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.FOR)
+    assert(token.get_token_type() == TokenType.FOR)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.IN)
+    assert(token.get_token_type() == TokenType.IN)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.FUN)
+    assert(token.get_token_type() == TokenType.FUN)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.RETURN)
+    assert(token.get_token_type() == TokenType.RETURN)
 
 def test_keyword_logical_operators():
     lexer = Lexer(io.StringIO("And Or Not"))
     
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.AND)
+    assert(token.get_token_type() == TokenType.AND)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.OR)
+    assert(token.get_token_type() == TokenType.OR)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.NOT)
+    assert(token.get_token_type() == TokenType.NOT)
 
 def test_keyword_logical_operators():
     lexer = Lexer(io.StringIO("SELECT FROM WHERE ORDER_BY ASC DESC"))
     
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.SELECT)
+    assert(token.get_token_type() == TokenType.SELECT)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.FROM)
+    assert(token.get_token_type() == TokenType.FROM)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.WHERE)
+    assert(token.get_token_type() == TokenType.WHERE)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.ORDER_BY)
+    assert(token.get_token_type() == TokenType.ORDER_BY)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.ASC)
+    assert(token.get_token_type() == TokenType.ASC)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.DESC)
+    assert(token.get_token_type() == TokenType.DESC)
 
 def test_keyword_values():
     lexer = Lexer(io.StringIO("True False"))
     
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.TRUE)
+    assert(token.get_token_type() == TokenType.TRUE)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.FALSE)
+    assert(token.get_token_type() == TokenType.FALSE)
 
 
 def test_string():
     lexer = Lexer(io.StringIO("\"test\" \"1234\" "))
     
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.STRING)
-    assert(token._value == "test")
-    assert(token._position._row == 1)
-    assert(token._position._column == 1)
+    assert(token.get_token_type() == TokenType.STRING)
+    assert(token.get_value() == "test")
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 1)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.STRING)
-    assert(token._value == "1234")
-    assert(token._position._row == 1)
-    assert(token._position._column == 8)
+    assert(token.get_token_type() == TokenType.STRING)
+    assert(token.get_value() == "1234")
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 8)
 
 def test_string_not_finished():
     with pytest.raises(StringNotFinished):
@@ -298,80 +298,80 @@ def test_operators_comparison():
     lexer = Lexer(io.StringIO("< > <= >= =="))
     
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.LESS)
+    assert(token.get_token_type() == TokenType.LESS)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.MORE)
+    assert(token.get_token_type() == TokenType.MORE)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.LESS_OR_EQUAL)
+    assert(token.get_token_type() == TokenType.LESS_OR_EQUAL)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.MORE_OR_EQUAL)
+    assert(token.get_token_type() == TokenType.MORE_OR_EQUAL)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.EQUAL)
+    assert(token.get_token_type() == TokenType.EQUAL)
 
 def test_operators():
     lexer = Lexer(io.StringIO("= + - * / . , ;"))
     
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.ASSIGN)
+    assert(token.get_token_type() == TokenType.ASSIGN)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.PLUS)
+    assert(token.get_token_type() == TokenType.PLUS)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.MINUS)
+    assert(token.get_token_type() == TokenType.MINUS)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.ASTERISK)
+    assert(token.get_token_type() == TokenType.ASTERISK)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.SLASH)
+    assert(token.get_token_type() == TokenType.SLASH)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.DOT)
+    assert(token.get_token_type() == TokenType.DOT)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.COMMA)
+    assert(token.get_token_type() == TokenType.COMMA)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.SEMICOLON)
+    assert(token.get_token_type() == TokenType.SEMICOLON)
 
 def test_brackets():
     lexer = Lexer(io.StringIO("( ) [ ] { }"))
     
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.BRACKET_OPENING)
+    assert(token.get_token_type() == TokenType.BRACKET_OPENING)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.BRACKET_CLOSING)
+    assert(token.get_token_type() == TokenType.BRACKET_CLOSING)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.SQUARE_BRACKET_OPENING)
+    assert(token.get_token_type() == TokenType.SQUARE_BRACKET_OPENING)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.SQUARE_BRACKET_CLOSING)
+    assert(token.get_token_type() == TokenType.SQUARE_BRACKET_CLOSING)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.BRACE_OPENING)
+    assert(token.get_token_type() == TokenType.BRACE_OPENING)
 
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.BRACE_CLOSING)
+    assert(token.get_token_type() == TokenType.BRACE_CLOSING)
 
 def test_EOF_EOT():
     lexer = Lexer(io.StringIO(""))
     
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.END_OF_TEXT)    
+    assert(token.get_token_type() == TokenType.END_OF_TEXT)    
 
 def test_comment():
     lexer = Lexer(io.StringIO("# some comment"))
     
     token = lexer.get_next_token()
-    assert(token._token_type == TokenType.COMMENT)    
-    assert(token._value == " some comment")    
+    assert(token.get_token_type() == TokenType.COMMENT)    
+    assert(token.get_value() == " some comment")    
 
 def test_invalid_token():
     with pytest.raises(TokenNotRecognized):

@@ -24,7 +24,8 @@ class Reader:
         return self._character
     
     def get_position(self):
-        #return (self.position.get_row(), self.position.get_column())
+        # new_position = self._position
+        # return new_position
         return (self._position.get_row(), self._position.get_column())
     
     def read_character(self):

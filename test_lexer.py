@@ -378,5 +378,11 @@ def test_invalid_token():
         lexer = Lexer(io.StringIO("%"))
         token = lexer.get_next_token() 
     
+def test_source_encoding():
+    with open('test_file2.txt', 'w', encoding='utf-8') as f:
+        f.write("Żółć")
 
-
+    lexer = Lexer('test_file2.txt')
+    token = lexer.get_next_token()
+    assert(token.get_token_type() == TokenType.IDENTIFIER)    
+    assert(token.get_value() == "Żółć")    

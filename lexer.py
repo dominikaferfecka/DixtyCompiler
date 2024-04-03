@@ -10,9 +10,7 @@ from errors import (
    StringNotFinished,
    TokenNotRecognized
 )
-
-EOT = "EOF" # change later
-EOL = '\n'
+from standards import ETX, EOL
 
 # FOR TEST OTHER PARTS
 # if __name__ == "__main__":
@@ -33,7 +31,7 @@ class Lexer:
 
       position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
 
-      if self._reader.get_character() == EOT:
+      if self._reader.get_character() == ETX:
          return Token(TokenType.END_OF_TEXT, position)
 
       token = self.build_number() or self.build_string() or self.build_identifier_or_keyword() or self.build_one_or_two_chars_operators() or self.build_one_char_operators() or self.build_comment()
@@ -107,14 +105,14 @@ class Lexer:
 
       character = self._reader.get_character()
 
-      while character not in ('"', EOT): # $ też?, chyba nie, na wykładzie tylko " EOT
+      while character not in ('"', ETX): # $ też?, chyba nie, na wykładzie tylko " ETX
          if len(StringBuilder) >= STRING_MAX_LIMIT:
             raise StringLimitExceeded(position)
          StringBuilder.append(character)
          self._reader.next_character()
          character = self._reader.get_character()
 
-      if character == EOT:
+      if character == ETX:
          raise StringNotFinished(position)
       
       if character == '"':
@@ -141,7 +139,7 @@ class Lexer:
       self._reader.next_character()
       character = self._reader.get_character()
 
-      while (character.isalpha() or character.isdecimal() or character == "_") and character != EOT:
+      while (character.isalpha() or character.isdecimal() or character == "_") and character != ETX:
          
          if len(StringBuilder) >= IDENTIFIER_MAX_LIMIT:
             raise IdentifierLimitExceeded(position)
@@ -215,7 +213,7 @@ class Lexer:
 
       self._reader.next_character()
       character = self._reader.get_character()
-      while character != EOL and character != EOT:
+      while character != EOL and character != ETX:
          StringBuilder.append(character)
          self._reader.next_character()
          character = self._reader.get_character()
@@ -224,15 +222,6 @@ class Lexer:
       self._reader.next_character()
 
       return Token( TokenType.COMMENT, position, value)
-
-         
-
-
-
-      # kończy się EOL lub ETX
-   
-   def build_EOF(self):
-      pass
 
 
 

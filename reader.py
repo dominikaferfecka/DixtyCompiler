@@ -1,9 +1,7 @@
 from io import TextIOWrapper
 import sys
 from position import Position
-
-EOL = '\n' # later maybe others
-EOF = "EOF" # change
+from standards import ETX, EOL
 
 class Reader:
     def __init__(self, source):
@@ -33,21 +31,45 @@ class Reader:
         if character:
             if self._character != EOL:
                 self._position.increase_column()
+                self.check_EOL()
             else:
                 self._position.start_next_row()
             self._character = character
         else:
-            self._character = EOF
+            self._character = ETX
 
     
     def next_character(self):
-        if self._character is not EOF:
+        if self._character is not ETX:
             self.read_character()
+
+    
+    def check_EOL(self):
+        if self._character == '\n':
+            next_character = self.peek_next_character()
+            if next_character == '\r': # check 'EOL: \n\r' ACORN BBC and RISC OS standard
+                self._source.read(1) # omit next
+            return EOL
+
+        # elif self._character == '\r':
+        #     next_character = self.peek_next_character()
+        #     if next_character == '\n': # check 'EOL: \r\n' Microsoft Windows, DOS, Atari TOS standard
+        #         self._source.read(1) # omit next
+        #     return EOL
+
+    def peek_next_character(self):
+        current_position = self._source.tell() 
+        next_character = self._source.read(1)
+        self._source.seek(current_position)
+        return next_character
+
 
 
 # dodać obsługę znaku nowej lini 
 # może być \n ale też \r\n -> i wtedy zamienić to na \n
             
 # musi też ogarnąć koniec, wystawia znak ETX, niezależnie od tego czym się kończy naprawdę
-            
+# źródło z pliku - null lub none
+
+
 # daje kod znaku w unicode

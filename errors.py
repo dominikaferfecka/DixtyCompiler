@@ -16,4 +16,4 @@ class StringNotFinished(Exception):
 
 class TokenNotRecognized(Exception):
      def __init__(self, position):
-        super().__init__(f"Token was recognized \n Invalid token attempted to create at {position}")
+        super().__init__(f"Token was not recognized \n Invalid token attempted to create at {position}")

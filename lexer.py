@@ -2,13 +2,15 @@ from reader import Reader, Position
 from tokens import Token, TokenType
 from keywords import KEYWORDS
 from operators import OPERATORS
+from string_escape import STRING_ESCAPE
 import sys
 from errors import (
    IntLimitExceeded, 
    StringLimitExceeded,
    IdentifierLimitExceeded,
    StringNotFinished,
-   TokenNotRecognized
+   TokenNotRecognized,
+   UnexpectedEscapeCharacter
 )
 from standards import ETX, EOL
 
@@ -100,15 +102,24 @@ class Lexer:
       position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
       self._reader.next_character()
       
-      #StringBuilder = ['"']
       StringBuilder = ['']
 
       character = self._reader.get_character()
 
-      while character not in ('"', ETX): # $ też?, chyba nie, na wykładzie tylko " ETX
+      while character not in ('"', ETX):
          if len(StringBuilder) >= STRING_MAX_LIMIT:
             raise StringLimitExceeded(position)
-         StringBuilder.append(character)
+
+         if character == '\\':
+            self._reader.next_character()
+            character = self._reader.get_character()
+            if character in STRING_ESCAPE.keys():
+               StringBuilder.append(STRING_ESCAPE[character])
+            else:
+               raise UnexpectedEscapeCharacter(position)
+         else:
+            StringBuilder.append(character)
+            
          self._reader.next_character()
          character = self._reader.get_character()
 
@@ -116,15 +127,9 @@ class Lexer:
          raise StringNotFinished(position)
       
       if character == '"':
-         #StringBuilder.append('"')
          value = "".join(StringBuilder)
          self._reader.next_character()
          return Token(TokenType.STRING, position, value)
-
-      # if character == '$':
-      #    StringBuilder.append('"')
-      #    value = StringBuilder.join(",")
-      #    return Token(TokenType.STRING, position, value)
 
 
    def build_identifier_or_keyword(self):
@@ -154,7 +159,6 @@ class Lexer:
          return Token( KEYWORDS[value], position)
 
       return Token(TokenType.IDENTIFIER, position, value)
-      
 
    def build_one_or_two_chars_operators(self):
       character = self._reader.get_character()

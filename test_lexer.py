@@ -520,14 +520,42 @@ def test_strings():
 def test_string_not_finished():
     with pytest.raises(StringNotFinished):
         lexer = Lexer(io.StringIO(" \"test"))
-        token = lexer.get_next_token() 
+        lexer.get_next_token() 
 
-def test_string_to_big():
+def test_string_too_big():
     with pytest.raises(StringLimitExceeded):
         a = "a" * 10**5
         print(a)
         lexer = Lexer(io.StringIO(" \" "+ "a" * 10**8 + "\" "))
         token = lexer.get_next_token() 
+
+def test_escape_character_newline():
+    lexer = Lexer(io.StringIO(" \"\\n\" "))
+    token = lexer.get_next_token()
+    assert(token.get_token_type() == TokenType.STRING)
+    assert(token.get_value() == "\n")
+
+def test_escape_character_slash():
+    lexer = Lexer(io.StringIO(" \" \\\\ \" "))
+    token = lexer.get_next_token()
+    assert(token.get_token_type() == TokenType.STRING)
+    assert(token.get_value() == " \\ ")
+
+def test_escape_character_r():
+    lexer = Lexer(io.StringIO(" \" \\r \" "))
+    token = lexer.get_next_token()
+    assert(token.get_token_type() == TokenType.STRING)
+    assert(token.get_value() == " \r ")
+
+
+def test_escape_character_t():
+    lexer = Lexer(io.StringIO(" \" \\t \" "))
+    token = lexer.get_next_token()
+    assert(token.get_token_type() == TokenType.STRING)
+    assert(token.get_value() == " \t ")
+
+
+
 
 def test_operators_comparison():
     lexer = Lexer(io.StringIO("< > <= >= =="))

@@ -17,3 +17,7 @@ class StringNotFinished(Exception):
 class TokenNotRecognized(Exception):
      def __init__(self, position):
         super().__init__(f"Token was not recognized \n Invalid token attempted to create at {position}")
+
+class UnexpectedEscapeCharacter(Exception):
+    def __init__(self, position):
+        super().__init__(f"Used escape character but after there was no expected character like: 'n', 'r', 't', '\\' \n Invalid escape character at {position}")

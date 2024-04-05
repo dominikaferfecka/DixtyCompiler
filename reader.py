@@ -3,11 +3,13 @@ import sys
 from position import Position
 from standards import ETX, EOL
 import codecs
+from standards import NEWLINE
 
 class Reader:
     def __init__(self, source, encoding='utf-8'):
         if isinstance(source, str):
             self._source = open(source, 'r', encoding=encoding)
+            #self._source = source ??
         elif hasattr(source, 'read'):
             self._source = TextIOWrapper(BytesIO(source.getvalue().encode(encoding)), encoding=encoding)
         elif source is sys.stdin:
@@ -17,6 +19,7 @@ class Reader:
         
         self._position = Position()
         self._character = None
+        self._last_two_chars_EOL = False
         self.next_character()
     
     def get_character(self):
@@ -41,36 +44,20 @@ class Reader:
 
     
     def next_character(self):
-        if self._character is not ETX:
+        if self._character is not ETX and not self._last_two_chars_EOL:
+            self._last_two_chars_EOL = False
             self.read_character()
+        
 
-    
+
     def check_EOL(self):
-        if self._character == '\n':
-            next_character = self.peek_next_character()
-            if next_character == '\r': # check 'EOL: \n\r' ACORN BBC and RISC OS standard
-                self._source.read(1) # omit next
-            return EOL
+        if self._character in NEWLINE.keys():
+            self.next_character()
+            next_character = self.get_character()
+            if next_character == NEWLINE[self._character]: # check 'EOL: \n\r' ACORN BBC and RISC OS standard
+                self._last_two_chars_EOL = True
+                self.next_character()
+                return EOL
+            elif self._character == '\\n':
+                return EOL
 
-        # elif self._character == '\r':
-        #     next_character = self.peek_next_character()
-        #     if next_character == '\n': # check 'EOL: \r\n' Microsoft Windows, DOS, Atari TOS standard
-        #         self._source.read(1) # omit next
-        #     return EOL
-
-    def peek_next_character(self):
-        current_position = self._source.tell() 
-        next_character = self._source.read(1)
-        self._source.seek(current_position)
-        return next_character
-
-
-
-# dodać obsługę znaku nowej lini 
-# może być \n ale też \r\n -> i wtedy zamienić to na \n
-            
-# musi też ogarnąć koniec, wystawia znak ETX, niezależnie od tego czym się kończy naprawdę
-# źródło z pliku - null lub none
-
-
-# daje kod znaku w unicode

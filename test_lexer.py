@@ -627,7 +627,8 @@ def test_EOF_EOT():
     lexer = Lexer(io.StringIO(""))
     
     token = lexer.get_next_token()
-    assert(token.get_token_type() == TokenType.END_OF_TEXT)    
+    assert(token.get_token_type() == TokenType.END_OF_TEXT)
+
 
 def test_comment():
     lexer = Lexer(io.StringIO("# some comment"))

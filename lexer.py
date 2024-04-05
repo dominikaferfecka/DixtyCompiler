@@ -2,7 +2,7 @@ from reader import Reader, Position
 from tokens import Token, TokenType
 from keywords import KEYWORDS
 from operators import OPERATORS
-from string_escape import STRING_ESCAPE
+from standards import STRING_ESCAPE
 import sys
 from errors import (
    IntLimitExceeded, 

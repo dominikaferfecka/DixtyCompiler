@@ -7,9 +7,8 @@ import codecs
 from standards import NEWLINE
 
 class Reader:
-    def __init__(self, source, encoding='utf-8'):
+    def __init__(self, source):
         self._source = source
-        
         self._position = Position()
         self._character = None
         self._last_two_chars_EOL = False

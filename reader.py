@@ -15,6 +15,7 @@ class Reader:
         self.next_character()
     
     def get_character(self):
+        self._last_EOL = False
         return self._character
     
     def get_position(self):
@@ -55,10 +56,11 @@ class Reader:
             next_character = self.read_character()
             if next_character == NEWLINE[character]: # check 'EOL: \n\r' ACORN BBC and RISC OS standard
                 self.next_character()
+                self._last_EOL = True
                 return EOL
             elif character == '\n':
                 self._character = next_character
-                self._last_one_char_EOL = True
+                self._last_EOL = True
                 return EOL
         else:
             self._character = character

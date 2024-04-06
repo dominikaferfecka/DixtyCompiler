@@ -246,6 +246,21 @@ def test_float():
     assert(token.get_token_type() == TokenType.FLOAT)
     assert(token.get_value() == 1.0)
 
+def test_tokens_in_two_rows():
+    lexer = Lexer(SourceString("12\n34"))
+    
+    token = lexer.get_next_token()
+    assert(token.get_token_type() == TokenType.INT)
+    assert(token.get_value() == 12)
+    assert(token.get_position().get_row() == 1)
+    assert(token.get_position().get_column() == 1)
+
+    token = lexer.get_next_token()
+    assert(token.get_token_type() == TokenType.INT)
+    assert(token.get_value() == 34)
+    assert(token.get_position().get_row() == 2)
+    assert(token.get_position().get_column() == 1)
+
 
 # lots of rows
 def test_tokens_in_different_rows():
@@ -643,7 +658,6 @@ def test_invalid_token():
         lexer = Lexer(SourceString("%"))
         token = lexer.get_next_token() 
     
-def test_source_encoding():
     with open('test_file2.txt', 'w', encoding='utf-8') as f:
         f.write("Żółć")
 

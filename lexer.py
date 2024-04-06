@@ -54,6 +54,7 @@ class Lexer:
       if character == "0":
          value = 0
          self._reader.next_character()
+         character = self._reader.get_character()
       else:
          value = int(character) # ascii code for 0
 
@@ -70,7 +71,7 @@ class Lexer:
             self._reader.next_character()  
             character = self._reader.get_character()
 
-      if self._reader.get_character() != '.':
+      if character != '.':
          return Token(TokenType.INT, position, value)
       
       self._reader.next_character()

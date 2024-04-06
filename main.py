@@ -1,4 +1,4 @@
-from lexer import Lexer, TokenType
+from filter import Filter, Lexer, TokenType
 from source import SourceFile, SourceString
 import sys, argparse
 
@@ -17,12 +17,13 @@ def main():
     elif args.source_type == "string":
         source = SourceString(args.source)
     
-    lexer = Lexer(source, args.int_limit, args.string_limit, args.identifier_limit)
+    filter = Filter(source, args.int_limit, args.string_limit, args.identifier_limit)
 
-    token = lexer.get_next_token()
-    while token.get_token_type() != TokenType.END_OF_TEXT:
-        print(token)
-        token = lexer.get_next_token()
+    token = filter.get_next_token()
+    while token == None or token.get_token_type() != TokenType.END_OF_TEXT:
+        if token:
+            print(token)
+        token = filter.get_next_token()
     print(token)
 
 if __name__ == "__main__":

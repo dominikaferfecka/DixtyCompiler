@@ -45,8 +45,10 @@ class Lexer:
       return token
 
    def skip_whites(self):
-      while (self._reader.get_character()).isspace():
-         self._reader.next_character()
+      character = self._reader.get_character()
+      while character.isspace():
+         character = self._reader.next_character()
+   
 
    def build_number(self):
       character = self._reader.get_character()
@@ -56,13 +58,11 @@ class Lexer:
       
       if character == "0":
          value = 0
-         self._reader.next_character()
-         character = self._reader.get_character()
+         character = self._reader.next_character()
       else:
          value = int(character) # ascii code for 0
 
-         self._reader.next_character()
-         character = self._reader.get_character()
+         character = self._reader.next_character()
 
          while character.isdecimal():
             new_value = int(character)
@@ -71,14 +71,13 @@ class Lexer:
                raise IntLimitExceeded(position)
 
             value = value*10 + new_value
-            self._reader.next_character()  
-            character = self._reader.get_character()
+            character = self._reader.next_character()  
+
 
       if character != '.':
          return Token(TokenType.INT, position, value)
       
-      self._reader.next_character()
-      character = self._reader.get_character()
+      character = self._reader.next_character()
       fraction = 0
       digits = 0
       while character.isdecimal():
@@ -90,8 +89,7 @@ class Lexer:
 
             fraction = fraction*10 + new_decimal
             digits += 1
-            self._reader.next_character()
-            character = self._reader.get_character() 
+            character = self._reader.next_character()
 
       number = float( value + fraction / 10**digits)
       return Token(TokenType.FLOAT, position, number)
@@ -103,19 +101,16 @@ class Lexer:
          return None
       
       position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
-      self._reader.next_character()
+      character = self._reader.next_character()
       
       StringBuilder = ['']
-
-      character = self._reader.get_character()
 
       while character not in ('"', ETX):
          if len(StringBuilder) >= self._STRING_LIMIT:
             raise StringLimitExceeded(position)
 
          if character == '\\':
-            self._reader.next_character()
-            character = self._reader.get_character()
+            character = self._reader.next_character()
             if character in STRING_ESCAPE.keys():
                StringBuilder.append(STRING_ESCAPE[character])
             else:
@@ -123,15 +118,14 @@ class Lexer:
          else:
             StringBuilder.append(character)
             
-         self._reader.next_character()
-         character = self._reader.get_character()
+         character = self._reader.next_character()
 
       if character == ETX:
          raise StringNotFinished(position)
       
       if character == '"':
          value = "".join(StringBuilder)
-         self._reader.next_character()
+         _ = self._reader.next_character()
          return Token(TokenType.STRING, position, value)
 
 
@@ -144,8 +138,7 @@ class Lexer:
       position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
       StringBuilder = [character]
 
-      self._reader.next_character()
-      character = self._reader.get_character()
+      character = self._reader.next_character()
 
       while (character.isalpha() or character.isdecimal() or character == "_") and character != ETX:
          
@@ -153,8 +146,7 @@ class Lexer:
             raise IdentifierLimitExceeded(position)
          
          StringBuilder.append(character)
-         self._reader.next_character()
-         character = self._reader.get_character()
+         character = self._reader.next_character()
 
       value = "".join(StringBuilder)
 
@@ -172,12 +164,10 @@ class Lexer:
       position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
       first_character = character
 
-      self._reader.next_character()
-      character = self._reader.get_character()
-
+      character = self._reader.next_character()
 
       if character == "=":
-         self._reader.next_character()
+         _ = self._reader.next_character()
          return Token(OPERATORS[first_character + "="], position)
       else:
          return Token(OPERATORS[first_character], position)
@@ -189,7 +179,7 @@ class Lexer:
          return None
       
       position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
-      self._reader.next_character()
+      _ = self._reader.next_character()
       
       return Token(OPERATORS[character], position)
    
@@ -202,15 +192,13 @@ class Lexer:
       position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
       StringBuilder = []
 
-      self._reader.next_character()
-      character = self._reader.get_character()
+      character = self._reader.next_character()
       while character != EOL and character != ETX:
          StringBuilder.append(character)
-         self._reader.next_character()
-         character = self._reader.get_character()
+         character = self._reader.next_character()
       
       value = "".join(StringBuilder)
-      self._reader.next_character()
+      _ = self._reader.next_character()
 
       return Token( TokenType.COMMENT, position, value)
 

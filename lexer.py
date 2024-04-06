@@ -198,8 +198,6 @@ class Lexer:
          character = self._reader.next_character()
       
       value = "".join(StringBuilder)
-      _ = self._reader.next_character()
-
       return Token( TokenType.COMMENT, position, value)
 
 

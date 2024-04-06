@@ -362,9 +362,15 @@ def test_floats():
     assert(token.get_position().get_row() == 1)
     assert(token.get_position().get_column() == 10)
 
-def test_integer_to_big():
+def test_integer_to_big_default_limit():
     with pytest.raises(IntLimitExceeded):
         lexer = Lexer(SourceString("92233720368547758070"))
+        token = lexer.get_next_token() 
+
+def test_integer_to_big():
+    INT_MAX_LIMIT = 100
+    with pytest.raises(IntLimitExceeded):
+        lexer = Lexer(SourceString("101"), INT_MAX_LIMIT)
         token = lexer.get_next_token() 
 
 
@@ -409,11 +415,16 @@ def test_float_invalid_comma():
     assert(token.get_position().get_column() == 3)
 
 
-def test_float_to_big():
+def test_float_to_big_defaut_limit():
     with pytest.raises(IntLimitExceeded):
         lexer = Lexer(SourceString("0.92233720368547758070"))
         token = lexer.get_next_token() 
 
+def test_integer_to_big():
+    INT_MAX_LIMIT = 100
+    with pytest.raises(IntLimitExceeded):
+        lexer = Lexer(SourceString("0.101"), INT_MAX_LIMIT)
+        token = lexer.get_next_token() 
 
 
 # IDENTIFIER
@@ -447,6 +458,20 @@ def test_identifier_starting_from_number():
     assert(token.get_value() == "sd2")
     assert(token.get_position().get_row() == 1)
     assert(token.get_position().get_column() == 2)
+
+def test_identifier_too_big_default_limit():
+    with pytest.raises(IdentifierLimitExceeded):
+        lexer = Lexer(SourceString("a" * 10**8 ))
+        token = lexer.get_next_token()
+
+def test_integer_to_big():
+    INT_MAX_LIMIT = 100
+    STRING_MAX_LIMIT = 5
+    IDENTIFIER_MAX_LIMIT = 5
+    with pytest.raises(IdentifierLimitExceeded):
+        lexer = Lexer(SourceString("123456"), INT_MAX_LIMIT, STRING_MAX_LIMIT, IDENTIFIER_MAX_LIMIT)
+        token = lexer.get_next_token() 
+
 
 def test_keywords():
     lexer = Lexer(SourceString("if else else_if while for in fun return"))
@@ -538,11 +563,18 @@ def test_string_not_finished():
         lexer = Lexer(SourceString(" \"test"))
         lexer.get_next_token() 
 
-def test_string_too_big():
+def test_string_too_big_default_limit():
     with pytest.raises(StringLimitExceeded):
         a = "a" * 10**5
         print(a)
         lexer = Lexer(SourceString(" \" "+ "a" * 10**8 + "\" "))
+        token = lexer.get_next_token() 
+
+def test_integer_to_big():
+    INT_MAX_LIMIT = 100
+    STRING_MAX_LIMIT = 5
+    with pytest.raises(StringLimitExceeded):
+        lexer = Lexer(SourceString(" \" 123456 \" "), INT_MAX_LIMIT, STRING_MAX_LIMIT)
         token = lexer.get_next_token() 
 
 def test_escape_character_newline():

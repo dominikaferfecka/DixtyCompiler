@@ -24,8 +24,11 @@ from standards import ETX, EOL
 #         reader.next_character(
 
 class Lexer:
-   def __init__(self, source):
+   def __init__(self, source, INT_LIMIT=sys.maxsize, STRING_LIMIT=10**7, IDENTIFIER_LIMIT=10**7):
       self._reader = Reader(source)
+      self._INT_LIMIT = INT_LIMIT
+      self._STRING_LIMIT = STRING_LIMIT
+      self._IDENTIFIER_LIMIT = IDENTIFIER_LIMIT
 
    def get_next_token(self):
 
@@ -64,7 +67,7 @@ class Lexer:
          while character.isdecimal():
             new_value = int(character)
             
-            if ( value >= (sys.maxsize - new_value)/10 ):
+            if ( value >= (self._INT_LIMIT - new_value)/10 ):
                raise IntLimitExceeded(position)
 
             value = value*10 + new_value
@@ -82,7 +85,7 @@ class Lexer:
             new_decimal = int(character)
             
             # correct later - it should check with integer value
-            if ( fraction >= (sys.maxsize - new_decimal)/10 ):
+            if ( fraction >= (self._INT_LIMIT - new_decimal)/10 ):
                raise IntLimitExceeded(position)
 
             fraction = fraction*10 + new_decimal
@@ -95,7 +98,6 @@ class Lexer:
 
 
    def build_string(self):
-      STRING_MAX_LIMIT = 10**7 # ?
 
       if self._reader.get_character() != '"':
          return None
@@ -108,7 +110,7 @@ class Lexer:
       character = self._reader.get_character()
 
       while character not in ('"', ETX):
-         if len(StringBuilder) >= STRING_MAX_LIMIT:
+         if len(StringBuilder) >= self._STRING_LIMIT:
             raise StringLimitExceeded(position)
 
          if character == '\\':
@@ -147,7 +149,7 @@ class Lexer:
 
       while (character.isalpha() or character.isdecimal() or character == "_") and character != ETX:
          
-         if len(StringBuilder) >= IDENTIFIER_MAX_LIMIT:
+         if len(StringBuilder) >= self._IDENTIFIER_LIMIT:
             raise IdentifierLimitExceeded(position)
          
          StringBuilder.append(character)
@@ -191,22 +193,6 @@ class Lexer:
       
       return Token(OPERATORS[character], position)
    
-   # def build_two_chars_operators(self):
-   #    character = self._reader.get_character()
-
-   #    if character != "!":
-   #       return None
-      
-   #    position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
-   #    self._reader.next_character()
-
-   #    if character == "=":
-   #       return Token(OPERATORS["!="], position)
-   #    else:
-   #       raise Invalid 
-
-
-
    # operators
 
    def build_comment(self):

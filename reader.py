@@ -52,16 +52,22 @@ class Reader:
 
     def check_EOL(self, character):
         if character in NEWLINE.keys():
-            self._character = EOL
-            next_character = self.read_character()
+            # self._character = EOL
+            next_character = self._source.read()
             if next_character == NEWLINE[character]: # check 'EOL: \n\r' ACORN BBC and RISC OS standard
                 self.next_character()
+                self._position.start_next_row()
                 self._last_EOL = True
                 return EOL
             elif character == '\n':
+                self._position.start_next_row()
                 self._character = next_character
                 self._last_EOL = True
                 return EOL
+            else:
+                self._last_EOL = True
+                self._character = next_character
+                return character
         else:
             self._character = character
             return character

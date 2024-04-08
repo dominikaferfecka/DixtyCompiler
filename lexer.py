@@ -42,7 +42,8 @@ class Lexer:
 
       token = self.build_number() or self.build_string() or self.build_identifier_or_keyword() or self.build_one_or_two_chars_operators() or self.build_one_char_operators() or self.build_comment()
       if not token:
-         raise TokenNotRecognized(position)
+         not_recognized = self._reader.get_character()
+         raise TokenNotRecognized(position, not_recognized)
       return token
 
    def skip_whites(self):
@@ -68,7 +69,7 @@ class Lexer:
             new_value = int(character)
 
             if (value >= (self._INT_LIMIT - new_value) / 10):
-               raise IntLimitExceeded(position)
+               raise IntLimitExceeded(position, self._INT_LIMIT)
 
             value = value*10 + new_value
             character = self._reader.next_character()
@@ -85,7 +86,7 @@ class Lexer:
 
             # correct later - it should check with integer value
             if (fraction >= (self._INT_LIMIT - new_decimal) / 10):
-               raise IntLimitExceeded(position)
+               raise IntLimitExceeded(position, self._INT_LIMIT)
 
             fraction = fraction*10 + new_decimal
             digits += 1
@@ -106,14 +107,14 @@ class Lexer:
 
       while character not in ('"', ETX):
          if len(StringBuilder) >= self._STRING_LIMIT:
-            raise StringLimitExceeded(position)
+            raise StringLimitExceeded(position, self._STRING_LIMIT)
 
          if character == '\\':
             character = self._reader.next_character()
             if character in STRING_ESCAPE.keys():
                StringBuilder.append(STRING_ESCAPE[character])
             else:
-               raise UnexpectedEscapeCharacter(position)
+               raise UnexpectedEscapeCharacter(position, character)
          else:
             StringBuilder.append(character)
 
@@ -128,7 +129,6 @@ class Lexer:
          return Token(TokenType.STRING, position, value)
 
    def build_identifier_or_keyword(self):
-      IDENTIFIER_MAX_LIMIT = 10**10
       character = self._reader.get_character()
       if not character.isalpha():
          return None
@@ -141,7 +141,7 @@ class Lexer:
       while (character.isalpha() or character.isdecimal() or character == "_") and character != ETX:
 
          if len(StringBuilder) >= self._IDENTIFIER_LIMIT:
-            raise IdentifierLimitExceeded(position)
+            raise IdentifierLimitExceeded(position, self._IDENTIFIER_LIMIT)
 
          StringBuilder.append(character)
          character = self._reader.next_character()

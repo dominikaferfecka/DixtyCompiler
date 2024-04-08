@@ -1,5 +1,6 @@
 from lexer import Lexer, TokenType
 
+
 class Filter:
     def __init__(self, source, INT_LIMIT, STRING_LIMIT, IDENTIFIER_LIMIT):
         self._lexer = Lexer(source, INT_LIMIT, STRING_LIMIT, IDENTIFIER_LIMIT)

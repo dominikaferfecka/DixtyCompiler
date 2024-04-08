@@ -1,5 +1,6 @@
 from enum import Enum, auto
 
+
 class TokenType(Enum):
     # keywords general
     FOR = auto()                        # for
@@ -10,8 +11,8 @@ class TokenType(Enum):
     IN = auto()                         # in
     FUN = auto()                        # fun
     RETURN = auto()                     # return
-    
-    #keywords LINQ
+
+    # keywords LINQ
     SELECT = auto()                     # SELECT
     FROM = auto()                       # FROM
     WHERE = auto()                      # WHERE
@@ -22,12 +23,12 @@ class TokenType(Enum):
     # keywords value
     TRUE = auto()                       # True
     FALSE = auto()                      # False
-    
+
     # logical operators
     AND = auto()                        # And
     OR = auto()                         # Or
     NOT = auto()                        # Not
-    
+
     # operators
     PLUS = auto()                       # +
     MINUS = auto()                      # -
@@ -44,7 +45,7 @@ class TokenType(Enum):
     LESS_OR_EQUAL = auto()              # <=
     MORE_OR_EQUAL = auto()              # >=
     EQUAL = auto()                      # ==
-    # NOT_EQUAL = auto()                  # !=    
+    # NOT_EQUAL = auto()                  # !=
 
     # brackets
     BRACKET_OPENING = auto()            # (
@@ -55,16 +56,11 @@ class TokenType(Enum):
     BRACE_CLOSING = auto()              # }
 
     # others
-    IDENTIFIER  = auto()   
+    IDENTIFIER = auto()
     END_OF_TEXT = auto()
-    COMMENT     = auto()                # # tekst
+    COMMENT = auto()                # # tekst
 
     # const
-    STRING      = auto()                # "tekst"
-    INT         = auto()
-    FLOAT       = auto()
-
-
-
-
-
+    STRING = auto()                # "tekst"
+    INT = auto()
+    FLOAT = auto()

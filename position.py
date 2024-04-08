@@ -5,10 +5,10 @@ class Position:
 
     def get_row(self):
         return self._row
-    
+
     def get_column(self):
         return self._column
-       
+
     def increase_row(self):
         self._row = self._row + 1
 
@@ -17,7 +17,7 @@ class Position:
 
     def restart_column(self):
         self._column = 1
-    
+
     def start_next_row(self):
         self.increase_row()
         self.restart_column()

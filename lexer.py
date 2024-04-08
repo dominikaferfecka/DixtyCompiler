@@ -5,7 +5,7 @@ from operators import OPERATORS
 from standards import STRING_ESCAPE
 import sys
 from errors import (
-   IntLimitExceeded, 
+   IntLimitExceeded,
    StringLimitExceeded,
    IdentifierLimitExceeded,
    StringNotFinished,
@@ -22,6 +22,7 @@ from standards import ETX, EOL
 #         current_position = reader.get_position()
 #         print(current_position)
 #         reader.next_character(
+
 
 class Lexer:
    def __init__(self, source, INT_LIMIT=sys.maxsize, STRING_LIMIT=10**7, IDENTIFIER_LIMIT=10**7):
@@ -48,61 +49,59 @@ class Lexer:
       character = self._reader.get_character()
       while character.isspace():
          character = self._reader.next_character()
-   
 
    def build_number(self):
       character = self._reader.get_character()
       position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
       if (not character.isdecimal()):
          return None
-      
+
       if character == "0":
          value = 0
          character = self._reader.next_character()
       else:
-         value = int(character) # ascii code for 0
+         value = int(character)  # ascii code for 0
 
          character = self._reader.next_character()
 
          while character.isdecimal():
             new_value = int(character)
-            
-            if ( value >= (self._INT_LIMIT - new_value)/10 ):
+
+            if (value >= (self._INT_LIMIT - new_value) / 10):
                raise IntLimitExceeded(position)
 
             value = value*10 + new_value
-            character = self._reader.next_character()  
+            character = self._reader.next_character()
 
 
       if character != '.':
          return Token(TokenType.INT, position, value)
-      
+
       character = self._reader.next_character()
       fraction = 0
       digits = 0
       while character.isdecimal():
             new_decimal = int(character)
-            
+
             # correct later - it should check with integer value
-            if ( fraction >= (self._INT_LIMIT - new_decimal)/10 ):
+            if (fraction >= (self._INT_LIMIT - new_decimal) / 10):
                raise IntLimitExceeded(position)
 
             fraction = fraction*10 + new_decimal
             digits += 1
             character = self._reader.next_character()
 
-      number = float( value + fraction / 10**digits)
+      number = float(value + fraction / 10**digits)
       return Token(TokenType.FLOAT, position, number)
-
 
    def build_string(self):
 
       if self._reader.get_character() != '"':
          return None
-      
+
       position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
       character = self._reader.next_character()
-      
+
       StringBuilder = ['']
 
       while character not in ('"', ETX):
@@ -117,34 +116,33 @@ class Lexer:
                raise UnexpectedEscapeCharacter(position)
          else:
             StringBuilder.append(character)
-            
+
          character = self._reader.next_character()
 
       if character == ETX:
          raise StringNotFinished(position)
-      
+
       if character == '"':
          value = "".join(StringBuilder)
          _ = self._reader.next_character()
          return Token(TokenType.STRING, position, value)
-
 
    def build_identifier_or_keyword(self):
       IDENTIFIER_MAX_LIMIT = 10**10
       character = self._reader.get_character()
       if not character.isalpha():
          return None
-      
+
       position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
       StringBuilder = [character]
 
       character = self._reader.next_character()
 
       while (character.isalpha() or character.isdecimal() or character == "_") and character != ETX:
-         
+
          if len(StringBuilder) >= self._IDENTIFIER_LIMIT:
             raise IdentifierLimitExceeded(position)
-         
+
          StringBuilder.append(character)
          character = self._reader.next_character()
 
@@ -160,7 +158,7 @@ class Lexer:
 
       if character not in ("<", ">", "="):
          return None
-      
+
       position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
       first_character = character
 
@@ -171,24 +169,25 @@ class Lexer:
          return Token(OPERATORS[first_character + "="], position)
       else:
          return Token(OPERATORS[first_character], position)
-      
+
    def build_one_char_operators(self):
       character = self._reader.get_character()
 
       if character not in OPERATORS.keys() or character in ("<", ">", "="):
          return None
-      
+
       position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
       _ = self._reader.next_character()
-      
+
       return Token(OPERATORS[character], position)
-   
+
    # operators
+
 
    def build_comment(self):
       if self._reader.get_character() != "#":
          return None
-      
+
       position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
       StringBuilder = []
 
@@ -196,10 +195,6 @@ class Lexer:
       while character != EOL and character != ETX:
          StringBuilder.append(character)
          character = self._reader.next_character()
-      
+
       value = "".join(StringBuilder)
-      return Token( TokenType.COMMENT, position, value)
-
-
-
-
+      return Token(TokenType.COMMENT, position, value)

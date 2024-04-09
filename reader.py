@@ -25,9 +25,8 @@ class Reader:
                 if new_character == ETX:
                     self._character = ETX
                 else:
-                    character_checked = self.check_EOL(new_character)  # EOL or other
-                    return character_checked
-            else:  # already next is in the character
+                    return self.check_EOL(new_character) # EOL or other
+            else:  # next is already in the self character
                 self._last_checked_EOL = False
         return self._character
 
@@ -47,16 +46,14 @@ class Reader:
             next_character = self._source.read()
             if next_character == NEWLINE[character]:
                 self._character = EOL
-                # self.next_character()
-                #self._position.start_next_row()
-                # self._last_checked_EOL = True
                 return EOL
             elif character == '\n':
-                self._position.start_next_row()
                 self._character = next_character
+                self._position.start_next_row()
                 self._last_checked_EOL = True
                 return EOL
             else:
+                self._position.increase_column()
                 self._last_checked_EOL = True
                 self._character = next_character
                 return character

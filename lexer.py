@@ -14,15 +14,6 @@ from errors import (
 )
 from standards import ETX, EOL
 
-# FOR TEST OTHER PARTS
-# if __name__ == "__main__":
-#    reader = Reader("test_file.txt")
-#    for i in range(15):
-#         print(reader.get_character())
-#         current_position = reader.get_position()
-#         print(current_position)
-#         reader.next_character(
-
 
 class Lexer:
    def __init__(self, source, INT_LIMIT=sys.maxsize, STRING_LIMIT=10**7, IDENTIFIER_LIMIT=10**7):
@@ -84,7 +75,6 @@ class Lexer:
       while character.isdecimal():
             new_decimal = int(character)
 
-            # correct later - it should check with integer value
             if (fraction >= (self._INT_LIMIT - new_decimal) / 10):
                raise IntLimitExceeded(position, self._INT_LIMIT)
 
@@ -180,8 +170,6 @@ class Lexer:
       _ = self._reader.next_character()
 
       return Token(OPERATORS[character], position)
-
-   # operators
 
 
    def build_comment(self):

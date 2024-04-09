@@ -24,6 +24,7 @@ class StringNotFinished(Exception):
         super().__init__(f"Could not find closing \" to the opened string \n Error occured with opened string at {position}")
         self.position = position
 
+
 class UnexpectedEscapeCharacter(Exception):
     def __init__(self, position, character):
         super().__init__(f"Used escape character but after invalid character: [{character}] expected character: 'n', 'r', 't', '\\' \n Invalid escape character at {position}")

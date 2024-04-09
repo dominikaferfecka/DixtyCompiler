@@ -42,7 +42,7 @@ def test_cyrillic_characters():
 
 
 def test_chars_not_english_from_file():
-    lexer = Lexer(SourceFile("test_file2.txt"))
+    lexer = Lexer(SourceFile("tests/test_file.txt"))
 
     token = lexer.get_next_token()
     assert (token.get_token_type() == TokenType.STRING)

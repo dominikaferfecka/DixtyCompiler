@@ -14,19 +14,25 @@ def main():
     args = parser.parse_args()
 
     source = None
-    if args.source_type == "file":
-        source = SourceFile(args.source)
-    elif args.source_type == "string":
-        source = SourceString(args.source)
- 
-    filter = Filter(source, args.int_limit, args.string_limit, args.identifier_limit)
 
-    token = filter.get_next_token()
-    while token is None or token.get_token_type() != TokenType.END_OF_TEXT:
-        if token:
-            print(token)
+    try:
+    
+        if args.source_type == "file":
+            source = SourceFile(args.source)
+        elif args.source_type == "string":
+            source = SourceString(args.source)
+
+        filter = Filter(source, args.int_limit, args.string_limit, args.identifier_limit)
+
         token = filter.get_next_token()
-    print(token)
+        while token is None or token.get_token_type() != TokenType.END_OF_TEXT:
+            if token:
+                print(token)
+            token = filter.get_next_token()
+        print(token)
+    
+    except Exception as e:
+        print(f"Error: {str(e)}")
 
 
 if __name__ == "__main__":

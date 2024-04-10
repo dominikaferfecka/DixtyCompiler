@@ -23,4 +23,4 @@ class Position:
         self.restart_column()
 
     def __str__(self):
-        return f" row: [ {self._row} ], column: [ {self._column} ]"
+        return f"row: [ {self._row} ], column: [ {self._column} ]"

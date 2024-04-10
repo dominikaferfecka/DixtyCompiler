@@ -12,7 +12,10 @@ class Source:
 class SourceFile(Source):
     def __init__(self, file_path):
         super().__init__()
-        self._source = open(file_path, 'r')
+        try:
+            self._source = open(file_path, 'r')
+        except (FileNotFoundError, PermissionError) as e:
+            raise e.__class__(f"{str(e)}")
 
 
 class SourceString(Source):

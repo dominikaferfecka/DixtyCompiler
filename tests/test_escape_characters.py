@@ -28,3 +28,10 @@ def test_escape_character_t():
     token = lexer.get_next_token()
     assert (token.get_token_type() == TokenType.STRING)
     assert (token.get_value() == " \t ")
+
+
+def test_escape_character_quote():
+    lexer = Lexer(SourceString(" \"\\\" \" "))
+    token = lexer.get_next_token()
+    assert (token.get_token_type() == TokenType.STRING)
+    assert (token.get_value() == "\" ")

@@ -7,6 +7,7 @@ STRING_ESCAPE = {
     'r': '\r',
     't': '\t',
     '\\': '\\',
+    '"': '\"'
 }
 
 # two chars newline

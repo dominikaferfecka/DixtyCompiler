@@ -44,9 +44,11 @@ class Lexer:
 
    def build_number(self):
       character = self._reader.get_character()
-      position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
+      
       if (not character.isdecimal()):
          return None
+      
+      position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
 
       if character == "0":
          value = 0

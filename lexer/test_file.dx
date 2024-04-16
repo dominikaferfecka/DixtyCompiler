@@ -1,0 +1,64 @@
+"3\"2"
+"1\n2"
+a b
+# aaa 
+# aa # aa
+
+if ( a + b == 2 And b <= 3)
+{
+    print("a + b jest równe 2 i b jest <= 3");
+}
+
+
+if ( a == 2 )
+{
+    print("a jest równe 2");
+}
+else
+{
+    print("a nie jest równe 2");
+}
+
+
+if ( a == 2)
+{
+    print("a jest równe 2");
+}
+else_if ( a == 3)
+{
+    print("a jest równe 3");
+}
+else
+{
+    print("a nie jest równe 2 ani 3");
+}
+
++-
+---
+*=
+/
+(
+]
+{
+}
+<
+<=
+==
+>=
+>
+=
+Test
+while
+Test2
+fun
+And
+Or
+for
+T23_23  
+ "aaaa"
+"1345"
+"sdf575*%^&()"
+12.12
+1
+0
+0.5

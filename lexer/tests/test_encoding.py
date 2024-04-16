@@ -42,28 +42,28 @@ def test_cyrillic_characters():
 
 
 def test_chars_not_english_from_file():
-    lexer = Lexer(SourceFile("tests/test_file.txt"))
+    with SourceFile("tests/test_file.txt") as source:
+        lexer = Lexer(source)
+        token = lexer.get_next_token()
+        assert (token.get_token_type() == TokenType.STRING)
+        assert (token.get_value() == "假")
 
-    token = lexer.get_next_token()
-    assert (token.get_token_type() == TokenType.STRING)
-    assert (token.get_value() == "假")
+        token = lexer.get_next_token()
+        assert (token.get_token_type() == TokenType.IDENTIFIER)
+        assert (token.get_value() == "借")
 
-    token = lexer.get_next_token()
-    assert (token.get_token_type() == TokenType.IDENTIFIER)
-    assert (token.get_value() == "借")
+        token = lexer.get_next_token()
+        assert (token.get_token_type() == TokenType.IDENTIFIER)
+        assert (token.get_value() == "字")
 
-    token = lexer.get_next_token()
-    assert (token.get_token_type() == TokenType.IDENTIFIER)
-    assert (token.get_value() == "字")
+        token = lexer.get_next_token()
+        assert (token.get_token_type() == TokenType.STRING)
+        assert (token.get_value() == "Б")
 
-    token = lexer.get_next_token()
-    assert (token.get_token_type() == TokenType.STRING)
-    assert (token.get_value() == "Б")
+        token = lexer.get_next_token()
+        assert (token.get_token_type() == TokenType.IDENTIFIER)
+        assert (token.get_value() == "Ё")
 
-    token = lexer.get_next_token()
-    assert (token.get_token_type() == TokenType.IDENTIFIER)
-    assert (token.get_value() == "Ё")
-
-    token = lexer.get_next_token()
-    assert (token.get_token_type() == TokenType.IDENTIFIER)
-    assert (token.get_value() == "Л")
+        token = lexer.get_next_token()
+        assert (token.get_token_type() == TokenType.IDENTIFIER)
+        assert (token.get_value() == "Л")

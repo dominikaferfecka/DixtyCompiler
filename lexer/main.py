@@ -3,6 +3,16 @@ from source import SourceFile, SourceString
 import sys
 import argparse
 
+def get_tokens_from_filter(source, args):
+    filter = Filter(source, args.int_limit, args.string_limit, args.identifier_limit)
+
+    token = filter.get_next_token()
+    while token is None or token.get_token_type() != TokenType.END_OF_TEXT:
+        if token:
+            print(token)
+        token = filter.get_next_token()
+    print(token)
+
 
 def main():
     parser = argparse.ArgumentParser(description="Lexer of the Dixty programming language")
@@ -18,18 +28,12 @@ def main():
     try:
     
         if args.source_type == "file":
-            source = SourceFile(args.source)
+            with SourceFile(args.source) as source:
+                get_tokens_from_filter(source, args)
+
         elif args.source_type == "string":
             source = SourceString(args.source)
-
-        filter = Filter(source, args.int_limit, args.string_limit, args.identifier_limit)
-
-        token = filter.get_next_token()
-        while token is None or token.get_token_type() != TokenType.END_OF_TEXT:
-            if token:
-                print(token)
-            token = filter.get_next_token()
-        print(token)
+            get_tokens_from_filter(source, args)
     
     except Exception as e:
         print(f"Error: {str(e)}")

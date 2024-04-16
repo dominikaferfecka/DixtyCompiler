@@ -31,7 +31,7 @@ class Reader:
         return self._character
 
     def read_character(self):
-        character = self._source.read()
+        character = self._source.read(1)
         if character:
             if self._character != EOL:  # check last
                 self._position.increase_column()
@@ -43,7 +43,7 @@ class Reader:
 
     def check_EOL(self, character):
         if character in NEWLINE.keys():
-            next_character = self._source.read()
+            next_character = self._source.read(1)
             if next_character == NEWLINE[character]:
                 self._character = EOL
                 return EOL

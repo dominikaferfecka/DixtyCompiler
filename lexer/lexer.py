@@ -1,10 +1,10 @@
-from reader import Reader, Position
-from tokens import Token, TokenType
-from keywords import KEYWORDS
-from operators import OPERATORS
-from standards import STRING_ESCAPE
+from lexer.reader import Reader, Position
+from lexer.tokens import Token, TokenType
+from lexer.keywords import KEYWORDS
+from lexer.operators import OPERATORS
+from lexer.standards import STRING_ESCAPE
 import sys
-from errors import (
+from lexer.errors import (
    IntLimitExceeded,
    StringLimitExceeded,
    IdentifierLimitExceeded,
@@ -12,7 +12,7 @@ from errors import (
    TokenNotRecognized,
    UnexpectedEscapeCharacter
 )
-from standards import ETX, EOL
+from lexer.standards import ETX, EOL
 
 
 class Lexer:

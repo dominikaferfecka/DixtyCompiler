@@ -1,6 +1,6 @@
-from position import Position
-from standards import ETX, EOL
-from standards import NEWLINE
+from lexer.position import Position
+from lexer.standards import ETX, EOL
+from lexer.standards import NEWLINE
 
 
 class Reader:

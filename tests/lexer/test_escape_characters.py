@@ -1,5 +1,5 @@
-from lexer import Lexer, TokenType
-from source import SourceString
+from lexer.lexer import Lexer, TokenType
+from lexer.source import SourceString
 
 
 def test_escape_character_newline():

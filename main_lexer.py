@@ -1,5 +1,5 @@
-from filter import Filter, TokenType
-from source import SourceFile, SourceString
+from lexer.filter import Filter, TokenType
+from lexer.source import SourceFile, SourceString
 import sys
 import argparse
 

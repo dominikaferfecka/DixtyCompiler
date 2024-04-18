@@ -1,7 +1,7 @@
 from lexer.filter import Filter
 from lexer.lexer import Lexer
 from lexer.tokens import Token, TokenType
-from syntax_tree import (
+from parser.syntax_tree import (
     Program,
     ForStatement,
     WhileStatement,
@@ -9,7 +9,12 @@ from syntax_tree import (
     IfStatement,
     OrTerm,
     AndTerm,
-    NotTerm
+    NotTerm,
+    ComparisonTerm,
+    AdditiveTerm,
+    MultTerm,
+    SignedFactor,
+    Number
 )
 
 class Parser:
@@ -146,7 +151,107 @@ class Parser:
     
     # comparison_term ::== additive_term [('=='|'<'|'>'|'<='|'>=') additive_term];
     def parse_comparison_term(self):
-        pass
+        left_additive_term = self.parse_additive_term()
+
+        comparison_operator = self._token.get_token_type()
+        if (comparison_operator.get_token_type in (TokenType.EQUAL,TokenType.LESS, TokenType.MORE, TokenType.LESS_OR_EQUAL, TokenType.MORE_OR_EQUAL)):
+            self._token = self._lexer.get_next_token() 
+            position = self._token.get_position()
+
+            right_additive_term = self.parse_additive_term()
+
+
+            if right_additive_term is None:
+                raise SyntaxError
+            
+            left_additive_term = ComparisonTerm(left_additive_term, position, right_additive_term)
+        
+        return left_additive_term
+
+
+    # additive_term   ::== mult_term {('+' | '-') mult_term};
+    def parse_additive_term(self):
+        left_mult_term = self.parse_mult_term()
+
+        additive_operator = self._token.get_token_type()
+        if (additive_operator.get_token_type in (TokenType.PLUS, TokenType.MINUS)):
+            self._token = self._lexer.get_next_token() 
+            position = self._token.get_position()
+
+            right_mult_term = self.parse_mult_term()
+
+
+            if right_mult_term is None:
+                raise SyntaxError
+            
+            left_mult_term = AdditiveTerm(left_mult_term, position, right_mult_term)
+        
+        return left_mult_term
+    
+    # mult_term ::== signed_factor {('*' | '/') signed_factor}
+    def parse_mult_term(self):
+        left_signed_factor = self.parse_signed_factor()
+
+        mult_operator = self._token.get_token_type()
+        if (mult_operator.get_token_type in (TokenType.ASTERISK, TokenType.SLASH)):
+            self._token = self._lexer.get_next_token() 
+            position = self._token.get_position()
+
+            right_signed_factor = self.parse_signed_factor()
+
+            if right_signed_factor is None:
+                raise SyntaxError
+            
+            left_signed_factor = MultTerm(left_signed_factor, position, right_signed_factor)
+        
+        return left_signed_factor
+
+    # signed_factor   ::== [sign] factor ;
+    def parse_signed_factor(self):
+        position = self._token.get_position()
+
+        unary_negation = False
+        if (self._token.get_token_type() == TokenType.MINUS):
+            unary_negation = True
+            self._token = self._lexer.get_next_token()
+        
+        factor = self.parse_factor()
+
+        if factor is None:
+            raise SyntaxError
+        
+        if unary_negation:
+            return SignedFactor(factor, position)
+        
+
+    # factor ::== pair_or_expr | literal | list_def | dict_def |  select_term |  object_access;
+    def parse_factor(self):
+        position = self._token.get_position()
+
+        factor = self.parse_literal() # i inne
+
+        return factor
+    
+    
+    # literal ::== number | bool | string;
+    def parse_literal(self):
+        position = self._token.get_position()
+
+        literal = self.parse_number() # i inne
+
+        return literal
+    
+    def parse_number(self):
+
+        position = self._token.get_position()
+
+        number = self._token.get_token_type()
+        if (number.get_token_type() in (TokenType.INT, TokenType.FLOAT)):
+            value = number.get_value()
+            return Number(value, position)
+
+        return None
+
 
     # block ::== '{' {statement} '}'
     def parse_block(self):

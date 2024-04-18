@@ -62,4 +62,48 @@ class NotTerm(Node):
         self._position = position
 
 
+class ComparisonTerm(Node):
+    def __init__(self, left_additive_term, position, right_additive_term):
+        super().__init__()
+        self._left_additive_term = left_additive_term
+        self._position = position
+        self._right_additive_term = right_additive_term
+
+
+class AdditiveTerm(Node):
+    def __init__(self, left_mult_term, position, right_mult_term):
+        super().__init__()
+        self._left_mult_term = left_mult_term
+        self._position = position
+        self._right_mult_term = right_mult_term
+
+
+class MultTerm(Node):
+    def __init__(self, left_signed_factor, position, right_signed_factor):
+        super().__init__()
+        self._left_signed_factor = left_signed_factor
+        self._position = position
+        self._right_signed_factor = right_signed_factor
+
+
+class SignedFactor(Node):
+    def __init__(self, factor, position):
+        super().__init__()
+        self._factor = factor
+        self._position = position
+
+
+class Literal(Node):
+    def __init__(self, factor, position):
+        super().__init__()
+        self._factor = factor
+        self._position = position
+
+
+class Number(Node):
+    def __init__(self, value, position):
+        super().__init__()
+        self._value = value
+        self._position = position
+
 

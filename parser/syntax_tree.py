@@ -107,3 +107,32 @@ class Number(Node):
         self._position = position
 
 
+class ObjectAccess(Node):
+    def __init__(self, left_item, position, right_item):
+        super().__init__()
+        self._left_item = left_item
+        self._right_item = right_item
+        self._position = position
+
+
+class Item(Node):
+    def __init__(self, name, position): # expression, arguments?
+        super().__init__()
+        self._name = name
+        self._position = position
+
+
+class Identifier(Node):
+    def __init__(self, name, position):
+        super().__init__()
+        self._name = name
+        self._position = position
+
+
+class Assignment(Node):
+    def __init__(self, object_access, expression, position):
+        super().__init__()
+        self._object_access = object_access
+        self._expression = expression
+        self._position = position
+

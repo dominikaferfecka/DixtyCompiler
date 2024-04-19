@@ -14,7 +14,11 @@ from parser.syntax_tree import (
     AdditiveTerm,
     MultTerm,
     SignedFactor,
-    Number
+    Number,
+    ObjectAccess,
+    Item,
+    Identifier,
+    Assignment
 )
 
 class Parser:
@@ -34,7 +38,7 @@ class Parser:
     
     def must_be(self, token_type, exception):
         if (self._token.get_token_type() != token_type):
-            raise exception
+            raise SyntaxError(f"Must be {token_type}")
         value = self._token.get_value()
 
         self._token = self._lexer.get_next_token()
@@ -88,6 +92,99 @@ class Parser:
             raise SyntaxError
         
         return WhileStatement(expression, block, position)
+
+    def parse_fun_def_statement(self):
+        pass
+
+    def parse_return_statement(self):
+        pass
+
+    # assign_or_call  ::== object_access ['=' expression] ‘;’ ;
+    def parse_assign_or_call_statement(self):
+        object_access = self.parse_object_access()
+        
+
+        statement = self.parse_fun_call(object_access)
+        if statement:
+            pass
+        else:
+            statement = self.parse_assignment(object_access)
+
+        # self.must_be(TokenType.SEMICOLON, SyntaxError)
+        return statement
+
+
+    def parse_fun_call(self, name):
+        pass
+
+    # assign_or_call  ::== object_access ['=' expression] ‘;’ ;
+
+    def parse_assignment(self, object_access):
+        position = self._token.get_position()
+        # object_access = self.parse_object_access()
+
+        if self._token.get_token_type() != TokenType.ASSIGN:
+            return None
+        
+
+        self._token = self._lexer.get_next_token() 
+
+        expression = self.parse_expression()
+
+        if expression is None:
+            raise SyntaxError("After assign must be expression")
+        
+        return Assignment(object_access, expression, position)
+
+        # to do later
+        return object_access
+
+
+    def parse_object_access(self):
+        left_item = self.parse_item()
+
+        if left_item is None:
+            return None # ?? maybe it should be error?
+        
+        while (self._token.get_token_type() == TokenType.DOT):
+            position = self._token.get_position()
+            self._token = self._lexer.get_next_token()
+
+            right_item = self.parse_item()
+
+            if right_item is None:
+                raise SyntaxError
+            
+            left_item = ObjectAccess(left_item, position, right_item)
+        
+        return left_item
+    
+
+    # item ::== identifier {  ‘[‘ expression ‘]’ |  ‘(‘ [arguments] ‘)’ }; 
+    def parse_item(self):
+        identifier = self.parse_identifier()
+        # to do later
+        return identifier
+
+
+    def parse_identifier(self):
+
+        if self._token.get_token_type() != TokenType.IDENTIFIER:
+            return None
+        
+        position = self._token.get_position()
+
+        name = self._token.get_value()
+
+        self._token = self._lexer.get_next_token()
+
+        
+        return Identifier(name, position)
+
+
+    def parse_if_statement(self):
+        pass
+
     
     
     # expression ::== and_term { ‘Or’ and_term}
@@ -142,19 +239,18 @@ class Parser:
             self._token = self._lexer.get_next_token()
         
         comparison_term = self.parse_comparison_term()
-
-        if comparison_term is None:
-            raise SyntaxError
         
         if negation:
+            if comparison_term is None:
+                raise SyntaxError
             return NotTerm(comparison_term, position)
+        return comparison_term
     
     # comparison_term ::== additive_term [('=='|'<'|'>'|'<='|'>=') additive_term];
     def parse_comparison_term(self):
         left_additive_term = self.parse_additive_term()
 
-        comparison_operator = self._token.get_token_type()
-        if (comparison_operator.get_token_type in (TokenType.EQUAL,TokenType.LESS, TokenType.MORE, TokenType.LESS_OR_EQUAL, TokenType.MORE_OR_EQUAL)):
+        if (self._token.get_token_type() in (TokenType.EQUAL,TokenType.LESS, TokenType.MORE, TokenType.LESS_OR_EQUAL, TokenType.MORE_OR_EQUAL)):
             self._token = self._lexer.get_next_token() 
             position = self._token.get_position()
 
@@ -162,7 +258,7 @@ class Parser:
 
 
             if right_additive_term is None:
-                raise SyntaxError
+                raise SyntaxError("After comparison operator must be right additive term")
             
             left_additive_term = ComparisonTerm(left_additive_term, position, right_additive_term)
         
@@ -173,8 +269,7 @@ class Parser:
     def parse_additive_term(self):
         left_mult_term = self.parse_mult_term()
 
-        additive_operator = self._token.get_token_type()
-        if (additive_operator.get_token_type in (TokenType.PLUS, TokenType.MINUS)):
+        if (self._token.get_token_type() in (TokenType.PLUS, TokenType.MINUS)):
             self._token = self._lexer.get_next_token() 
             position = self._token.get_position()
 
@@ -192,8 +287,7 @@ class Parser:
     def parse_mult_term(self):
         left_signed_factor = self.parse_signed_factor()
 
-        mult_operator = self._token.get_token_type()
-        if (mult_operator.get_token_type in (TokenType.ASTERISK, TokenType.SLASH)):
+        if (self._token.get_token_type() in (TokenType.ASTERISK, TokenType.SLASH)):
             self._token = self._lexer.get_next_token() 
             position = self._token.get_position()
 
@@ -222,6 +316,7 @@ class Parser:
         
         if unary_negation:
             return SignedFactor(factor, position)
+        return factor
         
 
     # factor ::== pair_or_expr | literal | list_def | dict_def |  select_term |  object_access;
@@ -245,9 +340,8 @@ class Parser:
 
         position = self._token.get_position()
 
-        number = self._token.get_token_type()
-        if (number.get_token_type() in (TokenType.INT, TokenType.FLOAT)):
-            value = number.get_value()
+        if (self._token.get_token_type() in (TokenType.INT, TokenType.FLOAT)):
+            value = self._token.get_value()
             return Number(value, position)
 
         return None
@@ -257,21 +351,7 @@ class Parser:
     def parse_block(self):
         pass
 
-    def parse_and_term(self):
-        pass
 
-
-    def parse_fun_def_statement(self):
-        pass
-
-    def parse_return_statement(self):
-        pass
-
-    def parse_assign_or_call_statement(self):
-        pass
-
-    def parse_if_statement(self):
-        pass
 
         
 

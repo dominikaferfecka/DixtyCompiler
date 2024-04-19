@@ -14,18 +14,12 @@ def main():
     #     program = parser.parse_program()
     #     print(program)
 
-
-
-
-    source = SourceString("for i in list: print(\"a\")")
+    source = SourceString("a = 1")
     
     filter = Filter(source)
 
     parser = Parser(filter)
     program = parser.parse_program()
-    print(program)
-
-
 
 
 if __name__ == "__main__":

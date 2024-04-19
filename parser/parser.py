@@ -18,7 +18,9 @@ from parser.syntax_tree import (
     ObjectAccess,
     Item,
     Identifier,
-    Assignment
+    Assignment,
+    String,
+    Bool
 )
 
 class Parser:
@@ -134,10 +136,10 @@ class Parser:
         if expression is None:
             raise SyntaxError("After assign must be expression")
         
+        self.must_be(TokenType.SEMICOLON, SyntaxError)
+        
         return Assignment(object_access, expression, position)
 
-        # to do later
-        return object_access
 
 
     def parse_object_access(self):
@@ -332,7 +334,7 @@ class Parser:
     def parse_literal(self):
         position = self._token.get_position()
 
-        literal = self.parse_number() # i inne
+        literal = self.parse_number() or self.parse_string() or self.parse_bool() # i inne
 
         return literal
     
@@ -340,11 +342,39 @@ class Parser:
 
         position = self._token.get_position()
 
-        if (self._token.get_token_type() in (TokenType.INT, TokenType.FLOAT)):
-            value = self._token.get_value()
-            return Number(value, position)
+        if self._token.get_token_type() not in (TokenType.INT, TokenType.FLOAT):
+            return None
+        
+        value = self._token.get_value()
+        self._token = self._lexer.get_next_token()
 
-        return None
+        return Number(value, position)
+    
+    def parse_string(self):
+
+        position = self._token.get_position()
+
+        if self._token.get_token_type() != TokenType.STRING:
+            return None
+        
+        value = self._token.get_value()
+        self._token = self._lexer.get_next_token()
+
+        return String(value, position)
+    
+    
+    def parse_bool(self):
+        position = self._token.get_position()
+
+        if self._token.get_token_type() == TokenType.TRUE:
+            value = True
+        elif self._token.get_token_type() == TokenType.FALSE:
+            value = False
+        else:
+            return None
+
+        self._token = self._lexer.get_next_token()
+        return Bool(value, position)
 
 
     # block ::== '{' {statement} '}'

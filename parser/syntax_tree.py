@@ -107,6 +107,20 @@ class Number(Node):
         self._position = position
 
 
+class String(Node):
+    def __init__(self, value, position):
+        super().__init__()
+        self._value = value
+        self._position = position
+
+
+class Bool(Node):
+    def __init__(self, value, position):
+        super().__init__()
+        self._value = value
+        self._position = position
+
+
 class ObjectAccess(Node):
     def __init__(self, left_item, position, right_item):
         super().__init__()

@@ -120,6 +120,12 @@ class Bool(Node):
         self._value = value
         self._position = position
 
+class List(Node):
+    def __init__(self, values, position):
+        super().__init__()
+        self._values = values
+        self._position = position
+
 
 class ObjectAccess(Node):
     def __init__(self, left_item, position, right_item):

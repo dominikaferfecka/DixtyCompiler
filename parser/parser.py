@@ -1,6 +1,7 @@
 from lexer.filter import Filter
 from lexer.lexer import Lexer
 from lexer.tokens import Token, TokenType
+import sys
 from parser.syntax_tree import (
     Program,
     ForStatement,
@@ -20,13 +21,15 @@ from parser.syntax_tree import (
     Identifier,
     Assignment,
     String,
-    Bool
+    Bool,
+    List
 )
 
 class Parser:
     def __init__(self, lexer):
         if not isinstance(lexer, Lexer) and not isinstance(lexer, Filter):
             raise TypeError("Lexer have to be type Lexer or Filter")
+        # sys.setrecursionlimit(10000)
         self._lexer = lexer
         self._token = self._lexer.get_next_token() # consume token
     
@@ -312,11 +315,10 @@ class Parser:
             self._token = self._lexer.get_next_token()
         
         factor = self.parse_factor()
-
-        if factor is None:
-            raise SyntaxError
         
         if unary_negation:
+            if factor is None:
+                raise SyntaxError
             return SignedFactor(factor, position)
         return factor
         
@@ -325,21 +327,19 @@ class Parser:
     def parse_factor(self):
         position = self._token.get_position()
 
-        factor = self.parse_literal() # i inne
+        factor = self.parse_literal() or self.parse_list() # i inne
 
         return factor
     
     
     # literal ::== number | bool | string;
     def parse_literal(self):
-        position = self._token.get_position()
-
-        literal = self.parse_number() or self.parse_string() or self.parse_bool() # i inne
-
-        return literal
+        literal = self.parse_number() or self.parse_string() or self.parse_bool() 
+        if literal:
+            return literal
+        return None
     
     def parse_number(self):
-
         position = self._token.get_position()
 
         if self._token.get_token_type() not in (TokenType.INT, TokenType.FLOAT):
@@ -351,7 +351,6 @@ class Parser:
         return Number(value, position)
     
     def parse_string(self):
-
         position = self._token.get_position()
 
         if self._token.get_token_type() != TokenType.STRING:
@@ -375,6 +374,47 @@ class Parser:
 
         self._token = self._lexer.get_next_token()
         return Bool(value, position)
+
+    # list_def	::== '[' [ expressions_list ] ']' ;
+    def parse_list(self):
+        position = self._token.get_position()
+
+        if self._token.get_token_type() != TokenType.SQUARE_BRACKET_OPENING:
+            return None
+        
+        self._token = self._lexer.get_next_token()
+        values = self.parse_expressions_list()
+
+        if values is None:
+            values = []
+
+        if self._token.get_token_type() != TokenType.SQUARE_BRACKET_CLOSING:
+            raise SyntaxError("Missing ']' to close list")
+        
+
+        self._token = self._lexer.get_next_token()
+        return List(values, position)
+    
+
+    # expressions_list ::== expression {‘,’ expression}
+    def parse_expressions_list(self):
+        expressions = []
+        expression = self.parse_expression()
+        if expression is None:
+            return None
+        
+        expressions.append(expression)
+
+        while (self._token.get_token_type() == TokenType.COMMA):
+            self._token = self._lexer.get_next_token()
+            expression = self.parse_expression()
+            
+            if expression is None:
+                raise SyntaxError
+            expressions.append(expression)
+        
+        return expressions
+
 
 
     # block ::== '{' {statement} '}'

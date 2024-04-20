@@ -15,8 +15,10 @@ from parser.syntax_tree import (
     AndTerm,
     NotTerm,
     ComparisonTerm,
-    AdditiveTerm,
+    AddTerm,
+    SubTerm,
     MultTerm,
+    DivTerm,
     SignedFactor,
     Number,
     ObjectAccess,
@@ -411,25 +413,31 @@ class Parser:
     def parse_additive_term(self):
         left_mult_term = self.parse_mult_term()
 
-        if (self._token.get_token_type() in (TokenType.PLUS, TokenType.MINUS)):
+        while self._token.get_token_type() in (TokenType.PLUS, TokenType.MINUS):
+            operator = self._token.get_token_type() 
+            
             self._token = self._lexer.get_next_token() 
             position = self._token.get_position()
 
             right_mult_term = self.parse_mult_term()
 
-
             if right_mult_term is None:
                 raise SyntaxError
             
-            left_mult_term = AdditiveTerm(left_mult_term, position, right_mult_term)
-        
+            if operator == TokenType.PLUS:
+                left_mult_term = AddTerm(left_mult_term, position, right_mult_term)
+            else:
+                left_mult_term = SubTerm(left_mult_term, position, right_mult_term)
+               
         return left_mult_term
     
     # mult_term ::== signed_factor {('*' | '/') signed_factor}
     def parse_mult_term(self):
         left_signed_factor = self.parse_signed_factor()
 
-        if (self._token.get_token_type() in (TokenType.ASTERISK, TokenType.SLASH)):
+        while (self._token.get_token_type() in (TokenType.ASTERISK, TokenType.SLASH)):
+            operator = self._token.get_token_type() 
+
             self._token = self._lexer.get_next_token() 
             position = self._token.get_position()
 
@@ -438,7 +446,10 @@ class Parser:
             if right_signed_factor is None:
                 raise SyntaxError
             
-            left_signed_factor = MultTerm(left_signed_factor, position, right_signed_factor)
+            if operator == TokenType.ASTERISK:
+                left_signed_factor = MultTerm(left_signed_factor, position, right_signed_factor)
+            else:
+                left_signed_factor = DivTerm(left_signed_factor, position, right_signed_factor)
         
         return left_signed_factor
 

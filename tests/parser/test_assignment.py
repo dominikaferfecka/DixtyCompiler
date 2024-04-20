@@ -11,8 +11,10 @@ from parser.syntax_tree import (
     AndTerm,
     NotTerm,
     ComparisonTerm,
-    AdditiveTerm,
+    AddTerm,
+    SubTerm,
     MultTerm,
+    DivTerm,
     SignedFactor,
     Number,
     ObjectAccess,
@@ -323,3 +325,97 @@ def test_assign_select_where_order_DESC():
     assert ( isinstance(select_term._order_by_expression, Identifier))
     assert ( select_term._order_by_expression._name == "Key")
     assert ( select_term._asc_desc == "DESC")
+
+
+def test_assign_add_two():
+    source = SourceString("sum = 1 + 2;")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+
+    object_access = program._statements[0]._object_access
+    assert ( isinstance(object_access, Identifier) )
+    assert ( object_access._name == "sum")
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, AddTerm) )
+    assert ( expression._left_mult_term._value == 1)
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, AddTerm) )
+    assert ( expression._right_mult_term._value == 2)
+
+
+def test_assign_add_three():
+    source = SourceString("sum = 1 + 2 + 3;")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+
+    object_access = program._statements[0]._object_access
+    assert ( isinstance(object_access, Identifier) )
+    assert ( object_access._name == "sum")
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, AddTerm) )
+    
+    left = expression._left_mult_term
+    assert ( isinstance(left, AddTerm) )
+    assert ( left._left_mult_term._value == 1)
+    assert ( left._right_mult_term._value == 2)
+
+    assert ( expression._right_mult_term._value == 3)
+
+
+def test_assign_mult_div():
+    source = SourceString("result = 1 * 2 / 3;")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+
+    object_access = program._statements[0]._object_access
+    assert ( isinstance(object_access, Identifier) )
+    assert ( object_access._name == "result")
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, DivTerm) )
+    
+    left = expression._left_signed_factor
+    assert ( isinstance(left, MultTerm) )
+    assert ( left._left_signed_factor._value == 1)
+    assert ( left._right_signed_factor._value == 2)
+
+    assert ( expression._right_signed_factor._value == 3)
+
+
+def test_assign_add_mult_div():
+    source = SourceString("result = 1 * 2 - 8 / 2;")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+
+    object_access = program._statements[0]._object_access
+    assert ( isinstance(object_access, Identifier) )
+    assert ( object_access._name == "result")
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, SubTerm) )
+    
+    left = expression._left_mult_term
+    assert ( isinstance(left, MultTerm) )
+    assert ( left._left_signed_factor._value == 1)
+    assert ( left._right_signed_factor._value == 2)
+
+
+    right = expression._right_mult_term
+    assert ( isinstance(right, DivTerm) )
+    assert ( right._left_signed_factor._value == 8)
+    assert ( right._right_signed_factor._value == 2)

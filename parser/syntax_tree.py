@@ -96,7 +96,14 @@ class ComparisonTerm(Node):
         self._right_additive_term = right_additive_term
 
 
-class AdditiveTerm(Node):
+class AddTerm(Node):
+    def __init__(self, left_mult_term, position, right_mult_term):
+        super().__init__()
+        self._left_mult_term = left_mult_term
+        self._position = position
+        self._right_mult_term = right_mult_term
+
+class SubTerm(Node):
     def __init__(self, left_mult_term, position, right_mult_term):
         super().__init__()
         self._left_mult_term = left_mult_term
@@ -111,6 +118,13 @@ class MultTerm(Node):
         self._position = position
         self._right_signed_factor = right_signed_factor
 
+
+class DivTerm(Node):
+    def __init__(self, left_signed_factor, position, right_signed_factor):
+        super().__init__()
+        self._left_signed_factor = left_signed_factor
+        self._position = position
+        self._right_signed_factor = right_signed_factor
 
 class SignedFactor(Node):
     def __init__(self, factor, position):

@@ -12,8 +12,10 @@ from parser.syntax_tree import (
     AndTerm,
     NotTerm,
     ComparisonTerm,
-    AdditiveTerm,
+    AddTerm,
+    SubTerm,
     MultTerm,
+    DivTerm,
     SignedFactor,
     Number,
     ObjectAccess,
@@ -114,7 +116,7 @@ def test_fun_two_parameter():
     assert ( object_access._name == "x")
 
     expression = block._statements[0]._expression
-    assert ( isinstance(expression, AdditiveTerm) )
+    assert ( isinstance(expression, AddTerm) )
     #assert ( expression._value == 2)
 
 def test_fun_return():

@@ -14,7 +14,11 @@ from parser.syntax_tree import (
     OrTerm,
     AndTerm,
     NotTerm,
-    ComparisonTerm,
+    LessTerm,
+    MoreTerm,
+    EqualsTerm,
+    LessOrEqualTerm,
+    MoreOrEqualTerm,
     AddTerm,
     SubTerm,
     MultTerm,
@@ -395,6 +399,17 @@ class Parser:
         left_additive_term = self.parse_additive_term()
 
         if (self._token.get_token_type() in (TokenType.EQUAL,TokenType.LESS, TokenType.MORE, TokenType.LESS_OR_EQUAL, TokenType.MORE_OR_EQUAL)):
+
+            comparison = {
+                TokenType.EQUAL : EqualsTerm,
+                TokenType.LESS : LessTerm,
+                TokenType.MORE : MoreTerm,
+                TokenType.LESS_OR_EQUAL : LessOrEqualTerm,
+                TokenType.MORE_OR_EQUAL : MoreOrEqualTerm
+            }
+
+            Class = comparison[self._token.get_token_type()]
+
             self._token = self._lexer.get_next_token() 
             position = self._token.get_position()
 
@@ -404,7 +419,7 @@ class Parser:
             if right_additive_term is None:
                 raise SyntaxError("After comparison operator must be right additive term")
             
-            left_additive_term = ComparisonTerm(left_additive_term, position, right_additive_term)
+            left_additive_term = Class(left_additive_term, position, right_additive_term)
         
         return left_additive_term
 
@@ -441,7 +456,7 @@ class Parser:
             self._token = self._lexer.get_next_token() 
             position = self._token.get_position()
 
-            right_signed_factor = self.parse_signed_factor()
+            right_signed_factor = self.parse_signed_factor() 
 
             if right_signed_factor is None:
                 raise SyntaxError

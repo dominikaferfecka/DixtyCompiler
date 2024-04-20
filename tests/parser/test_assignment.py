@@ -10,7 +10,11 @@ from parser.syntax_tree import (
     OrTerm,
     AndTerm,
     NotTerm,
-    ComparisonTerm,
+    LessTerm,
+    MoreTerm,
+    EqualsTerm,
+    LessOrEqualTerm,
+    MoreOrEqualTerm,
     AddTerm,
     SubTerm,
     MultTerm,
@@ -263,7 +267,7 @@ def test_assign_select_where():
     assert ( isinstance(select_term._from_expression, Identifier))
     assert (select_term._from_expression._name == "dict")
 
-    assert ( isinstance(select_term._where_expression, ComparisonTerm))
+    assert ( isinstance(select_term._where_expression, EqualsTerm))
 
     left = select_term._where_expression._left_additive_term
     right = select_term._where_expression._right_additive_term
@@ -287,7 +291,7 @@ def test_assign_select_where_order():
     assert ( isinstance(select_term._from_expression, Identifier))
     assert (select_term._from_expression._name == "dict")
 
-    assert ( isinstance(select_term._where_expression, ComparisonTerm))
+    assert ( isinstance(select_term._where_expression, EqualsTerm))
 
     left = select_term._where_expression._left_additive_term
     right = select_term._where_expression._right_additive_term
@@ -315,7 +319,7 @@ def test_assign_select_where_order_DESC():
     assert ( isinstance(select_term._from_expression, Identifier))
     assert (select_term._from_expression._name == "dict")
 
-    assert ( isinstance(select_term._where_expression, ComparisonTerm))
+    assert ( isinstance(select_term._where_expression, EqualsTerm))
 
     left = select_term._where_expression._left_additive_term
     right = select_term._where_expression._right_additive_term
@@ -419,3 +423,39 @@ def test_assign_add_mult_div():
     assert ( isinstance(right, DivTerm) )
     assert ( right._left_signed_factor._value == 8)
     assert ( right._right_signed_factor._value == 2)
+
+
+def test_assign_comparison_equals():
+    source = SourceString("result = x == 1;")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+
+    object_access = program._statements[0]._object_access
+    assert ( isinstance(object_access, Identifier) )
+    assert ( object_access._name == "result")
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, EqualsTerm) )
+    assert ( expression._left_additive_term._name == "x")
+    assert ( expression._right_additive_term._value == 1)
+
+
+def test_assign_comparison_less_or_equals():
+    source = SourceString("result = x <= 1;")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+
+    object_access = program._statements[0]._object_access
+    assert ( isinstance(object_access, Identifier) )
+    assert ( object_access._name == "result")
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, LessOrEqualTerm) )
+    assert ( expression._left_additive_term._name == "x")
+    assert ( expression._right_additive_term._value == 1)

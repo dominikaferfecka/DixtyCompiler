@@ -10,7 +10,11 @@ from parser.syntax_tree import (
     OrTerm,
     AndTerm,
     NotTerm,
-    ComparisonTerm,
+    LessTerm,
+    MoreTerm,
+    EqualsTerm,
+    LessOrEqualTerm,
+    MoreOrEqualTerm,
     AddTerm,
     SubTerm,
     MultTerm,
@@ -62,7 +66,7 @@ def test_while_identifier_equals():
     assert ( len(program._statements) == 1 )
     assert ( isinstance(program._statements[0], WhileStatement) )
 
-    assert ( isinstance(program._statements[0]._expression, ComparisonTerm) )
+    assert ( isinstance(program._statements[0]._expression, EqualsTerm) )
 
     left = program._statements[0]._expression._left_additive_term
     assert ( isinstance(left, Identifier) )

@@ -21,7 +21,9 @@ from parser.syntax_tree import (
     Assignment,
     String,
     Bool,
-    List
+    List,
+    Pair,
+    Dict
 )
 
 def test_assign_number():
@@ -168,3 +170,58 @@ def test_assign_list_three_values():
     assert ( values[0]._value == 1)
     assert ( values[1]._value == 2)
     assert ( values[2]._value == 3)
+
+
+def test_assign_pair_empty():
+    source = SourceString("pair = (1,2);")
+    filter = Filter(source)
+    parser = Parser(filter)
+    
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+
+    object_access = program._statements[0]._object_access
+    assert ( isinstance(object_access, Identifier) )
+    assert ( object_access._name == "pair")
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, Pair) )
+    # assert ( expression._first = 1 )
+    # assert ( expression._second = 1 )
+
+
+def test_assign_dict_empty():
+    source = SourceString("dict = {};")
+    filter = Filter(source)
+    parser = Parser(filter)
+    
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+
+    object_access = program._statements[0]._object_access
+    assert ( isinstance(object_access, Identifier) )
+    assert ( object_access._name == "dict")
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, Dict) )
+    assert ( expression._values == {})
+
+# czy parser powinien już to wywalić?
+def test_assign_dict_non_dict():
+    source = SourceString("dict = {1};")
+    filter = Filter(source)
+    parser = Parser(filter)
+    
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+
+    object_access = program._statements[0]._object_access
+    assert ( isinstance(object_access, Identifier) )
+    assert ( object_access._name == "dict")
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, Dict) )
+    assert ( expression._values[0]._value == 1)

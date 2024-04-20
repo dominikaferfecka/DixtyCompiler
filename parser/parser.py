@@ -22,7 +22,9 @@ from parser.syntax_tree import (
     Assignment,
     String,
     Bool,
-    List
+    List,
+    Pair,
+    Dict
 )
 
 class Parser:
@@ -334,7 +336,7 @@ class Parser:
     
     # literal ::== number | bool | string;
     def parse_literal(self):
-        literal = self.parse_number() or self.parse_string() or self.parse_bool() 
+        literal = self.parse_number() or self.parse_string() or self.parse_bool() or self.parse_pair_or_expr() or self.parse_dict()
         if literal:
             return literal
         return None
@@ -414,7 +416,56 @@ class Parser:
             expressions.append(expression)
         
         return expressions
+    
+    # pair_or_expr ::== ‘(‘ expression [‘,' expression ] ‘)’ # or expression
+    def parse_pair_or_expr(self):
+        position = self._token.get_position()
 
+        if self._token.get_token_type() != TokenType.BRACKET_OPENING:
+            return None
+        
+        self._token = self._lexer.get_next_token()
+
+        expression = self.parse_expression()
+
+        if self._token.get_token_type() != TokenType.COMMA:
+            if self._token.get_token_type() != TokenType.BRACKET_CLOSING:
+                raise SyntaxError("Missing ')' to close expression in brackets")
+            return expression
+    
+        self._token = self._lexer.get_next_token()
+
+        expression_second = self.parse_expression()
+   
+        if expression_second is None:
+            raise SyntaxError("Pair started but missing second expression")
+
+        if self._token.get_token_type() != TokenType.BRACKET_CLOSING:
+            raise SyntaxError("Missing ')' to close pair")
+        self._token = self._lexer.get_next_token()
+
+        return Pair(expression, expression_second, position)
+
+    # dict_def 	   ::== '{' [ expressions_list ]  '}';
+    def parse_dict(self):
+        position = self._token.get_position()
+
+        if self._token.get_token_type() != TokenType.BRACE_OPENING:
+            return None
+        
+        self._token = self._lexer.get_next_token()
+        values = self.parse_expressions_list()
+
+        if values is None:
+            values = {}
+
+        if self._token.get_token_type() != TokenType.BRACE_CLOSING:
+            raise SyntaxError("Missing '}' to close dict")
+        
+
+        self._token = self._lexer.get_next_token()
+        return Dict(values, position)
+    
 
 
     # block ::== '{' {statement} '}'

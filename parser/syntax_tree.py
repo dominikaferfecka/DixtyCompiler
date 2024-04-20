@@ -120,7 +120,23 @@ class Bool(Node):
         self._value = value
         self._position = position
 
+
 class List(Node):
+    def __init__(self, values, position):
+        super().__init__()
+        self._values = values
+        self._position = position
+
+
+class Pair(Node):
+    def __init__(self, first, second, position):
+        super().__init__()
+        self._first = first
+        self._second = second
+        self._position = position
+
+
+class Dict(Node):
     def __init__(self, values, position):
         super().__init__()
         self._values = values

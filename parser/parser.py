@@ -104,8 +104,46 @@ class Parser:
         
         return WhileStatement(expression, block, position)
 
+    # fun_def_statement   ::== 'fun' identifier '(' [ parameters ] ')' block;
     def parse_fun_def_statement(self):
-        pass
+        if self._token.get_token_type() != TokenType.FUN:
+            return None
+        
+        self._token = self._lexer.get_next_token()
+
+        name = self.parse_identifier()
+        if name is None:
+            raise SyntaxError("Function have to has name")
+        
+        self.must_be(TokenType.BRACKET_OPENING, SyntaxError)
+
+        parameters = self.parse_parameters()
+
+        self.must_be(TokenType.BRACKET_CLOSING, SyntaxError)
+
+        block = self.parse_block()
+
+
+        return FunStatement(name, parameters, block)
+
+
+    # parameters ::== identifier {',' identifier}
+    def parse_parameters(self):
+        
+        parameters = []
+        identifier = self.parse_identifier()
+        if identifier is None:
+            return None
+        parameters.append(identifier)
+        
+        while self._token.get_token_type() == TokenType.COMMA:
+            self._token = self._lexer.get_next_token()
+            identifier = self.parse_identifier()
+            if identifier is None:
+                raise SyntaxError
+            parameters.append(identifier)
+
+        return parameters
 
     def parse_return_statement(self):
         pass

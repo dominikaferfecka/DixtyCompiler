@@ -23,7 +23,8 @@ from parser.syntax_tree import (
     Bool,
     List,
     Pair,
-    Dict
+    Dict,
+    SelectTerm
 )
 
 def test_assign_number():
@@ -173,7 +174,7 @@ def test_assign_list_three_values():
 
 
 def test_assign_pair_empty():
-    source = SourceString("pair = (1,2);")
+    source = SourceString("pair = (1, 1);")
     filter = Filter(source)
     parser = Parser(filter)
     
@@ -225,3 +226,100 @@ def test_assign_dict_non_dict():
     expression = program._statements[0]._expression
     assert ( isinstance(expression, Dict) )
     assert ( expression._values[0]._value == 1)
+
+
+def test_assign_select():
+    source = SourceString("select = SELECT Key FROM dict;")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+    select_term = program._statements[0]._expression
+    assert ( isinstance(select_term, SelectTerm ))
+
+    assert ( isinstance(select_term._select_expression, Identifier))
+    assert (select_term._select_expression._name == "Key")
+
+    assert ( isinstance(select_term._from_expression, Identifier))
+    assert (select_term._from_expression._name == "dict")
+
+
+def test_assign_select_where():
+    source = SourceString("select = SELECT Key FROM dict WHERE Value == 2;")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+    select_term = program._statements[0]._expression
+    assert ( isinstance(select_term, SelectTerm ))
+
+    assert ( isinstance(select_term._select_expression, Identifier))
+    assert (select_term._select_expression._name == "Key")
+
+    assert ( isinstance(select_term._from_expression, Identifier))
+    assert (select_term._from_expression._name == "dict")
+
+    assert ( isinstance(select_term._where_expression, ComparisonTerm))
+
+    left = select_term._where_expression._left_additive_term
+    right = select_term._where_expression._right_additive_term
+    assert (left._name == "Value")
+    assert (right._value == 2)
+
+
+def test_assign_select_where_order():
+    source = SourceString("select = SELECT Key FROM dict WHERE Value == 2 ORDER_BY Key;")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+    select_term = program._statements[0]._expression
+    assert ( isinstance(select_term, SelectTerm ))
+
+    assert ( isinstance(select_term._select_expression, Identifier))
+    assert (select_term._select_expression._name == "Key")
+
+    assert ( isinstance(select_term._from_expression, Identifier))
+    assert (select_term._from_expression._name == "dict")
+
+    assert ( isinstance(select_term._where_expression, ComparisonTerm))
+
+    left = select_term._where_expression._left_additive_term
+    right = select_term._where_expression._right_additive_term
+    assert (left._name == "Value")
+    assert (right._value == 2)
+
+    assert ( isinstance(select_term._order_by_expression, Identifier))
+    assert ( select_term._order_by_expression._name == "Key")
+    assert ( select_term._asc_desc == "ASC")
+
+
+def test_assign_select_where_order_DESC():
+    source = SourceString("select = SELECT Key FROM dict WHERE Value == 2 ORDER_BY Key DESC;")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+    select_term = program._statements[0]._expression
+    assert ( isinstance(select_term, SelectTerm ))
+
+    assert ( isinstance(select_term._select_expression, Identifier))
+    assert (select_term._select_expression._name == "Key")
+
+    assert ( isinstance(select_term._from_expression, Identifier))
+    assert (select_term._from_expression._name == "dict")
+
+    assert ( isinstance(select_term._where_expression, ComparisonTerm))
+
+    left = select_term._where_expression._left_additive_term
+    right = select_term._where_expression._right_additive_term
+    assert (left._name == "Value")
+    assert (right._value == 2)
+
+    assert ( isinstance(select_term._order_by_expression, Identifier))
+    assert ( select_term._order_by_expression._name == "Key")
+    assert ( select_term._asc_desc == "DESC")

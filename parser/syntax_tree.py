@@ -212,3 +212,14 @@ class FunCall(Node):
         self._name = name
         self._parameters = parameters
         self._position = position
+
+
+class SelectTerm(Node):
+    def __init__(self, select_expression, from_expression, position, where_expression = None, order_by_expression = None, asc_desc = "ASC"):
+        super().__init__()
+        self._select_expression = select_expression
+        self._from_expression = from_expression
+        self._position = position
+        self._where_expression = where_expression
+        self._order_by_expression = order_by_expression
+        self._asc_desc = asc_desc

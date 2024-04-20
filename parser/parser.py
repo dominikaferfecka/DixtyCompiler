@@ -29,7 +29,8 @@ from parser.syntax_tree import (
     Pair,
     Dict,
     Block,
-    FunCall
+    FunCall,
+    SelectTerm
 )
 
 class Parser:
@@ -463,14 +464,14 @@ class Parser:
     def parse_factor(self):
         position = self._token.get_position()
 
-        factor = self.parse_literal() or self.parse_list() or self.parse_object_access()# i inne
+        factor = self.parse_literal() or self.parse_list() or self.parse_object_access() or self.parse_pair_or_expr() or self.parse_dict() or self.parse_select()
 
         return factor
     
     
     # literal ::== number | bool | string;
     def parse_literal(self):
-        literal = self.parse_number() or self.parse_string() or self.parse_bool() or self.parse_pair_or_expr() or self.parse_dict()
+        literal = self.parse_number() or self.parse_string() or self.parse_bool() 
         if literal:
             return literal
         return None
@@ -599,6 +600,52 @@ class Parser:
 
         self._token = self._lexer.get_next_token()
         return Dict(values, position)
+    
+    #select_term ::== 'SELECT' expression 'FROM' expression [ 'WHERE' expression ] [ 'ORDER BY' expression ['ASC' | 'DESC'] ] ‘;’;
+
+    def parse_select(self):
+        if self._token.get_token_type() != TokenType.SELECT:
+            return None
+        
+        position = self._token.get_position()
+        self.consume_token()
+
+        select_expression = self.parse_expression()
+        self.not_none(select_expression, SyntaxError)
+
+        self.must_be(TokenType.FROM, SyntaxError)
+
+        from_expression = self.parse_expression()
+        self.not_none(from_expression, SyntaxError)
+
+        if self._token.get_token_type() != TokenType.WHERE:
+            return SelectTerm(select_expression, from_expression, position)
+        
+        self.consume_token()
+
+        where_expression = self.parse_expression()
+        self.not_none(where_expression, SyntaxError)
+
+        if self._token.get_token_type() != TokenType.ORDER_BY:
+            return SelectTerm(select_expression, from_expression, position, where_expression)
+        
+        self.consume_token()
+
+        order_by_expression = self.parse_expression()
+        self.not_none(order_by_expression, SyntaxError)
+
+        asc_desc = "ASC"
+        if self._token.get_token_type() == TokenType.ASC:
+            self.consume_token()
+        elif self._token.get_token_type() == TokenType.DESC:
+            asc_desc = "DESC"
+            self.consume_token()
+
+        return SelectTerm(select_expression, from_expression, position, where_expression, order_by_expression, asc_desc)
+
+
+
+
     
 
     # non statements possible?

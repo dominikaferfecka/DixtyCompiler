@@ -63,8 +63,8 @@ def test_if_bool():
     assert ( len(program._statements) == 1 )
     assert ( isinstance(program._statements[0], IfStatement) )
 
-    assert ( isinstance(program._statements[0]._expression, Identifier) )
-    assert ( program._statements[0]._expression._name == "x" )
+    assert ( isinstance(program._statements[0]._expression, Bool) )
+    assert ( program._statements[0]._expression._value == True )
 
     block = program._statements[0]._block
     assert ( isinstance(block, Block) )

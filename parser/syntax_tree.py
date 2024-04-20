@@ -172,3 +172,9 @@ class Assignment(Node):
         self._expression = expression
         self._position = position
 
+
+class Block(Node):
+    def __init__(self, statements, position):
+        super().__init__()
+        self._statements = statements
+        self._position = position

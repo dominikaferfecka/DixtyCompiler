@@ -24,7 +24,8 @@ from parser.syntax_tree import (
     Bool,
     List,
     Pair,
-    Dict
+    Dict,
+    Block
 )
 
 class Parser:
@@ -65,7 +66,10 @@ class Parser:
         position = self._token.get_position()
         self._token = self._lexer.get_next_token()
 
-        identifier = self.must_be(TokenType.IDENTIFIER, SyntaxError)
+        identifier = self.parse_identifier()
+        if identifier is None:
+            raise SyntaxError
+        
         self.must_be(TokenType.IN, SyntaxError)
 
         expression = self.parse_expression()
@@ -329,7 +333,7 @@ class Parser:
     def parse_factor(self):
         position = self._token.get_position()
 
-        factor = self.parse_literal() or self.parse_list() # i inne
+        factor = self.parse_literal() or self.parse_list() or self.parse_object_access()# i inne
 
         return factor
     
@@ -467,10 +471,24 @@ class Parser:
         return Dict(values, position)
     
 
-
+    # non statements possible?
     # block ::== '{' {statement} '}'
     def parse_block(self):
-        pass
+        position = self._token.get_position()
+
+        if self._token.get_token_type() != TokenType.BRACE_OPENING:
+            return None
+        self._token = self._lexer.get_next_token()
+
+        block_statements = []
+
+        while statement := self.parse_statement():
+            block_statements.append(statement)
+        
+        self.must_be(TokenType.BRACE_CLOSING, SyntaxError)
+
+        return Block(block_statements, position)
+        
 
 
 

@@ -7,6 +7,7 @@ from parser.syntax_tree import (
     ForStatement,
     WhileStatement,
     FunStatement,
+    ReturnStatement,
     IfStatement,
     OrTerm,
     AndTerm,
@@ -108,7 +109,8 @@ class Parser:
     def parse_fun_def_statement(self):
         if self._token.get_token_type() != TokenType.FUN:
             return None
-        
+
+        position = self._token.get_position()
         self._token = self._lexer.get_next_token()
 
         name = self.parse_identifier()
@@ -124,7 +126,7 @@ class Parser:
         block = self.parse_block()
 
 
-        return FunStatement(name, parameters, block)
+        return FunStatement(name, parameters, block, position)
 
 
     # parameters ::== identifier {',' identifier}
@@ -146,7 +148,20 @@ class Parser:
         return parameters
 
     def parse_return_statement(self):
-        pass
+        if self._token.get_token_type() != TokenType.RETURN:
+            return None
+
+        position = self._token.get_position()
+        self._token = self._lexer.get_next_token()
+        
+        expression = self.parse_expression()
+        if expression is None:
+            raise SyntaxError 
+        
+        self.must_be(TokenType.SEMICOLON, SyntaxError)
+
+        return ReturnStatement(expression, position)
+
 
     # assign_or_call  ::== object_access ['=' expression] ‘;’ ;
     def parse_assign_or_call_statement(self):

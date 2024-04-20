@@ -25,16 +25,19 @@ class WhileStatement(Node):
 
 
 class FunStatement(Node):
-    def __init__(self, name, parameters, block):
+    def __init__(self, name, parameters, block, position):
         super().__init__()
         self._name = name
         self._parameters = parameters
         self._block = block
+        self._position = position
 
 
 class ReturnStatement(Node):
-    def __init__(self):
+    def __init__(self, expression, position):
         super().__init__()
+        self._expression = expression
+        self._position = position
 
 
 class IfStatement(Node):

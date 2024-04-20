@@ -6,6 +6,7 @@ from parser.syntax_tree import (
     ForStatement,
     WhileStatement,
     FunStatement,
+    ReturnStatement,
     IfStatement,
     OrTerm,
     AndTerm,
@@ -55,5 +56,31 @@ def test_fun():
     expression = block._statements[0]._expression
     assert ( isinstance(expression, Number) )
     assert ( expression._value == 2)
+
+
+def test_fun_return():
+    source = SourceString("fun get(x) { return x; }")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], FunStatement) )
+
+    assert ( isinstance(program._statements[0]._name, Identifier) )
+    assert ( program._statements[0]._name._name == "get" )
+
+    parameters = program._statements[0]._parameters
+    assert ( len(parameters) == 1 )
+    assert ( isinstance(parameters[0], Identifier) )
+    assert ( parameters[0]._name == "x" )
+
+    block = program._statements[0]._block
+    assert ( isinstance(block, Block) )
+    assert ( len(block._statements) == 1 )
+    assert ( isinstance(block._statements[0], ReturnStatement) )
+
+    expression = block._statements[0]._expression
+    assert ( isinstance(expression, Identifier) )
+    assert ( expression._name == "x")
 
 

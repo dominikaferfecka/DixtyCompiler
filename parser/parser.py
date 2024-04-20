@@ -9,6 +9,8 @@ from parser.syntax_tree import (
     FunStatement,
     ReturnStatement,
     IfStatement,
+    ElseIfStatement,
+    ElseStatement,
     OrTerm,
     AndTerm,
     NotTerm,
@@ -45,6 +47,9 @@ class Parser:
         
         return Program(statements)
     
+    def consume_token(self):
+        self._token = self._lexer.get_next_token()
+    
     def must_be(self, token_type, exception):
         if (self._token.get_token_type() != token_type):
             raise SyntaxError(f"Must be {token_type}")
@@ -53,6 +58,10 @@ class Parser:
         self._token = self._lexer.get_next_token()
 
         return value
+    
+    def not_none(self, element, exception):
+        if element is None:
+            raise SyntaxError
 
     # statement ::== for_loop_statement | while_loop_statement | fun_def_statement | return_statement | assign_or_call | if_statement;
     def parse_statement(self):
@@ -247,9 +256,60 @@ class Parser:
 
 
     def parse_if_statement(self):
-        pass
+        if self._token.get_token_type() != TokenType.IF:
+            return None
+        position = self._token.get_position()
+        self.consume_token()
+        
+        self.must_be(TokenType.BRACKET_OPENING, SyntaxError)
 
+        expression = self.parse_expression()
+        self.not_none(expression, SyntaxError)
+
+        self.must_be(TokenType.BRACKET_CLOSING, SyntaxError)
+
+        block = self.parse_block()
+        self.not_none(block, SyntaxError)
+        
+        else_if_lists = []
+        while else_if_statement := self.parse_else_if():
+            else_if_lists.append(else_if_statement)
+        
+        else_statement = self.parse_else()
+
+        return IfStatement(expression, block,  else_if_lists, else_statement, position)
+
+
+    def parse_else_if(self):
+        if self._token.get_token_type() != TokenType.ELSE_IF:
+            return None
+        position = self._token.get_position()
+        self.consume_token()    
+
+        self.must_be(TokenType.BRACKET_OPENING, SyntaxError)
+
+        expression = self.parse_expression()
+        self.not_none(expression, SyntaxError)
+
+        self.must_be(TokenType.BRACKET_CLOSING, SyntaxError)
+
+        block = self.parse_block()
+        self.not_none(block, SyntaxError)
+
+        return ElseIfStatement(expression, block, position)
     
+
+    def parse_else(self):
+        if self._token.get_token_type() != TokenType.ELSE:
+            return None
+        position = self._token.get_position()
+        self.consume_token()    
+
+        block = self.parse_block()
+        self.not_none(block, SyntaxError)
+
+        return ElseStatement(block, position)
+
     
     # expression ::== and_term { ‘Or’ and_term}
     def parse_expression(self):

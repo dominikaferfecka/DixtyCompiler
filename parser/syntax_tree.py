@@ -41,8 +41,28 @@ class ReturnStatement(Node):
 
 
 class IfStatement(Node):
-    def __init__(self):
+    def __init__(self, expression, block, else_if_statement, else_statement, position):
         super().__init__()
+        self._expression = expression
+        self._block = block
+        self._else_if_statement = else_if_statement
+        self._else_statement = else_statement
+        self._position = position
+
+
+class ElseIfStatement(Node):
+    def __init__(self, expression, block, position):
+        super().__init__()
+        self._expression = expression
+        self._block = block
+        self._position = position
+
+
+class ElseStatement(Node):
+    def __init__(self, block, position):
+        super().__init__()
+        self._block = block
+        self._position = position
 
 
 class OrTerm(Node):

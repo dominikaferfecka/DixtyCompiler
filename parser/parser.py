@@ -28,7 +28,8 @@ from parser.syntax_tree import (
     List,
     Pair,
     Dict,
-    Block
+    Block,
+    FunCall
 )
 
 class Parser:
@@ -188,7 +189,23 @@ class Parser:
 
 
     def parse_fun_call(self, name):
-        pass
+        if self._token.get_token_type() != TokenType.BRACKET_OPENING:
+            return None
+        
+        position = self._token.get_position()
+        self._token = self._lexer.get_next_token()
+
+        parameters = self.parse_expressions_list()
+        if parameters is None:
+            parameters = []
+        
+        self.must_be(TokenType.BRACKET_CLOSING, SyntaxError)
+
+        self.must_be(TokenType.SEMICOLON, SyntaxError)
+
+        return FunCall(name, parameters, position)
+
+
 
     # assign_or_call  ::== object_access ['=' expression] ‘;’ ;
 

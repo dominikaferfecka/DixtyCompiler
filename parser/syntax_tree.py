@@ -204,3 +204,11 @@ class Block(Node):
         super().__init__()
         self._statements = statements
         self._position = position
+
+
+class FunCall(Node):
+    def __init__(self, name, parameters, position):
+        super().__init__()
+        self._name = name
+        self._parameters = parameters
+        self._position = position

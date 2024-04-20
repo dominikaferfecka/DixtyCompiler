@@ -135,7 +135,7 @@ class Parser:
         parameters = []
         identifier = self.parse_identifier()
         if identifier is None:
-            return None
+            return parameters
         parameters.append(identifier)
         
         while self._token.get_token_type() == TokenType.COMMA:

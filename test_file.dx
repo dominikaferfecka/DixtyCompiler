@@ -1,0 +1,24 @@
+a = 1;
+b = 2;
+list = [1, 2, 3];
+dict_inside = {
+   (a, "one"),
+   (b, "two")
+};
+
+dict_inside2 = {
+   (a, "one2"),
+   (b, "two")
+};
+
+dict =
+{
+    (a, 1),
+    ("two", b),
+    (list, 3),
+    ("four", dict_inside)
+};
+
+result_select = SELECT Key FROM dict;
+
+print(result_select);

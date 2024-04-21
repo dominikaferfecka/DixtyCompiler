@@ -32,7 +32,7 @@ class Printer(Visitor):
     def visit_fun_call_statement(self, fun_call_statement, indent=""):
         print(f"{indent}FunCall - memory: [{hex(id(fun_call_statement))}], position [{fun_call_statement._position}], name [{fun_call_statement._name._name}]")
         for parameter in fun_call_statement._parameters:
-            parameter.accept(self, indent + new_indent + "Parameter: ")
+            parameter.accept(self, indent + new_indent)
     
     def visit_if_statement(self, if_statement, indent=""):
         print(f"{indent}IfStatement - memory: [{hex(id(if_statement))}], position [{if_statement._position}]") 
@@ -80,11 +80,36 @@ class Printer(Visitor):
         print(f"{indent}MultTerm - memory: [{hex(id(mult_term))}], position [{mult_term._position}]") 
         mult_term._left_signed_factor.accept(self, indent + new_indent)
         mult_term._right_signed_factor.accept(self, indent + new_indent)
-    
+
     def visit_div_term(self, div_term, indent=""):
         print(f"{indent}DivTerm - memory: [{hex(id(div_term))}], position [{div_term._position}]") 
         div_term._left_signed_factor.accept(self, indent + new_indent)
         div_term._right_signed_factor.accept(self, indent + new_indent)
+    
+    def visit_equal_term(self, equal_term, indent=""):
+        print(f"{indent}EqualTerm - memory: [{hex(id(equal_term))}], position [{equal_term._position}]") 
+        equal_term._left_additive_term.accept(self, indent + new_indent)
+        equal_term._right_additive_term.accept(self, indent + new_indent)
+
+    def visit_less_term(self, less_term, indent=""):
+        print(f"{indent}LessTerm - memory: [{hex(id(less_term))}], position [{less_term._position}]") 
+        less_term._left_additive_term.accept(self, indent + new_indent)
+        less_term._right_additive_term.accept(self, indent + new_indent)
+
+    def visit_more_term(self, more_term, indent=""):
+        print(f"{indent}MoreTerm - memory: [{hex(id(more_term))}], position [{more_term._position}]") 
+        more_term._left_additive_term.accept(self, indent + new_indent)
+        more_term._right_additive_term.accept(self, indent + new_indent)
+
+    def visit_less_or_equal_term(self, less_or_equal_term, indent=""):
+        print(f"{indent}MoreTerm - memory: [{hex(id(less_or_equal_term))}], position [{less_or_equal_term._position}]") 
+        less_or_equal_term._left_additive_term.accept(self, indent + new_indent)
+        less_or_equal_term._right_additive_term.accept(self, indent + new_indent)
+
+    def visit_more_or_equal_term(self, more_or_equal_term, indent=""):
+        print(f"{indent}MoreTerm - memory: [{hex(id(more_or_equal_term))}], position [{more_or_equal_term._position}]") 
+        more_or_equal_term._left_additive_term.accept(self, indent + new_indent)
+        more_or_equal_term._right_additive_term.accept(self, indent + new_indent)
 
     def visit_signed_factor(self, signed_factor, indent=""):
         print(f"{indent}SignedFactor - memory: [{hex(id(signed_factor))}], position [{signed_factor._position}], factor: [{signed_factor._factor}]") 
@@ -105,7 +130,9 @@ class Printer(Visitor):
         print(f"{indent}List - memory: [{hex(id(list))}], position [{list._position}], value: [{list._values}]") 
 
     def visit_pair(self, pair, indent=""):
-        print(f"{indent}Pair - memory: [{hex(id(pair))}], position [{pair._position}], value: [{pair._value}]") 
+        print(f"{indent}Pair - memory: [{hex(id(pair))}], position [{pair._position}]") 
+        pair._first.accept(self, indent + new_indent)
+        pair._second.accept(self, indent + new_indent)
 
     def visit_dict(self, dict, indent=""):
         print(f"{indent}Dict - memory: [{hex(id(dict))}], position [{dict._position}], value: [{dict._values}]") 

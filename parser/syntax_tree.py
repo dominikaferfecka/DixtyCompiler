@@ -138,21 +138,36 @@ class EqualsTerm(ComparisonTerm):
     def __init__(self, left_additive_term, position, right_additive_term):
         super().__init__(left_additive_term, position, right_additive_term)
 
+    def accept(self, visitor, arg=""):
+        visitor.visit_equal_term(self, arg)
+
 class LessTerm(ComparisonTerm):
     def __init__(self, left_additive_term, position, right_additive_term):
         super().__init__(left_additive_term, position, right_additive_term)
+    
+    def accept(self, visitor, arg=""):
+        visitor.visit_less_term(self, arg)
 
 class MoreTerm(ComparisonTerm):
     def __init__(self, left_additive_term, position, right_additive_term):
         super().__init__(left_additive_term, position, right_additive_term)
 
+    def accept(self, visitor, arg=""):
+        visitor.visit_more_term(self, arg)
+
 class LessOrEqualTerm(ComparisonTerm):
     def __init__(self, left_additive_term, position, right_additive_term):
         super().__init__(left_additive_term, position, right_additive_term)
 
+    def accept(self, visitor, arg=""):
+        visitor.visit_less_or_equal_term(self, arg)
+
 class MoreOrEqualTerm(ComparisonTerm):
     def __init__(self, left_additive_term, position, right_additive_term):
         super().__init__(left_additive_term, position, right_additive_term)
+    
+    def accept(self, visitor, arg=""):
+        visitor.visit_more_or_equal_term(self, arg)
 
 class AddTerm(Node):
     def __init__(self, left_mult_term, position, right_mult_term):
@@ -285,7 +300,7 @@ class ObjectAccess(Node):
         self._position = position
     
     def accept(self, visitor, arg=""):
-        visitor.visit_object_access_statement(self, arg)
+        visitor.visit_object_access(self, arg)
 
 
 class Item(Node):

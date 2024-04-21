@@ -51,4 +51,5 @@ if __name__ == "__main__":
         printer = Printer()
         
         for node in nodes:
-            node.accept(printer)
+            if node is not None:
+                node.accept(printer)

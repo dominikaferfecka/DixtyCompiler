@@ -22,3 +22,17 @@ dict =
 result_select = SELECT Key FROM dict;
 
 print(result_select);
+
+pair = ("value", 2);
+
+print(pair.Key);
+print(pair.Value); 
+
+print(pair);
+
+pair.Key = "new_value";
+print(pair.Key);
+
+pair.Value = 3;
+print(pair.Value); 
+

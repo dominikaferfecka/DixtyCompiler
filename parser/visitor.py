@@ -71,6 +71,26 @@ class Visitor(ABC):
         pass
 
     @abstractmethod
+    def visit_equal_term(self, equal_term):
+        pass
+
+    @abstractmethod
+    def visit_less_term(self, less_term):
+        pass
+
+    @abstractmethod
+    def visit_less_or_equal_term(self, less_or_equal_term):
+        pass
+
+    @abstractmethod
+    def visit_more_term(self, more_term):
+        pass
+
+    @abstractmethod
+    def visit_more_or_equal_term(self, more_or_equal_term):
+        pass
+
+    @abstractmethod
     def visit_signed_factor(self, signed_factor):
         pass
 

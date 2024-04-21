@@ -19,7 +19,11 @@ class Visitor(ABC):
         pass
 
     @abstractmethod
-    def visit_assign_or_call_statement(self, assign_or_call_statement):
+    def visit_assign_statement(self, assign_statement):
+        pass
+    
+    @abstractmethod
+    def visit_fun_call_statement(self, fun_call_statement):
         pass
 
     @abstractmethod

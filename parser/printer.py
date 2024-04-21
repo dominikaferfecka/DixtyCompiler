@@ -16,8 +16,11 @@ class Printer(Visitor):
     def visit_return_statement(self, return_statement):
         print("RETURN statement")
     
-    def visit_assign_or_call_statement(self, assign_or_call_statement):
-        print("ASSIGN OR CALL statement")
+    def visit_assign_statement(self, assign_statement):
+        print("ASSIGN statement")
+
+    def visit_fun_call_statement(self, fun_call_statement):
+        print("FUN CALL statement")
     
     def visit_if_statement(self, if_statement):
         print("IF statement")

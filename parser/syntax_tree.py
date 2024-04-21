@@ -1,6 +1,12 @@
-class Node:
+from abc import ABC, abstractmethod
+
+class Node(ABC):
     def __init__(self):
         pass
+
+    @abstractmethod
+    def accept(self, visitor):
+        pass    
 
 class Program(Node):
     def __init__(self, statements):
@@ -15,6 +21,9 @@ class ForStatement(Node):
         self._expression = expression
         self._block = block
         self._position = position
+    
+    def accept(self, visitor):
+        visitor.visit_for_statement(self)
 
 
 class WhileStatement(Node):
@@ -22,6 +31,9 @@ class WhileStatement(Node):
         self._expression = expression
         self._block = block
         self._position = position
+
+    def accept(self, visitor):
+        visitor.visit_while_statement(self)
 
 
 class FunStatement(Node):
@@ -31,6 +43,10 @@ class FunStatement(Node):
         self._parameters = parameters
         self._block = block
         self._position = position
+    
+    def accept(self, visitor):
+        visitor.visit_fun_statement(self)
+        
 
 
 class ReturnStatement(Node):
@@ -38,6 +54,9 @@ class ReturnStatement(Node):
         super().__init__()
         self._expression = expression
         self._position = position
+    
+    def accept(self, visitor):
+        visitor.visit_return_statement(self)
 
 
 class IfStatement(Node):
@@ -48,6 +67,9 @@ class IfStatement(Node):
         self._else_if_statement = else_if_statement
         self._else_statement = else_statement
         self._position = position
+    
+    def accept(self, visitor):
+        visitor.visit_if_statement(self)
 
 
 class ElseIfStatement(Node):
@@ -232,6 +254,9 @@ class Assignment(Node):
         self._expression = expression
         self._position = position
 
+    def accept(self, visitor):
+        visitor.visit_assign_statement(self)
+
 
 class Block(Node):
     def __init__(self, statements, position):
@@ -246,6 +271,9 @@ class FunCall(Node):
         self._name = name
         self._parameters = parameters
         self._position = position
+
+    def accept(self, visitor):
+        visitor.visit_fun_call_statement(self)
 
 
 class SelectTerm(Node):

@@ -127,7 +127,9 @@ class Printer(Visitor):
         print(f"{indent}Bool - memory: [{hex(id(bool))}], position [{bool._position}], value: [{bool._value}]") 
 
     def visit_list(self, list, indent=""):
-        print(f"{indent}List - memory: [{hex(id(list))}], position [{list._position}], value: [{list._values}]") 
+        print(f"{indent}List - memory: [{hex(id(list))}], position [{list._position}]") 
+        for value in list._values:
+            value.accept(self,indent + new_indent)
 
     def visit_pair(self, pair, indent=""):
         print(f"{indent}Pair - memory: [{hex(id(pair))}], position [{pair._position}]") 
@@ -135,8 +137,10 @@ class Printer(Visitor):
         pair._second.accept(self, indent + new_indent)
 
     def visit_dict(self, dict, indent=""):
-        print(f"{indent}Dict - memory: [{hex(id(dict))}], position [{dict._position}], value: [{dict._values}]") 
-
+        print(f"{indent}Dict - memory: [{hex(id(dict))}], position [{dict._position}]") 
+        for value in dict._values:
+            value.accept(self,indent + new_indent)
+        
     def visit_object_access(self, object_access, indent=""):
         print(f"{indent}Object access - memory: [{hex(id(object_access))}], position [{object_access._position}]") 
         object_access._left_item.accept(self, indent + new_indent)

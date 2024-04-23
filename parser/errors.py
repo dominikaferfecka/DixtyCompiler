@@ -46,45 +46,45 @@ class SemicolonMissing(Exception):
         self.position = position
 
 
-class MissingExpectedToken(Exception):
+class MissingExpectedStatement(Exception):
     def __init__(self, expected, received, position, extra_message=""):
         super().__init__(f'{extra_message}Expected token [{expected}], received token [{received}] at {position}')
         self.position = position
         self.expected = expected
         self.received = received
 
-class InvalidFunctionDefinition(MissingExpectedToken):
+class InvalidFunctionDefinition(MissingExpectedStatement):
     def __init__(self, expected, received, position):
         super().__init__(expected, received, position)
 
-class InvalidWhileLoop(MissingExpectedToken):
+class InvalidWhileLoop(MissingExpectedStatement):
     def __init__(self, expected, received, position):
         super().__init__(expected, received, position)
 
-class InvalidForLoop(MissingExpectedToken):
+class InvalidForLoop(MissingExpectedStatement):
     def __init__(self, expected, received, position):
         super().__init__(expected, received, position)
 
-class InvalidIfStatement(MissingExpectedToken):
-    def __init__(self, expected, received, position):
-        super().__init__(expected, received, position)
-
-
-class InvalidElseIfStatement(MissingExpectedToken):
+class InvalidIfStatement(MissingExpectedStatement):
     def __init__(self, expected, received, position):
         super().__init__(expected, received, position)
 
 
-class InvalidElseStatement(MissingExpectedToken):
+class InvalidElseIfStatement(MissingExpectedStatement):
+    def __init__(self, expected, received, position):
+        super().__init__(expected, received, position)
+
+
+class InvalidElseStatement(MissingExpectedStatement):
     def __init__(self, expected, received, position):
         super().__init__(expected, received, position)
     
 
-class InvalidReturnStatement(MissingExpectedToken):
+class InvalidReturnStatement(MissingExpectedStatement):
     def __init__(self, expected, received, position):
         super().__init__(expected, received, position)
 
 
-class InvalidAssignmentStatement(MissingExpectedToken):
+class InvalidAssignmentStatement(MissingExpectedStatement):
     def __init__(self, expected, received, position):
         super().__init__(expected, received, position)

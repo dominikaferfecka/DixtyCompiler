@@ -107,7 +107,7 @@ def test_invalid_function_def_bracket_exc_info():
     assert exception.expected == TokenType.BRACKET_OPENING
     assert exception.received == TokenType.BRACKET_CLOSING
     assert exception.position.get_row() == 1
-    assert exception.position.get_column() == 1
+    assert exception.position.get_column() == 7
 
 
 def test_invalid_for_identifier():
@@ -121,7 +121,7 @@ def test_invalid_for_identifier():
     assert exception.expected == TokenType.IDENTIFIER
     assert exception.received == TokenType.IN
     assert exception.position.get_row() == 1
-    assert exception.position.get_column() == 1
+    assert exception.position.get_column() == 5
 
 
 def test_invalid_for_block():
@@ -135,4 +135,18 @@ def test_invalid_for_block():
     assert exception.expected == TokenType.BRACE_CLOSING
     assert exception.received == TokenType.END_OF_TEXT
     assert exception.position.get_row() == 1
-    assert exception.position.get_column() == 15
+    assert exception.position.get_column() == 21
+
+
+def test_invalid_while_identifier():
+    with pytest.raises(InvalidWhileLoop) as exc_info:
+        source = SourceString("while x==2 {a=1;}")
+        filter = Filter(source)
+        parser = Parser(filter)
+        program = parser.parse_program()
+    
+    exception = exc_info.value
+    assert exception.expected == TokenType.BRACKET_OPENING
+    assert exception.received == TokenType.IDENTIFIER
+    assert exception.position.get_row() == 1
+    assert exception.position.get_column() == 7

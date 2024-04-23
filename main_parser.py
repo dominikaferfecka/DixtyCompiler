@@ -14,7 +14,8 @@ def main():
     #     program = parser.parse_program()
     #     print(program)
 
-    source = SourceString("a = 1")
+    #source = SourceString("fun () {x=2;}")
+    source = SourceString("fun a ) {x=2;}")
     
     filter = Filter(source)
 

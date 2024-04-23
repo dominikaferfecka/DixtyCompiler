@@ -39,7 +39,18 @@ from parser.syntax_tree import (
     SelectTerm
 )
 
-from parser.errors import SemicolonMissing
+from parser.errors import (
+    SemicolonMissing,
+    MissingExpectedToken,
+    InvalidFunctionDefinition,
+    InvalidWhileLoop,
+    InvalidForLoop,
+    InvalidIfStatement,
+    InvalidElseStatement,
+    InvalidElseIfStatement,
+    InvalidReturnStatement,
+    InvalidAssignmentStatement
+    )
 
 class Parser:
     def __init__(self, lexer):
@@ -62,16 +73,17 @@ class Parser:
     
     def must_be(self, token_type, exception, position):
         if (self._token.get_token_type() != token_type):
-            raise exception(position)
+            raise exception(token_type, self._token.get_token_type(), position)
         value = self._token.get_value()
 
         self._token = self._lexer.get_next_token()
 
         return value
     
-    def not_none(self, element, exception, position):
+    def not_none(self, element, exception, expected, position):
+        received = self._token.get_token_type()
         if element is None:
-            raise SyntaxError
+            raise exception(expected, received, position)
 
     # statement ::== for_loop_statement | while_loop_statement | fun_def_statement | return_statement | assign_or_call | if_statement;
     def parse_statement(self):
@@ -87,18 +99,15 @@ class Parser:
         self._token = self._lexer.get_next_token()
 
         identifier = self.parse_identifier()
-        if identifier is None:
-            raise SyntaxError
+        self.not_none(identifier, InvalidForLoop, TokenType.IDENTIFIER, position)
         
-        self.must_be(TokenType.IN, SyntaxError, position)
+        self.must_be(TokenType.IN, InvalidForLoop, position)
 
         expression = self.parse_expression()
-        if expression is None:
-            raise SyntaxError
+        self.not_none(expression, InvalidForLoop, "Expression", position)
         
         block = self.parse_block()
-        if block is None:
-            raise SyntaxError
+        self.not_none(block, InvalidForLoop, "Loop block", position)
         
         return ForStatement(identifier, expression, block, position)
 
@@ -110,18 +119,16 @@ class Parser:
         position = self._token.get_position()
         self._token = self._lexer.get_next_token()
 
-        self.must_be(TokenType.BRACKET_OPENING, SyntaxError, position)
+        self.must_be(TokenType.BRACKET_OPENING, InvalidWhileLoop, position)
         
         expression = self.parse_expression()
-        if expression is None:
-            raise SyntaxError
+        self.not_none(expression, InvalidWhileLoop, "Expression", position)
         
-        self.must_be(TokenType.BRACKET_CLOSING, SyntaxError, position)
+        self.must_be(TokenType.BRACKET_CLOSING, InvalidWhileLoop, position)
         
         block = self.parse_block()
-        if block is None:
-            raise SyntaxError
-        
+        self.not_none(block, InvalidWhileLoop, "Loop block", position)
+       
         return WhileStatement(expression, block, position)
 
     # fun_def_statement   ::== 'fun' identifier '(' [ parameters ] ')' block;
@@ -133,14 +140,15 @@ class Parser:
         self._token = self._lexer.get_next_token()
 
         name = self.parse_identifier()
-        if name is None:
-            raise SyntaxError("Function have to has name")
+        self.not_none(name, InvalidFunctionDefinition, TokenType.IDENTIFIER, position)
+        # if name is None:
+        #     raise InvalidFunctionDefinition(self._token.get_token_type(), TokenType.IDENTIFIER, position)
         
-        self.must_be(TokenType.BRACKET_OPENING, SyntaxError, position)
+        self.must_be(TokenType.BRACKET_OPENING, InvalidFunctionDefinition, position)
 
         parameters = self.parse_parameters()
 
-        self.must_be(TokenType.BRACKET_CLOSING, SyntaxError, position)
+        self.must_be(TokenType.BRACKET_CLOSING, InvalidFunctionDefinition, position)
 
         block = self.parse_block()
 
@@ -152,6 +160,7 @@ class Parser:
     def parse_parameters(self):
         
         parameters = []
+        position = self._token.get_position()
         identifier = self.parse_identifier()
         if identifier is None:
             return parameters
@@ -160,8 +169,7 @@ class Parser:
         while self._token.get_token_type() == TokenType.COMMA:
             self._token = self._lexer.get_next_token()
             identifier = self.parse_identifier()
-            if identifier is None:
-                raise SyntaxError
+            self.not_none(identifier, MissingExpectedToken, TokenType.IDENTIFIER, position)
             parameters.append(identifier)
 
         return parameters
@@ -174,8 +182,7 @@ class Parser:
         self._token = self._lexer.get_next_token()
         
         expression = self.parse_expression()
-        if expression is None:
-            raise SyntaxError 
+        self.not_none(expression, InvalidReturnStatement, "Expression", position)
         
         self.must_be(TokenType.SEMICOLON, SemicolonMissing, position)
 
@@ -208,7 +215,7 @@ class Parser:
         if parameters is None:
             parameters = []
         
-        self.must_be(TokenType.BRACKET_CLOSING, SyntaxError, position)
+        self.must_be(TokenType.BRACKET_CLOSING, MissingExpectedToken, position)
 
         self.must_be(TokenType.SEMICOLON, SemicolonMissing, position)
 
@@ -225,13 +232,14 @@ class Parser:
         if self._token.get_token_type() != TokenType.ASSIGN:
             return None
         
-
+        
         self._token = self._lexer.get_next_token() 
 
         expression = self.parse_expression()
 
-        if expression is None:
-            raise SyntaxError("After assign must be expression")
+        self.not_none(expression, InvalidAssignmentStatement, "Expression", position)
+        # if expression is None:
+        #     raise SyntaxError("After assign must be expression")
         
         self.must_be(TokenType.SEMICOLON, SemicolonMissing, position)
         
@@ -251,8 +259,7 @@ class Parser:
 
             right_item = self.parse_item()
 
-            if right_item is None:
-                raise SyntaxError
+            self.not_none(right_item, MissingExpectedToken, "right_item", position)
             
             left_item = ObjectAccess(left_item, position, right_item)
         
@@ -287,15 +294,15 @@ class Parser:
         position = self._token.get_position()
         self.consume_token()
         
-        self.must_be(TokenType.BRACKET_OPENING, SyntaxError, position)
+        self.must_be(TokenType.BRACKET_OPENING, InvalidIfStatement, position)
 
         expression = self.parse_expression()
-        self.not_none(expression, SyntaxError, position)
+        self.not_none(expression, InvalidIfStatement, "Expression", position)
 
-        self.must_be(TokenType.BRACKET_CLOSING, SyntaxError, position)
+        self.must_be(TokenType.BRACKET_CLOSING, InvalidIfStatement, position)
 
         block = self.parse_block()
-        self.not_none(block, SyntaxError, position)
+        self.not_none(expression, InvalidIfStatement, "If block", position)
         
         else_if_lists = []
         while else_if_statement := self.parse_else_if():
@@ -312,15 +319,15 @@ class Parser:
         position = self._token.get_position()
         self.consume_token()    
 
-        self.must_be(TokenType.BRACKET_OPENING, SyntaxError, position)
+        self.must_be(TokenType.BRACKET_OPENING, InvalidElseIfStatement, position)
 
         expression = self.parse_expression()
-        self.not_none(expression, SyntaxError, position)
+        self.not_none(expression, InvalidElseIfStatement, "Expression", position)
 
-        self.must_be(TokenType.BRACKET_CLOSING, SyntaxError, position)
+        self.must_be(TokenType.BRACKET_CLOSING, InvalidElseIfStatement, position)
 
         block = self.parse_block()
-        self.not_none(block, SyntaxError, position)
+        self.not_none(block, InvalidElseIfStatement, "Else if block", position)
 
         return ElseIfStatement(expression, block, position)
     
@@ -332,7 +339,7 @@ class Parser:
         self.consume_token()    
 
         block = self.parse_block()
-        self.not_none(block, SyntaxError, position)
+        self.not_none(block, InvalidElseStatement, "Else block", position)
 
         return ElseStatement(block, position)
 
@@ -350,9 +357,8 @@ class Parser:
 
             right_and_term = self.parse_and_term()
 
-            if right_and_term is None:
-                raise SyntaxError
-            
+            self.not_none(right_and_term, MissingExpectedToken, "Expression", position)
+
             left_and_term = OrTerm(left_and_term, position, right_and_term)
         
         return left_and_term
@@ -370,7 +376,7 @@ class Parser:
 
             right_not_term = self.parse_not_term()
 
-            self.not_none(right_not_term, SyntaxError, position)
+            self.not_none(right_not_term, MissingExpectedToken, "Not term", position)
             
             left_not_term = AndTerm(left_not_term, position, right_not_term)
         
@@ -390,7 +396,7 @@ class Parser:
         comparison_term = self.parse_comparison_term()
         
         if negation:
-            self.not_none(comparison_term, SyntaxError, position)
+            self.not_none(comparison_term, MissingExpectedToken, "Comparison term", position)
             return NotTerm(comparison_term, position)
         return comparison_term
     
@@ -415,7 +421,7 @@ class Parser:
 
             right_additive_term = self.parse_additive_term()
 
-            self.not_none(right_additive_term, SyntaxError, position)
+            self.not_none(right_additive_term, MissingExpectedToken, "right_additive_term", position)
             # raise SyntaxError("After comparison operator must be right additive term")
             
             left_additive_term = Class(left_additive_term, position, right_additive_term)
@@ -435,7 +441,7 @@ class Parser:
 
             right_mult_term = self.parse_mult_term()
 
-            self.not_none(right_mult_term, SyntaxError, position)
+            self.not_none(right_mult_term, MissingExpectedToken, "right_mult_term", position)
             
             if operator == TokenType.PLUS:
                 left_mult_term = AddTerm(left_mult_term, position, right_mult_term)
@@ -456,7 +462,7 @@ class Parser:
 
             right_signed_factor = self.parse_signed_factor() 
 
-            self.not_none(right_signed_factor, SyntaxError, position)
+            self.not_none(right_signed_factor, MissingExpectedToken, "right_signed_factor", position)
             
             if operator == TokenType.ASTERISK:
                 left_signed_factor = MultTerm(left_signed_factor, position, right_signed_factor)
@@ -477,7 +483,7 @@ class Parser:
         factor = self.parse_factor()
         
         if unary_negation:
-            self.not_none(factor, SyntaxError, position)
+            self.not_none(factor, MissingExpectedToken, "factor", position)
             return SignedFactor(factor, position)
         return factor
         
@@ -570,7 +576,7 @@ class Parser:
             self._token = self._lexer.get_next_token()
             expression = self.parse_expression()
             
-            self.not_none(expression, SyntaxError, position)
+            self.not_none(expression, MissingExpectedToken, "expression", position)
             expressions.append(expression)
         
         return expressions
@@ -596,7 +602,7 @@ class Parser:
         expression_second = self.parse_expression()
 
         # raise SyntaxError("Pair started but missing second expression")
-        self.not_none(expression_second, SyntaxError, position)
+        self.not_none(expression_second, MissingExpectedToken, "expression", position)
 
         if self._token.get_token_type() != TokenType.BRACKET_CLOSING:
             raise SyntaxError("Missing ')' to close pair")
@@ -634,12 +640,12 @@ class Parser:
         self.consume_token()
 
         select_expression = self.parse_expression()
-        self.not_none(select_expression, SyntaxError, position)
+        self.not_none(select_expression, MissingExpectedToken, "select_expression", position)
 
-        self.must_be(TokenType.FROM, SyntaxError, position)
+        self.must_be(TokenType.FROM, MissingExpectedToken, position)
 
         from_expression = self.parse_expression()
-        self.not_none(from_expression, SyntaxError, position)
+        self.not_none(from_expression, MissingExpectedToken, "FROM_expression", position)
 
         if self._token.get_token_type() != TokenType.WHERE:
             return SelectTerm(select_expression, from_expression, position)
@@ -647,7 +653,7 @@ class Parser:
         self.consume_token()
 
         where_expression = self.parse_expression()
-        self.not_none(where_expression, SyntaxError, position)
+        self.not_none(where_expression, MissingExpectedToken, "WHERE_expression", position)
 
         if self._token.get_token_type() != TokenType.ORDER_BY:
             return SelectTerm(select_expression, from_expression, position, where_expression)
@@ -655,7 +661,7 @@ class Parser:
         self.consume_token()
 
         order_by_expression = self.parse_expression()
-        self.not_none(order_by_expression, SyntaxError, position)
+        self.not_none(order_by_expression, MissingExpectedToken, "ORDER_BY_expression", position)
 
         asc_desc = "ASC"
         if self._token.get_token_type() == TokenType.ASC:
@@ -685,7 +691,7 @@ class Parser:
         while statement := self.parse_statement():
             block_statements.append(statement)
         
-        self.must_be(TokenType.BRACE_CLOSING, SyntaxError, position)
+        self.must_be(TokenType.BRACE_CLOSING, MissingExpectedToken, position)
 
         return Block(block_statements, position)
         

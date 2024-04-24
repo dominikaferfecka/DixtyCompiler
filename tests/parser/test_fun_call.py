@@ -109,3 +109,30 @@ def test_fun_call_three_args_numbers():
     
     assert ( isinstance(parameters[2], Number))
     assert( parameters[2]._value == 1.0)
+
+
+def test_fun_call_lists():
+    source = SourceString("print(list[0][0][0]);")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], FunCall) )
+
+    assert ( isinstance(program._statements[0]._name, Identifier) )
+    assert ( program._statements[0]._name._name == "print" )
+
+    parameters = program._statements[0]._parameters
+    assert ( len(parameters) == 1 )
+    assert ( isinstance(parameters[0], Item))
+
+    name = parameters[0]._name
+    assert( isinstance(name, Identifier) )
+    assert( name._name == "list") 
+
+    elements = parameters[0]._elements
+    assert ( len(elements) == 3 )
+    assert ( elements[0]._value == 0 )
+    assert ( elements[1]._value == 0 )
+    assert ( elements[2]._value == 0 )
+    

@@ -266,11 +266,41 @@ class Parser:
         return left_item
     
 
-    # item ::== identifier {  ‘[‘ expression ‘]’ |  ‘(‘ [arguments] ‘)’ }; 
+    # item ::== identifier {  ‘[‘ expression ‘]’ | ‘(‘ [arguments] ‘)’ }; 
     def parse_item(self):
+
         identifier = self.parse_identifier()
-        # to do later
-        return identifier
+        # return identifier
+        if identifier is None:
+            return None
+
+        position = self._token.get_position()
+
+        token = self._token.get_token_type()
+        elements = []
+        while token == TokenType.SQUARE_BRACKET_OPENING:
+            self.consume_token()
+    
+            # if token == TokenType.SQUARE_BRACKET_OPENING:
+            expression = self.parse_expression()
+            self.not_none(expression, MissingExpectedStatement, "Expression")
+            self.must_be(TokenType.SQUARE_BRACKET_CLOSING, MissingExpectedStatement)
+            elements.append(expression)
+            token = self._token.get_token_type()
+
+        #     # elif token == TokenType.BRACKET_OPENING:
+        #     #     parameters = self.parse_expressions_list()
+        #     #     if parameters is None:
+        #     #         fun_call = "({parameters})"
+        #     #     self.not_none(expression, MissingExpectedStatement, "Expression")
+        #     #     self.must_be(TokenType.BRACKET_CLOSING, MissingExpectedStatement)
+        #     #     elements.append(expression)
+        #     #     token = self._token.get_token_type()
+
+        if len(elements) == 0:
+            return identifier
+        else:
+            return Item(identifier, elements, position)
 
 
     def parse_identifier(self):

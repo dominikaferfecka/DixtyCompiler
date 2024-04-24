@@ -215,6 +215,71 @@ def test_assign_dict_empty():
     assert ( isinstance(expression, Dict) )
     assert ( expression._values == {})
 
+
+def test_assign_dict_one():
+    source = SourceString("dict = { (\"one\", 1)};" ) 
+    filter = Filter(source)
+    parser = Parser(filter)
+    
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+
+    object_access = program._statements[0]._object_access
+    assert ( isinstance(object_access, Identifier) )
+    assert ( object_access._name == "dict")
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, Dict) )
+    values = expression._values
+    assert ( isinstance(values[0], Pair))
+
+    first = values[0]._first
+    assert ( isinstance(first, String ))
+    assert ( first._value == "one" )
+
+    second = values[0]._second
+    assert ( isinstance(second, Number ))
+    assert ( second._value == 1 )
+
+def test_assign_dict_two():
+    source = SourceString("dict = { (\"one\", 1), (\"two\", 2)};" ) 
+    filter = Filter(source)
+    parser = Parser(filter)
+    
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+
+    object_access = program._statements[0]._object_access
+    assert ( isinstance(object_access, Identifier) )
+    assert ( object_access._name == "dict")
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, Dict) )
+
+    values = expression._values
+    assert ( isinstance(values[0], Pair))
+
+    first = values[0]._first
+    assert ( isinstance(first, String ))
+    assert ( first._value == "one" )
+
+    second = values[0]._second
+    assert ( isinstance(second, Number ))
+    assert ( second._value == 1 )
+
+    assert ( isinstance(values[1], Pair))
+
+    first = values[1]._first
+    assert ( isinstance(first, String ))
+    assert ( first._value == "two" )
+
+    second = values[1]._second
+    assert ( isinstance(second, Number ))
+    assert ( second._value == 2 )
+
+
 # czy parser powinien już to wywalić?
 def test_assign_dict_non_dict():
     source = SourceString("dict = {1};")
@@ -459,3 +524,48 @@ def test_assign_comparison_less_or_equals():
     assert ( isinstance(expression, LessOrEqualTerm) )
     assert ( expression._left_additive_term._name == "x")
     assert ( expression._right_additive_term._value == 1)
+
+# def test_assign_to_fun_call():
+#     source = SourceString(" a() = 2;")
+#     filter = Filter(source)
+#     parser = Parser(filter)
+#     program = parser.parse_program()
+#     assert ( len(program._statements) == 1 )
+#     assert ( isinstance(program._statements[0], Assignment) )
+
+#     object_access = program._statements[0]._object_access
+#     assert ( isinstance(object_access, Identifier) )
+#     assert ( object_access._name == "list")
+
+#     expression = program._statements[0]._expression
+#     assert ( isinstance(expression, List) )
+
+#     values = expression._values
+#     assert ( len(values) == 3)
+#     assert ( values[0]._value == 1)
+#     assert ( values[1]._value == 2)
+#     assert ( values[2]._value == 3)
+
+
+def test_assign_lists():
+    source = SourceString("sum = list[0][2][4];")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+
+    object_access = program._statements[0]._object_access
+    assert ( isinstance(object_access, Identifier) )
+    assert ( object_access._name == "sum")
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, Item) )
+    assert ( expression._name._name == "list")
+
+    elements = expression._elements
+    assert ( len(elements) == 3 )
+    assert ( elements[0]._value == 0 )
+    assert ( elements[1]._value == 2 )
+    assert ( elements[2]._value == 4 )
+    

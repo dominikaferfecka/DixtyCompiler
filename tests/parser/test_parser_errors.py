@@ -55,7 +55,7 @@ def test_semicolon_assign():
         source = SourceString("a = 1")
         filter = Filter(source)
         parser = Parser(filter)
-        program = parser.parse_program()
+        parser.parse_program()
 
 
 def test_semicolon_function_call():
@@ -63,7 +63,7 @@ def test_semicolon_function_call():
         source = SourceString("a()")
         filter = Filter(source)
         parser = Parser(filter)
-        program = parser.parse_program()
+        parser.parse_program()
 
 
 def test_semicolon_function_call():
@@ -71,21 +71,21 @@ def test_semicolon_function_call():
         source = SourceString("a()")
         filter = Filter(source)
         parser = Parser(filter)
-        program = parser.parse_program()
+        parser.parse_program()
 
 def test_semicolon_return():
     with pytest.raises(SemicolonMissing):
         source = SourceString("return 1")
         filter = Filter(source)
         parser = Parser(filter)
-        program = parser.parse_program()
+        parser.parse_program()
 
 def test_invalid_function_def():
     with pytest.raises(InvalidFunctionDefinition):
         source = SourceString("fun () {a;}")
         filter = Filter(source)
         parser = Parser(filter)
-        program = parser.parse_program()
+        parser.parse_program()
 
 
 def test_invalid_function_def_bracket():
@@ -93,7 +93,7 @@ def test_invalid_function_def_bracket():
         source = SourceString("fun a ) {a;}")
         filter = Filter(source)
         parser = Parser(filter)
-        program = parser.parse_program()
+        parser.parse_program()
 
 
 def test_invalid_function_def_bracket_exc_info():
@@ -101,7 +101,7 @@ def test_invalid_function_def_bracket_exc_info():
         source = SourceString("fun a ) {a;}")
         filter = Filter(source)
         parser = Parser(filter)
-        program = parser.parse_program()
+        parser.parse_program()
 
     exception = exc_info.value
     assert exception.expected == TokenType.BRACKET_OPENING
@@ -115,7 +115,7 @@ def test_invalid_for_identifier():
         source = SourceString("for in list {}")
         filter = Filter(source)
         parser = Parser(filter)
-        program = parser.parse_program()
+        parser.parse_program()
     
     exception = exc_info.value
     assert exception.expected == TokenType.IDENTIFIER
@@ -129,7 +129,7 @@ def test_invalid_for_block():
         source = SourceString("for a in list {a = 1;")
         filter = Filter(source)
         parser = Parser(filter)
-        program = parser.parse_program()
+        parser.parse_program()
     
     exception = exc_info.value
     assert exception.expected == TokenType.BRACE_CLOSING
@@ -143,10 +143,24 @@ def test_invalid_while_identifier():
         source = SourceString("while x==2 {a=1;}")
         filter = Filter(source)
         parser = Parser(filter)
-        program = parser.parse_program()
+        parser.parse_program()
     
     exception = exc_info.value
     assert exception.expected == TokenType.BRACKET_OPENING
     assert exception.received == TokenType.IDENTIFIER
     assert exception.position.get_row() == 1
     assert exception.position.get_column() == 7
+
+
+def test_invalid_while_block():
+    with pytest.raises(InvalidWhileLoop) as exc_info:
+        source = SourceString("while (x==2);")
+        filter = Filter(source)
+        parser = Parser(filter)
+        parser.parse_program()
+    
+    exception = exc_info.value
+    assert exception.expected == "Loop block"
+    assert exception.received == TokenType.SEMICOLON
+    assert exception.position.get_row() == 1
+    assert exception.position.get_column() == 13

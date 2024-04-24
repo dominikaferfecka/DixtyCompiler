@@ -45,7 +45,8 @@ from parser.errors import (
     InvalidElseStatement,
     InvalidElseIfStatement,
     InvalidReturnStatement,
-    InvalidAssignmentStatement
+    InvalidAssignmentStatement,
+    FunctionAlreadyExists
 )
 
 import pytest
@@ -164,3 +165,17 @@ def test_invalid_while_block():
     assert exception.received == TokenType.SEMICOLON
     assert exception.position.get_row() == 1
     assert exception.position.get_column() == 13
+
+
+def test_function_redefinition():
+    with pytest.raises(FunctionAlreadyExists) as exc_info:
+        source = SourceString("fun print(a) { return a; } fun print(a) { return 1; }")
+        filter = Filter(source)
+        parser = Parser(filter)
+        parser.parse_program()
+    
+    exception = exc_info.value
+    assert exception.name == "print"
+    assert exception.position.get_row() == 1
+    assert exception.position.get_column() == 28
+

@@ -88,3 +88,10 @@ class InvalidReturnStatement(MissingExpectedStatement):
 class InvalidAssignmentStatement(MissingExpectedStatement):
     def __init__(self, expected, received, position):
         super().__init__(expected, received, position)
+
+
+class FunctionAlreadyExists(Exception):
+    def __init__(self, name, position):
+        super().__init__(f'Function with name {name} is already defined. Tried to define again at position: {position}')
+        self.position = position
+        self.name = name

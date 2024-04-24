@@ -49,7 +49,8 @@ from parser.errors import (
     InvalidElseStatement,
     InvalidElseIfStatement,
     InvalidReturnStatement,
-    InvalidAssignmentStatement
+    InvalidAssignmentStatement,
+    FunctionAlreadyExists
     )
 
 class Parser:
@@ -59,6 +60,7 @@ class Parser:
         # sys.setrecursionlimit(10000)
         self._lexer = lexer
         self._token = self._lexer.get_next_token() # consume token
+        self._functions = {}
     
     # program :== {statement};     
     def parse_program(self) -> Program:
@@ -152,8 +154,14 @@ class Parser:
 
         block = self.parse_block()
 
+        if name._name in self._functions.keys():
+            raise FunctionAlreadyExists(name._name, position)
+        
+        fun = FunStatement(name, parameters, block, position)
+        self._functions[name._name] = fun
 
-        return FunStatement(name, parameters, block, position)
+        return fun
+
 
 
     # parameters ::== identifier {',' identifier}

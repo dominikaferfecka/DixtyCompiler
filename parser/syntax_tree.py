@@ -303,12 +303,21 @@ class ObjectAccess(Node):
         visitor.visit_object_access(self, arg)
 
 
+# class Item(Node):
+#     def __init__(self, left, elements, position): # expression, arguments?
+#         super().__init__()
+#         self._name = name
+#         self._position = position
+#         self._elements = elements
+
 class Item(Node):
-    def __init__(self, name, elements, position): # expression, arguments?
+    def __init__(self, left, index_acces, call_access, position): # expression, arguments?
         super().__init__()
-        self._name = name
+        self._left = left
+        self._index_access = index_acces
+        self._call_access = call_access
         self._position = position
-        self._elements = elements
+
     
     def accept(self, visitor, arg=""):
         visitor.visit_item_statement(self, arg)

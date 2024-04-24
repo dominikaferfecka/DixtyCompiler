@@ -126,13 +126,16 @@ def test_fun_call_lists():
     assert ( len(parameters) == 1 )
     assert ( isinstance(parameters[0], Item))
 
-    name = parameters[0]._name
-    assert( isinstance(name, Identifier) )
-    assert( name._name == "list") 
+    left = parameters[0]._left #list[0][0]
+    assert( isinstance(left, Item) )
+    assert( left._index_access._value == 0) 
 
-    elements = parameters[0]._elements
-    assert ( len(elements) == 3 )
-    assert ( elements[0]._value == 0 )
-    assert ( elements[1]._value == 0 )
-    assert ( elements[2]._value == 0 )
-    
+
+def test_fun_call_two():
+    source = SourceString("a()();")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], FunCall) )
+

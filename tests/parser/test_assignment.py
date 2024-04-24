@@ -280,6 +280,42 @@ def test_assign_dict_two():
     assert ( second._value == 2 )
 
 
+def test_assign_dict_complex():
+    source = SourceString("dict = { (a, 1), (b, [1, 2]), (c, {(1,2)}) };" ) 
+    filter = Filter(source)
+    parser = Parser(filter)
+    
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+
+    object_access = program._statements[0]._object_access
+    assert ( isinstance(object_access, Identifier) )
+    assert ( object_access._name == "dict")
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, Dict) )
+
+    values = expression._values
+
+    assert ( isinstance(values[0], Pair))
+    first = values[0]._first
+    assert ( isinstance(first, Identifier ))
+    assert ( first._name == "a" )
+    second = values[0]._second
+    assert ( isinstance(second, Number ))
+    assert ( second._value == 1 )
+
+    assert ( isinstance(values[1], Pair))
+    first = values[1]._first
+    assert ( isinstance(first, Identifier ))
+    assert ( first._name == "b" )
+    second = values[1]._second
+    values = second._values
+    assert ( values[0]._value == 1 )
+    assert ( values[1]._value == 2 )
+
+
 # czy parser powinien już to wywalić?
 def test_assign_dict_non_dict():
     source = SourceString("dict = {1};")
@@ -525,29 +561,8 @@ def test_assign_comparison_less_or_equals():
     assert ( expression._left_additive_term._name == "x")
     assert ( expression._right_additive_term._value == 1)
 
-# def test_assign_to_fun_call():
-#     source = SourceString(" a() = 2;")
-#     filter = Filter(source)
-#     parser = Parser(filter)
-#     program = parser.parse_program()
-#     assert ( len(program._statements) == 1 )
-#     assert ( isinstance(program._statements[0], Assignment) )
 
-#     object_access = program._statements[0]._object_access
-#     assert ( isinstance(object_access, Identifier) )
-#     assert ( object_access._name == "list")
-
-#     expression = program._statements[0]._expression
-#     assert ( isinstance(expression, List) )
-
-#     values = expression._values
-#     assert ( len(values) == 3)
-#     assert ( values[0]._value == 1)
-#     assert ( values[1]._value == 2)
-#     assert ( values[2]._value == 3)
-
-
-def test_assign_lists():
+def test_assign_elements_lists():
     source = SourceString("sum = list[0][2][4];")
     filter = Filter(source)
     parser = Parser(filter)
@@ -568,4 +583,68 @@ def test_assign_lists():
     assert ( elements[0]._value == 0 )
     assert ( elements[1]._value == 2 )
     assert ( elements[2]._value == 4 )
-    
+
+
+
+def test_assign_two_dimensions_list():
+    source = SourceString("A = [ [1,2,3], [2,4,6] ];")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+
+    object_access = program._statements[0]._object_access
+    assert ( isinstance(object_access, Identifier) )
+    assert ( object_access._name == "A")
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, List) )
+
+    lists = expression._values
+    assert ( len(lists) == 2 )
+
+    values0 = lists[0]._values
+    assert ( isinstance(values0[0], Number))
+    assert ( values0[0]._value == 1 )
+
+    values1 = lists[1]._values
+    assert ( isinstance(values1[2], Number))
+    assert ( values1[2]._value == 6 )
+
+# def test_assign_fun_call():
+#     source = SourceString(" a = b();")
+#     filter = Filter(source)
+#     parser = Parser(filter)
+#     program = parser.parse_program()
+#     assert ( len(program._statements) == 1 )
+#     assert ( isinstance(program._statements[0], Assignment) )
+
+#     object_access = program._statements[0]._object_access
+#     assert ( isinstance(object_access, Identifier) )
+#     assert ( object_access._name == "a")
+
+#     expression = program._statements[0]._expression
+#     assert ( isinstance(expression, List) )
+
+
+# def test_assign_to_fun_call():
+#     source = SourceString(" a() = 2;")
+#     filter = Filter(source)
+#     parser = Parser(filter)
+#     program = parser.parse_program()
+#     assert ( len(program._statements) == 1 )
+#     assert ( isinstance(program._statements[0], Assignment) )
+
+#     object_access = program._statements[0]._object_access
+#     assert ( isinstance(object_access, Identifier) )
+#     assert ( object_access._name == "list")
+
+#     expression = program._statements[0]._expression
+#     assert ( isinstance(expression, List) )
+
+#     values = expression._values
+#     assert ( len(values) == 3)
+#     assert ( values[0]._value == 1)
+#     assert ( values[1]._value == 2)
+#     assert ( values[2]._value == 3)

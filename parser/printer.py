@@ -30,7 +30,7 @@ class Printer(Visitor):
         assign_statement._expression.accept(self, indent + new_indent)
 
     def visit_fun_call_statement(self, fun_call_statement, indent=""):
-        print(f"{indent}FunCall - memory: [{hex(id(fun_call_statement))}], position [{fun_call_statement._position}], name [{fun_call_statement._name._name}]")
+        print(f"{indent}FunCall - memory: [{hex(id(fun_call_statement))}], position [{fun_call_statement._position}], name [{fun_call_statement._left._name}]")
         for parameter in fun_call_statement._parameters:
             parameter.accept(self, indent + new_indent)
     
@@ -110,6 +110,18 @@ class Printer(Visitor):
         print(f"{indent}MoreTerm - memory: [{hex(id(more_or_equal_term))}], position [{more_or_equal_term._position}]") 
         more_or_equal_term._left_additive_term.accept(self, indent + new_indent)
         more_or_equal_term._right_additive_term.accept(self, indent + new_indent)
+    
+    def visit_item_statement(self, item, indent=""):
+        print(f"{indent}Item - memory: [{hex(id(item))}], position [{item._position}]") 
+        item._left.accept(self, indent + new_indent)
+        # print(item._call_access)
+        # print(item._index_access)
+        if item._call_access is not None:
+            item._call_access.accept(self, indent + new_indent)
+            #print(item._call_access)
+        elif item._index_access is not None:
+            item._index_access.accept(self, indent + new_indent)
+            #print(item._index_access)
 
     def visit_signed_factor(self, signed_factor, indent=""):
         print(f"{indent}SignedFactor - memory: [{hex(id(signed_factor))}], position [{signed_factor._position}], factor: [{signed_factor._factor}]") 

@@ -36,3 +36,10 @@ print(pair.Key);
 pair.Value = 3;
 print(pair.Value); 
 
+b = a[1];
+
+b = a["a"]["b"];
+
+c();
+
+b = a();

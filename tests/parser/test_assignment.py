@@ -637,7 +637,25 @@ def test_assign_fun_call():
 
     expression = program._statements[0]._expression
     assert ( isinstance(expression, Item) )
-    assert (expression._call_access == [])
+    assert (expression._call_access == None)
+
+
+def test_assign_fun_call_param():
+    source = SourceString(" a = b(1);")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+
+    object_access = program._statements[0]._object_access
+    assert ( isinstance(object_access, Identifier) )
+    assert ( object_access._name == "a")
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, Item) )
+    assert (expression._call_access[0]._value == 1)
+
 
 def test_assign_fun_call_two():
     source = SourceString(" a = b()();")
@@ -655,7 +673,7 @@ def test_assign_fun_call_two():
     assert ( isinstance(expression, Item) )
     left = expression._left # b()
     assert ( isinstance(expression, Item) )
-    assert (left._call_access == [])
+    assert (left._call_access == None)
 
 
 # to powinno się wywalić

@@ -203,13 +203,6 @@ class Parser:
             object_access = self.parse_object_access(identifier)
             statement = self.parse_assignment(object_access)
     
-        # statement = self.parse_fun_call()
-        # if statement:
-        #     pass
-        # else:
-        # statement = self.parse_assignment(object_access)
-
-        # self.must_be(TokenType.SEMICOLON, SyntaxError, position)
         return statement
 
     # call :: == identifier([parameters])’;’
@@ -326,29 +319,13 @@ class Parser:
                 left = Item(left, expression, None, position)
             elif token == TokenType.BRACKET_OPENING:
                 self.consume_token()
-                parameters = self.parse_parameters()
+                parameters = self.parse_expressions_list()
                 elements.append(parameters)
                 self.must_be(TokenType.BRACKET_CLOSING, MissingExpectedStatement)
                 token = self._token.get_token_type()
                 left = Item(left, None, parameters, position)
 
-
-
-        #     # elif token == TokenType.BRACKET_OPENING:
-        #     #     parameters = self.parse_expressions_list()
-        #     #     if parameters is None:
-        #     #         fun_call = "({parameters})"
-        #     #     self.not_none(expression, MissingExpectedStatement, "Expression")
-        #     #     self.must_be(TokenType.BRACKET_CLOSING, MissingExpectedStatement)
-        #     #     elements.append(expression)
-        #     #     token = self._token.get_token_type()
-
         return left
-
-        # if len(elements) == 0:
-        #     return identifier
-        # else:
-        #     return Item(identifier, elements, position)
 
 
     def parse_identifier(self):

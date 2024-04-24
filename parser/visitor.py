@@ -95,6 +95,10 @@ class Visitor(ABC):
         pass
 
     @abstractmethod
+    def visit_item_statement(self, item):
+        pass
+
+    @abstractmethod
     def visit_literal(self, literal):
         pass
 

@@ -283,6 +283,7 @@ class Parser:
             right_item = self.parse_item()
 
             self.not_none(right_item, MissingExpectedStatement, "right_item")
+
             
             left_item = ObjectAccess(left_item, position, right_item)
         
@@ -290,12 +291,13 @@ class Parser:
     
 
     # item ::== identifier {  ‘[‘ expression ‘]’ | ‘(‘ [arguments] ‘)’ }; 
-    def parse_item(self, identifier):
+    def parse_item(self, identifier=None):
 
-        # identifier = self.parse_identifier()
-        # return identifier
         if identifier is None:
-            return None
+            identifier = self.parse_identifier()
+        # return identifier
+        # if identifier is None:
+        #     return None
 
         position = self._token.get_position()
 

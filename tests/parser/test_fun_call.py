@@ -157,3 +157,19 @@ def test_fun_call_three_param():
 
     left = program._statements[0]._left # a(1)(2)
     assert ( isinstance(left, FunCall) ) 
+
+
+def test_fun_call_object_access():
+    source = SourceString("print(pair.Key);")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], FunCall) )
+
+    assert ( program._statements[0]._left._name == "print" )
+    parameters = program._statements[0]._parameters 
+
+    assert ( isinstance(parameters[0], ObjectAccess) )
+    assert ( parameters[0]._left_item._name == "pair" )
+    assert ( parameters[0]._right_item._name == "Key" )

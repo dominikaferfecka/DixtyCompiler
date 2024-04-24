@@ -355,9 +355,9 @@ class Block(Node):
 
 
 class FunCall(Node):
-    def __init__(self, name, parameters, position):
+    def __init__(self, left, parameters, position):
         super().__init__()
-        self._name = name
+        self._left = left
         self._parameters = parameters
         self._position = position
 

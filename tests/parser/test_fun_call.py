@@ -42,8 +42,8 @@ def test_fun_call_non_args():
     assert ( len(program._statements) == 1 )
     assert ( isinstance(program._statements[0], FunCall) )
 
-    assert ( isinstance(program._statements[0]._name, Identifier) )
-    assert ( program._statements[0]._name._name == "start" )
+    assert ( isinstance(program._statements[0]._left, Identifier) )
+    assert ( program._statements[0]._left._name == "start" )
 
     assert ( program._statements[0]._parameters == [] )
 
@@ -56,8 +56,8 @@ def test_fun_call_one_args():
     assert ( len(program._statements) == 1 )
     assert ( isinstance(program._statements[0], FunCall) )
 
-    assert ( isinstance(program._statements[0]._name, Identifier) )
-    assert ( program._statements[0]._name._name == "display" )
+    assert ( isinstance(program._statements[0]._left, Identifier) )
+    assert ( program._statements[0]._left._name == "display" )
 
     parameters = program._statements[0]._parameters
     assert ( len(parameters) == 1 )
@@ -73,8 +73,8 @@ def test_fun_call_three_args():
     assert ( len(program._statements) == 1 )
     assert ( isinstance(program._statements[0], FunCall) )
 
-    assert ( isinstance(program._statements[0]._name, Identifier) )
-    assert ( program._statements[0]._name._name == "add" )
+    assert ( isinstance(program._statements[0]._left, Identifier) )
+    assert ( program._statements[0]._left._name == "add" )
 
     parameters = program._statements[0]._parameters
     assert ( len(parameters) == 3 )
@@ -96,8 +96,8 @@ def test_fun_call_three_args_numbers():
     assert ( len(program._statements) == 1 )
     assert ( isinstance(program._statements[0], FunCall) )
 
-    assert ( isinstance(program._statements[0]._name, Identifier) )
-    assert ( program._statements[0]._name._name == "add" )
+    assert ( isinstance(program._statements[0]._left, Identifier) )
+    assert ( program._statements[0]._left._name == "add" )
 
     parameters = program._statements[0]._parameters
     assert ( len(parameters) == 3 )
@@ -119,8 +119,8 @@ def test_fun_call_lists():
     assert ( len(program._statements) == 1 )
     assert ( isinstance(program._statements[0], FunCall) )
 
-    assert ( isinstance(program._statements[0]._name, Identifier) )
-    assert ( program._statements[0]._name._name == "print" )
+    assert ( isinstance(program._statements[0]._left, Identifier) )
+    assert ( program._statements[0]._left._name == "print" )
 
     parameters = program._statements[0]._parameters
     assert ( len(parameters) == 1 )
@@ -139,3 +139,21 @@ def test_fun_call_two():
     assert ( len(program._statements) == 1 )
     assert ( isinstance(program._statements[0], FunCall) )
 
+    left = program._statements[0]._left # a()
+    assert ( isinstance(left, FunCall) ) 
+    assert ( left._left._name == "a" )
+
+
+def test_fun_call_three_param():
+    source = SourceString("a(1)(2)(3,4);")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], FunCall) )
+
+    assert ( program._statements[0]._parameters[0]._value == 3 )
+    assert ( program._statements[0]._parameters[1]._value == 4 )
+
+    left = program._statements[0]._left # a(1)(2)
+    assert ( isinstance(left, FunCall) ) 

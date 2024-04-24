@@ -222,18 +222,23 @@ class Parser:
         if self._token.get_token_type() != TokenType.BRACKET_OPENING:
             return None
         
-        position = self._token.get_position()
-        self._token = self._lexer.get_next_token()
-
-        parameters = self.parse_expressions_list()
-        if parameters is None:
-            parameters = []
+        left = identifier
+        while self._token.get_token_type() == TokenType.BRACKET_OPENING:
         
-        self.must_be(TokenType.BRACKET_CLOSING, MissingExpectedStatement)
+            position = self._token.get_position()
+            self._token = self._lexer.get_next_token()
+
+            parameters = self.parse_expressions_list()
+            if parameters is None:
+                parameters = []
+            
+            self.must_be(TokenType.BRACKET_CLOSING, MissingExpectedStatement)
+
+            left = FunCall(left, parameters, position)
 
         self.must_be(TokenType.SEMICOLON, SemicolonMissing)
 
-        return FunCall(identifier, parameters, position)
+        return left
 
 
 

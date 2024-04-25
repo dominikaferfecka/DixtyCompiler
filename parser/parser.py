@@ -68,7 +68,7 @@ class Parser:
         while statement := self.parse_statement():
             statements.append(statement)
         
-        return Program(statements)
+        return Program(statements) # functions
     
     def consume_token(self):
         self._token = self._lexer.get_next_token()
@@ -89,7 +89,7 @@ class Parser:
 
     # statement ::== for_loop_statement | while_loop_statement | fun_def_statement | return_statement | assign_or_call | if_statement;
     def parse_statement(self):
-        position = self._token.get_position()
+        #position = self._token.get_position()
         statement = self.parse_for_statement() or self.parse_while_statement() or self.parse_fun_def_statement() or self.parse_return_statement() or self.parse_assign_or_call_statement() or self.parse_if_statement()
         return statement
 
@@ -205,7 +205,7 @@ class Parser:
             return None
         
         statement = self.parse_fun_call(identifier)
-        if statement:
+        if statement: # poprawić
             pass
         else:
             object_access = self.parse_object_access(identifier)
@@ -222,25 +222,19 @@ class Parser:
 
         if self._token.get_token_type() != TokenType.BRACKET_OPENING:
             return None
-        
-        left = identifier
-        while self._token.get_token_type() == TokenType.BRACKET_OPENING:
-        
-            position = self._token.get_position()
-            self._token = self._lexer.get_next_token()
+                
+        position = self._token.get_position()
+        self._token = self._lexer.get_next_token()
 
-            parameters = self.parse_expressions_list()
-            if parameters is None:
-                parameters = []
-            
-            self.must_be(TokenType.BRACKET_CLOSING, MissingExpectedStatement)
-
-            left = FunCall(left, parameters, position)
+        parameters = self.parse_expressions_list()
+        if parameters is None:
+            parameters = []
+        
+        self.must_be(TokenType.BRACKET_CLOSING, MissingExpectedStatement)
 
         self.must_be(TokenType.SEMICOLON, SemicolonMissing)
 
-        return left
-
+        return FunCall(identifier, parameters, position)
 
 
     # assign_or_call  ::== object_access ['=' expression] ‘;’ ;
@@ -324,14 +318,14 @@ class Parser:
                 self.must_be(TokenType.SQUARE_BRACKET_CLOSING, MissingExpectedStatement)
                 elements.append(expression)
                 token = self._token.get_token_type()
-                left = Item(left, expression, None, position)
+                left = Item(left, expression, None, position) #IndexAccess
             elif token == TokenType.BRACKET_OPENING:
                 self.consume_token()
                 parameters = self.parse_expressions_list()
                 elements.append(parameters)
                 self.must_be(TokenType.BRACKET_CLOSING, MissingExpectedStatement)
                 token = self._token.get_token_type()
-                left = Item(left, None, parameters, position)
+                left = Item(left, None, parameters, position) # MethodCall
 
         return left
 
@@ -735,10 +729,6 @@ class Parser:
 
         return SelectTerm(select_expression, from_expression, position, where_expression, order_by_expression, asc_desc)
 
-
-
-
-    
 
     # non statements possible?
     # block ::== '{' {statement} '}'

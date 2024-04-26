@@ -9,10 +9,10 @@ class Node(ABC):
         pass    
 
 class Program(Node):
-    def __init__(self, statements):
+    def __init__(self, statements, functions):
         super().__init__()
         self._statements = statements
-        # functions ?
+        self._functions = functions
     
     def accept(self, visitor, arg=""):
         visitor.visit_program(self, arg)

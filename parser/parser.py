@@ -68,7 +68,7 @@ class Parser:
         while statement := self.parse_statement():
             statements.append(statement)
         
-        return Program(statements) # functions
+        return Program(statements, self._functions) # functions
     
     def consume_token(self):
         self._token = self._lexer.get_next_token()

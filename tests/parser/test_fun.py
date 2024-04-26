@@ -39,6 +39,7 @@ def test_fun_zero_parameter():
     filter = Filter(source)
     parser = Parser(filter)
     program = parser.parse_program()
+    assert ( len(program._functions) == 1 )
     assert ( len(program._statements) == 1 )
     assert ( isinstance(program._statements[0], FunStatement) )
 

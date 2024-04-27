@@ -23,6 +23,7 @@ from parser.syntax_tree import (
     Number,
     ObjectAccess,
     Item,
+    IndexAccess,
     Identifier,
     Assignment,
     String,
@@ -575,10 +576,10 @@ def test_assign_elements_lists():
     assert ( object_access._name == "sum")
 
     expression = program._statements[0]._expression
-    assert ( isinstance(expression, Item) )
+    assert ( isinstance(expression, IndexAccess) )
 
-    assert ( isinstance(expression._index_access, Number) )
-    assert ( expression._index_access._value == 4 )
+    assert ( isinstance(expression._index_object, Number) )
+    assert ( expression._index_object._value == 4 )
 
     left = expression._left # list[0][2]
     assert ( isinstance(left, Item) )

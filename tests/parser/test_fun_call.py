@@ -42,10 +42,10 @@ def test_fun_call_non_args():
     assert ( len(program._statements) == 1 )
     assert ( isinstance(program._statements[0], FunCall) )
 
-    assert ( isinstance(program._statements[0]._name, Identifier) )
-    assert ( program._statements[0]._name._name == "start" )
+    assert ( isinstance(program._statements[0]._left, Identifier) )
+    assert ( program._statements[0]._left._name == "start" )
 
-    assert ( program._statements[0]._parameters == [] )
+    assert ( program._statements[0]._parameters == None )
 
 
 def test_fun_call_one_args():
@@ -56,8 +56,8 @@ def test_fun_call_one_args():
     assert ( len(program._statements) == 1 )
     assert ( isinstance(program._statements[0], FunCall) )
 
-    assert ( isinstance(program._statements[0]._name, Identifier) )
-    assert ( program._statements[0]._name._name == "display" )
+    assert ( isinstance(program._statements[0]._left, Identifier) )
+    assert ( program._statements[0]._left._name == "display" )
 
     parameters = program._statements[0]._parameters
     assert ( len(parameters) == 1 )
@@ -73,8 +73,8 @@ def test_fun_call_three_args():
     assert ( len(program._statements) == 1 )
     assert ( isinstance(program._statements[0], FunCall) )
 
-    assert ( isinstance(program._statements[0]._name, Identifier) )
-    assert ( program._statements[0]._name._name == "add" )
+    assert ( isinstance(program._statements[0]._left, Identifier) )
+    assert ( program._statements[0]._left._name == "add" )
 
     parameters = program._statements[0]._parameters
     assert ( len(parameters) == 3 )
@@ -96,8 +96,8 @@ def test_fun_call_three_args_numbers():
     assert ( len(program._statements) == 1 )
     assert ( isinstance(program._statements[0], FunCall) )
 
-    assert ( isinstance(program._statements[0]._name, Identifier) )
-    assert ( program._statements[0]._name._name == "add" )
+    assert ( isinstance(program._statements[0]._left, Identifier) )
+    assert ( program._statements[0]._left._name == "add" )
 
     parameters = program._statements[0]._parameters
     assert ( len(parameters) == 3 )
@@ -119,8 +119,8 @@ def test_fun_call_lists():
     assert ( len(program._statements) == 1 )
     assert ( isinstance(program._statements[0], FunCall) )
 
-    assert ( isinstance(program._statements[0]._name, Identifier) )
-    assert ( program._statements[0]._name._name == "print" )
+    assert ( isinstance(program._statements[0]._left, Identifier) )
+    assert ( program._statements[0]._left._name == "print" )
 
     parameters = program._statements[0]._parameters
     assert ( len(parameters) == 1 )
@@ -149,7 +149,7 @@ def test_fun_call_object_access():
     assert ( len(program._statements) == 1 )
     assert ( isinstance(program._statements[0], FunCall) )
 
-    assert ( program._statements[0]._name._name == "print" )
+    assert ( program._statements[0]._left._name == "print" )
     parameters = program._statements[0]._parameters 
 
     assert ( isinstance(parameters[0], ObjectAccess) )

@@ -27,6 +27,7 @@ from parser.syntax_tree import (
     Number,
     ObjectAccess,
     Item,
+    IndexAccess,
     Identifier,
     Assignment,
     String,
@@ -66,8 +67,7 @@ class Parser:
     def parse_program(self) -> Program:
         statements = []
         while statement := self.parse_statement():
-            statements.append(statement)
-        
+            statements.append(statement)        
         return Program(statements, self._functions) # functions
     
     def consume_token(self):
@@ -200,41 +200,40 @@ class Parser:
     # assign_or_call  ::== object_access ['=' expression] ‘;’ ;
     def parse_assign_or_call_statement(self):
 
-        identifier = self.parse_identifier()
-        if identifier is None:
-            return None
-        
-        statement = self.parse_fun_call(identifier)
-        if statement: # poprawić
-            pass
-        else:
-            object_access = self.parse_object_access(identifier)
-            statement = self.parse_assignment(object_access)
+        object_access = self.parse_object_access()
+
+        statement = self.parse_assignment(object_access)
+
+        if statement is None:
+            if isinstance(object_access, FunCall):
+                return object_access
+            else:
+                return None
     
         return statement
 
-    # call :: == identifier([parameters])’;’
-    def parse_fun_call(self, identifier):
-        # identifier = self.parse_identifier()
+    # # call :: == identifier([parameters])’;’
+    # def parse_fun_call(self, identifier):
+    #     # identifier = self.parse_identifier()
 
-        if identifier is None:
-            return None
+    #     if identifier is None:
+    #         return None
 
-        if self._token.get_token_type() != TokenType.BRACKET_OPENING:
-            return None
+    #     if self._token.get_token_type() != TokenType.BRACKET_OPENING:
+    #         return None
                 
-        position = self._token.get_position()
-        self._token = self._lexer.get_next_token()
+    #     position = self._token.get_position()
+    #     self._token = self._lexer.get_next_token()
 
-        parameters = self.parse_expressions_list()
-        if parameters is None:
-            parameters = []
+    #     parameters = self.parse_expressions_list()
+    #     if parameters is None:
+    #         parameters = []
         
-        self.must_be(TokenType.BRACKET_CLOSING, MissingExpectedStatement)
+    #     self.must_be(TokenType.BRACKET_CLOSING, MissingExpectedStatement)
 
-        self.must_be(TokenType.SEMICOLON, SemicolonMissing)
+    #     self.must_be(TokenType.SEMICOLON, SemicolonMissing)
 
-        return FunCall(identifier, parameters, position)
+    #     return FunCall(identifier, parameters, position)
 
 
     # assign_or_call  ::== object_access ['=' expression] ‘;’ ;
@@ -259,75 +258,73 @@ class Parser:
         
         return Assignment(object_access, expression, position)
 
-    def parse_object_access_identifier(self):
-        identifier = self.parse_identifier()
-        if identifier is None:
-            return None
-        return self.parse_object_access(identifier)
 
-    def parse_object_access(self, identifier):
-        left_item = self.parse_item(identifier)
+    def parse_object_access(self):
+        left_item = self.parse_item()
 
         if left_item is None:
             return None # ?? maybe it should be error?
+        
+        # if isinstance(left_item, CallAccess) return CallAccess
         
         while (self._token.get_token_type() == TokenType.DOT):
             position = self._token.get_position()
             self._token = self._lexer.get_next_token()
 
             right_item = self.parse_item()
-
             self.not_none(right_item, MissingExpectedStatement, "right_item")
-
             
             left_item = ObjectAccess(left_item, position, right_item)
         
         return left_item
-    
 
     # item ::== identifier {  ‘[‘ expression ‘]’ | ‘(‘ [arguments] ‘)’ }; 
-    def parse_item(self, identifier=None):
-
-        if identifier is None:
-            identifier = self.parse_identifier()
-        # return identifier
-        # if identifier is None:
-        #     return None
+    def parse_item(self):
 
         position = self._token.get_position()
+        identifier = self.parse_identifier()
+        if identifier is None:
+            return None
 
-        token = self._token.get_token_type()
-        elements = []
-        # while token == TokenType.SQUARE_BRACKET_OPENING:
-        #     self.consume_token()
+        item_access = self.parse_index_access(identifier, position) or self.parse_call_access(identifier, position)
+
+        if item_access is None:
+            return identifier
+
+        return item_access
     
-        #     if token == TokenType.SQUARE_BRACKET_OPENING:
-        #         expression = self.parse_expression()
-        #         self.not_none(expression, MissingExpectedStatement, "Expression")
-        #         self.must_be(TokenType.SQUARE_BRACKET_CLOSING, MissingExpectedStatement)
-        #         elements.append(expression)
-        #         token = self._token.get_token_type()
-        left = identifier
-        while token in (TokenType.SQUARE_BRACKET_OPENING, TokenType.BRACKET_OPENING):
-            #self.consume_token()
-    
-            if token == TokenType.SQUARE_BRACKET_OPENING:
-                self.consume_token()
-                expression = self.parse_expression()
-                self.not_none(expression, MissingExpectedStatement, "Expression")
-                self.must_be(TokenType.SQUARE_BRACKET_CLOSING, MissingExpectedStatement)
-                elements.append(expression)
-                token = self._token.get_token_type()
-                left = Item(left, expression, None, position) #IndexAccess
-            elif token == TokenType.BRACKET_OPENING:
-                self.consume_token()
-                parameters = self.parse_expressions_list()
-                elements.append(parameters)
-                self.must_be(TokenType.BRACKET_CLOSING, MissingExpectedStatement)
-                token = self._token.get_token_type()
-                left = Item(left, None, parameters, position) # MethodCall
+    def parse_index_access(self, identifier, position): # a[1][2]
+        if self._token.get_token_type() != TokenType.SQUARE_BRACKET_OPENING:
+            return None
+        
+        self.consume_token()
+        expression = self.parse_expression()
+        self.not_none(expression, MissingExpectedStatement, "Expression")
+        self.must_be(TokenType.SQUARE_BRACKET_CLOSING, MissingExpectedStatement)
+
+        left = IndexAccess(identifier, position, expression)
+        
+        while self._token.get_token_type() == TokenType.SQUARE_BRACKET_OPENING:
+            self.consume_token()
+            expression = self.parse_expression()
+            self.not_none(expression, MissingExpectedStatement, "Expression")
+            self.must_be(TokenType.SQUARE_BRACKET_CLOSING, MissingExpectedStatement)
+            left = IndexAccess(left, position, expression)
 
         return left
+
+    def parse_call_access(self, identifier, position):
+        if self._token.get_token_type() != TokenType.BRACKET_OPENING:
+            return None
+        
+        self.consume_token()
+        parameters = self.parse_expressions_list()
+
+        self.must_be(TokenType.BRACKET_CLOSING, MissingExpectedStatement)
+        self.must_be(TokenType.SEMICOLON, SemicolonMissing)
+
+        return FunCall(identifier, position, parameters) # FunCall
+    
 
 
     def parse_identifier(self):
@@ -549,7 +546,7 @@ class Parser:
     def parse_factor(self):
         position = self._token.get_position()
 
-        factor = self.parse_literal() or self.parse_list() or self.parse_object_access_identifier() or self.parse_pair_or_expr() or self.parse_dict() or self.parse_select()
+        factor = self.parse_literal() or self.parse_list() or self.parse_object_access() or self.parse_pair_or_expr() or self.parse_dict() or self.parse_select()
 
         return factor
     

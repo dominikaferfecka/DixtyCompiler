@@ -29,10 +29,10 @@ class Printer(Visitor):
         assign_statement._object_access.accept(self, indent + new_indent)
         assign_statement._expression.accept(self, indent + new_indent)
 
-    def visit_fun_call_statement(self, fun_call_statement, indent=""):
-        print(f"{indent}FunCall - memory: [{hex(id(fun_call_statement))}], position [{fun_call_statement._position}], name [{fun_call_statement._left._name}]")
-        for parameter in fun_call_statement._parameters:
-            parameter.accept(self, indent + new_indent)
+    # def visit_fun_call_statement(self, fun_call_statement, indent=""):
+    #     print(f"{indent}FunCall - memory: [{hex(id(fun_call_statement))}], position [{fun_call_statement._position}], name [{fun_call_statement._left._name}]")
+    #     for parameter in fun_call_statement._parameters:
+    #         parameter.accept(self, indent + new_indent)
     
     def visit_if_statement(self, if_statement, indent=""):
         print(f"{indent}IfStatement - memory: [{hex(id(if_statement))}], position [{if_statement._position}]") 
@@ -117,11 +117,21 @@ class Printer(Visitor):
         # print(item._call_access)
         # print(item._index_access)
         if item._call_access is not None:
-            item._call_access.accept(self, indent + new_indent)
+            item._fun_call.accept(self, indent + new_indent)
             #print(item._call_access)
         elif item._index_access is not None:
             item._index_access.accept(self, indent + new_indent)
             #print(item._index_access)
+
+    def visit_index_access(self, index_access, indent=""):
+        print(f"{indent}IndexAccess - memory: [{hex(id(index_access))}], position [{index_access._position}]") 
+        index_access._left.accept(self, indent + new_indent)
+        index_access._index_object.accept(self, indent + new_indent)
+    
+    def visit_fun_call(self, call_access, indent=""):
+        print(f"{indent}FunCall - memory: [{hex(id(call_access))}], position [{call_access._position}]") 
+        call_access._left.accept(self, indent + new_indent)
+        call_access._index_object.accept(self, indent + new_indent)
 
     def visit_signed_factor(self, signed_factor, indent=""):
         print(f"{indent}SignedFactor - memory: [{hex(id(signed_factor))}], position [{signed_factor._position}], factor: [{signed_factor._factor}]") 

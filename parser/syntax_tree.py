@@ -311,16 +311,31 @@ class ObjectAccess(Node):
 #         self._elements = elements
 
 class Item(Node):
-    def __init__(self, left, index_acces, call_access, position): # expression, arguments?
+    def __init__(self, left, position):
         super().__init__()
         self._left = left
-        self._index_access = index_acces
-        self._call_access = call_access
         self._position = position
-
     
     def accept(self, visitor, arg=""):
         visitor.visit_item_statement(self, arg)
+
+
+class IndexAccess(Item):
+    def __init__(self, left, position, index_object):
+        super().__init__(left, position)
+        self._index_object = index_object
+    
+    def accept(self, visitor, arg=""):
+        visitor.visit_index_access_statement(self, arg)
+
+
+class FunCall(Item):
+    def __init__(self, left, position, parameters):
+        super().__init__(left, position)
+        self._parameters = parameters
+    
+    def accept(self, visitor, arg=""):
+        visitor.visit_fun_call(self, arg)
 
 
 class Identifier(Node):
@@ -354,15 +369,15 @@ class Block(Node):
         visitor.visit_block(self, arg)
 
 
-class FunCall(Node):
-    def __init__(self, name, parameters, position):
-        super().__init__()
-        self._name = name
-        self._parameters = parameters
-        self._position = position
+# class FunCall(Node):
+#     def __init__(self, name, parameters, position):
+#         super().__init__()
+#         self._name = name
+#         self._parameters = parameters
+#         self._position = position
 
-    def accept(self, visitor, arg=""):
-        visitor.visit_fun_call_statement(self, arg)
+#     def accept(self, visitor, arg=""):
+#         visitor.visit_fun_call_statement(self, arg)
 
 
 class SelectTerm(Node):

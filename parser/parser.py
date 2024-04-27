@@ -206,9 +206,12 @@ class Parser:
 
         if statement is None:
             if isinstance(object_access, FunCall):
+                self.must_be(TokenType.SEMICOLON, SemicolonMissing)
                 return object_access
             else:
                 return None
+        
+        self.must_be(TokenType.SEMICOLON, SemicolonMissing)
     
         return statement
 
@@ -253,8 +256,7 @@ class Parser:
         self.not_none(expression, InvalidAssignmentStatement, "Expression")
         # if expression is None:
         #     raise SyntaxError("After assign must be expression")
-        
-        self.must_be(TokenType.SEMICOLON, SemicolonMissing)
+    
         
         return Assignment(object_access, expression, position)
 
@@ -321,7 +323,6 @@ class Parser:
         parameters = self.parse_expressions_list()
 
         self.must_be(TokenType.BRACKET_CLOSING, MissingExpectedStatement)
-        self.must_be(TokenType.SEMICOLON, SemicolonMissing)
 
         return FunCall(identifier, position, parameters) # FunCall
     

@@ -638,7 +638,7 @@ def test_assign_fun_call():
 
     expression = program._statements[0]._expression
     assert ( isinstance(expression, Item) )
-    assert (expression._call_access == None)
+    assert (expression._parameters == None)
 
 
 def test_assign_fun_call_param():
@@ -655,7 +655,7 @@ def test_assign_fun_call_param():
 
     expression = program._statements[0]._expression
     assert ( isinstance(expression, Item) )
-    assert (expression._call_access[0]._value == 1)
+    assert (expression._parameters[0]._value == 1)
 
 
 def test_assign_fun_call_two():
@@ -674,7 +674,7 @@ def test_assign_fun_call_two():
     assert ( isinstance(expression, Item) )
     left = expression._left # b()
     assert ( isinstance(expression, Item) )
-    assert (left._call_access == None)
+    assert (left._parameters == None)
 
 
 def test_assign_fun_call_two():
@@ -693,7 +693,7 @@ def test_assign_fun_call_two():
     assert ( isinstance(expression, Item) )
     left = expression._left # b()
     assert ( isinstance(expression, Item) )
-    assert (left._call_access == None)
+    assert (left._parameters == None)
 
 
 # to powinno się wywalić

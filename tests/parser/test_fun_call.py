@@ -128,7 +128,7 @@ def test_fun_call_lists():
 
     left = parameters[0]._left #list[0][0]
     assert( isinstance(left, Item) )
-    assert( left._index_access._value == 0) 
+    assert( left._index_object._value == 0) 
 
 
 def test_fun_call_param():

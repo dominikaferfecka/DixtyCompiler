@@ -676,6 +676,25 @@ def test_assign_fun_call_two():
     assert (left._call_access == None)
 
 
+def test_assign_fun_call_two():
+    source = SourceString(" a = b()();")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+
+    object_access = program._statements[0]._object_access
+    assert ( isinstance(object_access, Identifier) )
+    assert ( object_access._name == "a")
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, Item) )
+    left = expression._left # b()
+    assert ( isinstance(expression, Item) )
+    assert (left._call_access == None)
+
+
 # to powinno się wywalić
 def test_assign_to_fun_call():
     source = SourceString(" a() = 2;")
@@ -697,3 +716,20 @@ def test_assign_to_fun_call():
     # assert ( values[0]._value == 1)
     # assert ( values[1]._value == 2)
     # assert ( values[2]._value == 3)
+
+
+def test_assign_fun_call_dot():
+    source = SourceString(" a = b(1).c;")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+
+    object_access = program._statements[0]._object_access
+    assert ( isinstance(object_access, Identifier) )
+    assert ( object_access._name == "a")
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, ObjectAccess) )
+    assert (expression._right_item._name == "c")

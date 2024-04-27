@@ -51,7 +51,8 @@ from parser.errors import (
     InvalidElseIfStatement,
     InvalidReturnStatement,
     InvalidAssignmentStatement,
-    FunctionAlreadyExists
+    FunctionAlreadyExists,
+    DictInvalidElement
     )
 
 class Parser:
@@ -677,6 +678,10 @@ class Parser:
 
         if values is None:
             values = {}
+        else:
+            for value in values:
+                if not isinstance(value, Pair):
+                    raise DictInvalidElement(value, position)
 
         if self._token.get_token_type() != TokenType.BRACE_CLOSING:
             raise SyntaxError("Missing '}' to close dict")

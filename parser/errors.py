@@ -95,3 +95,10 @@ class FunctionAlreadyExists(Exception):
         super().__init__(f'Function with name {name} is already defined. Tried to define again at position: {position}')
         self.position = position
         self.name = name
+
+
+class DictInvalidElement(Exception):
+    def __init__(self, element, position):
+        super().__init__(f'Elements in Dict must be Pair type. Object with invalid type {element} at {position}')
+        self.position = position
+        self.element = element

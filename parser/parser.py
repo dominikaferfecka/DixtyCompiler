@@ -203,14 +203,14 @@ class Parser:
 
         object_access = self.parse_object_access()
 
+        if isinstance(object_access, FunCall):
+            self.must_be(TokenType.SEMICOLON, SemicolonMissing)
+            return object_access
+
         statement = self.parse_assignment(object_access)
 
         if statement is None:
-            if isinstance(object_access, FunCall):
-                self.must_be(TokenType.SEMICOLON, SemicolonMissing)
-                return object_access
-            else:
-                return None
+            return None
         
         self.must_be(TokenType.SEMICOLON, SemicolonMissing)
     

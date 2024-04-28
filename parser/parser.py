@@ -57,8 +57,8 @@ from parser.errors import (
 
 class Parser:
     def __init__(self, lexer):
-        if not isinstance(lexer, Lexer) and not isinstance(lexer, Filter):
-            raise TypeError("Lexer have to be type Lexer or Filter")
+        # if not isinstance(lexer, Lexer) and not isinstance(lexer, Filter):
+        #     raise TypeError("Lexer have to be type Lexer or Filter")
         self._lexer = lexer
         self.consume_token()
         self._functions = {}

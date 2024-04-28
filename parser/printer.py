@@ -1,7 +1,7 @@
 from parser.visitor import Visitor
 
-# indent = " " * 5
-new_indent = "|" + ("-" * 5)
+new_indent = " " * 5
+#new_indent = "|" + ("-" * 5)
 
 class Printer(Visitor):
     def __init__(self):
@@ -131,7 +131,8 @@ class Printer(Visitor):
     def visit_fun_call(self, call_access, indent=""):
         print(f"{indent}FunCall - memory: [{hex(id(call_access))}], position [{call_access._position}]") 
         call_access._left.accept(self, indent + new_indent)
-        call_access._index_object.accept(self, indent + new_indent)
+        if call_access._parameters is not None:
+            print(call_access._parameters)
 
     def visit_signed_factor(self, signed_factor, indent=""):
         print(f"{indent}SignedFactor - memory: [{hex(id(signed_factor))}], position [{signed_factor._position}], factor: [{signed_factor._factor}]") 
@@ -177,7 +178,6 @@ class Printer(Visitor):
     def visit_block(self, block, indent = ""):
         print(f"{indent}Block - memory: [{hex(id(block))}], position [{block._position}]") 
         for statement in block._statements:
-            # self.visit_statement(statement)
             statement.accept(self,indent + new_indent)
 
     def visit_select_term(self, select_term, indent=""):

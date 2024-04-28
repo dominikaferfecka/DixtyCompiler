@@ -214,7 +214,7 @@ def test_assign_dict_empty():
 
     expression = program._statements[0]._expression
     assert ( isinstance(expression, Dict) )
-    assert ( expression._values == {})
+    assert ( expression._values == None)
 
 
 def test_assign_dict_one():

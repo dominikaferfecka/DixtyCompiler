@@ -303,13 +303,6 @@ class ObjectAccess(Node):
         visitor.visit_object_access(self, arg)
 
 
-# class Item(Node):
-#     def __init__(self, left, elements, position): # expression, arguments?
-#         super().__init__()
-#         self._name = name
-#         self._position = position
-#         self._elements = elements
-
 class Item(Node):
     def __init__(self, left, position):
         super().__init__()
@@ -326,7 +319,7 @@ class IndexAccess(Item):
         self._index_object = index_object
     
     def accept(self, visitor, arg=""):
-        visitor.visit_index_access_statement(self, arg)
+        visitor.visit_index_access(self, arg)
 
 
 class FunCall(Item):
@@ -367,17 +360,6 @@ class Block(Node):
     
     def accept(self, visitor, arg=""):
         visitor.visit_block(self, arg)
-
-
-# class FunCall(Node):
-#     def __init__(self, name, parameters, position):
-#         super().__init__()
-#         self._name = name
-#         self._parameters = parameters
-#         self._position = position
-
-#     def accept(self, visitor, arg=""):
-#         visitor.visit_fun_call_statement(self, arg)
 
 
 class SelectTerm(Node):

@@ -59,9 +59,8 @@ class Parser:
     def __init__(self, lexer):
         if not isinstance(lexer, Lexer) and not isinstance(lexer, Filter):
             raise TypeError("Lexer have to be type Lexer or Filter")
-        # sys.setrecursionlimit(10000)
         self._lexer = lexer
-        self._token = self._lexer.get_next_token() # consume token
+        self.consume_token()
         self._functions = {}
     
     # program :== {statement};     
@@ -79,7 +78,7 @@ class Parser:
             position = self._token.get_position()
             raise exception(token_type, self._token.get_token_type(), position)
         value = self._token.get_value()
-        self._token = self._lexer.get_next_token()
+        self.consume_token()
         return value
     
     def not_none(self, element, exception, expected):
@@ -99,7 +98,7 @@ class Parser:
         if self._token.get_token_type() != TokenType.FOR:
             return None
         position = self._token.get_position()
-        self._token = self._lexer.get_next_token()
+        self.consume_token()
 
         identifier = self.parse_identifier()
         self.not_none(identifier, InvalidForLoop, TokenType.IDENTIFIER)
@@ -120,7 +119,7 @@ class Parser:
             return None
         
         position = self._token.get_position()
-        self._token = self._lexer.get_next_token()
+        self.consume_token()
 
         self.must_be(TokenType.BRACKET_OPENING, InvalidWhileLoop)
         
@@ -140,12 +139,10 @@ class Parser:
             return None
 
         position = self._token.get_position()
-        self._token = self._lexer.get_next_token()
+        self.consume_token()
 
         name = self.parse_identifier()
         self.not_none(name, InvalidFunctionDefinition, TokenType.IDENTIFIER)
-        # if name is None:
-        #     raise InvalidFunctionDefinition(self._token.get_token_type(), TokenType.IDENTIFIER)
         
         self.must_be(TokenType.BRACKET_OPENING, InvalidFunctionDefinition)
 
@@ -163,8 +160,6 @@ class Parser:
 
         return fun
 
-
-
     # parameters ::== identifier {',' identifier}
     def parse_parameters(self):
         
@@ -176,19 +171,20 @@ class Parser:
         parameters.append(identifier)
         
         while self._token.get_token_type() == TokenType.COMMA:
-            self._token = self._lexer.get_next_token()
+            self.consume_token()
             identifier = self.parse_identifier()
             self.not_none(identifier, MissingExpectedStatement, TokenType.IDENTIFIER)
             parameters.append(identifier)
 
         return parameters
 
+    # return_statement     ::== ‘return’ expression ‘;’;
     def parse_return_statement(self):
         if self._token.get_token_type() != TokenType.RETURN:
             return None
 
         position = self._token.get_position()
-        self._token = self._lexer.get_next_token()
+        self.consume_token()
         
         expression = self.parse_expression()
         self.not_none(expression, InvalidReturnStatement, "Expression")
@@ -196,7 +192,6 @@ class Parser:
         self.must_be(TokenType.SEMICOLON, SemicolonMissing)
 
         return ReturnStatement(expression, position)
-
 
     # assign_or_call  ::== object_access ['=' expression] ‘;’ ;
     def parse_assign_or_call_statement(self):
@@ -216,63 +211,31 @@ class Parser:
     
         return statement
 
-    # # call :: == identifier([parameters])’;’
-    # def parse_fun_call(self, identifier):
-    #     # identifier = self.parse_identifier()
-
-    #     if identifier is None:
-    #         return None
-
-    #     if self._token.get_token_type() != TokenType.BRACKET_OPENING:
-    #         return None
-                
-    #     position = self._token.get_position()
-    #     self._token = self._lexer.get_next_token()
-
-    #     parameters = self.parse_expressions_list()
-    #     if parameters is None:
-    #         parameters = []
-        
-    #     self.must_be(TokenType.BRACKET_CLOSING, MissingExpectedStatement)
-
-    #     self.must_be(TokenType.SEMICOLON, SemicolonMissing)
-
-    #     return FunCall(identifier, parameters, position)
-
-
     # assign_or_call  ::== object_access ['=' expression] ‘;’ ;
 
     def parse_assignment(self, object_access):
         position = self._token.get_position()
-        # object_access = self.parse_object_access()
-
         if self._token.get_token_type() != TokenType.ASSIGN:
-            return None
-        
-        
-        self._token = self._lexer.get_next_token() 
+            return None       
+        self.consume_token() 
 
         expression = self.parse_expression()
 
         self.not_none(expression, InvalidAssignmentStatement, "Expression")
-        # if expression is None:
-        #     raise SyntaxError("After assign must be expression")
-    
         
         return Assignment(object_access, expression, position)
 
 
+    # object_access   ::== item {‘.’ item};
     def parse_object_access(self):
         left_item = self.parse_item()
 
         if left_item is None:
-            return None # ?? maybe it should be error?
-        
-        # if isinstance(left_item, CallAccess) return CallAccess
-        
+            return None
+                
         while (self._token.get_token_type() == TokenType.DOT):
             position = self._token.get_position()
-            self._token = self._lexer.get_next_token()
+            self.consume_token()
 
             right_item = self.parse_item()
             self.not_none(right_item, MissingExpectedStatement, "right_item")
@@ -296,7 +259,7 @@ class Parser:
 
         return item_access
     
-    def parse_index_access(self, identifier, position): # a[1][2]
+    def parse_index_access(self, identifier, position):
         if self._token.get_token_type() != TokenType.SQUARE_BRACKET_OPENING:
             return None
         
@@ -338,7 +301,7 @@ class Parser:
 
         name = self._token.get_value()
 
-        self._token = self._lexer.get_next_token()
+        self.consume_token()
 
         
         return Identifier(name, position)
@@ -409,7 +372,7 @@ class Parser:
         
         while (self._token.get_token_type() == TokenType.OR):
             position = self._token.get_position()
-            self._token = self._lexer.get_next_token()
+            self.consume_token()
 
             right_and_term = self.parse_and_term()
 
@@ -428,7 +391,7 @@ class Parser:
         
         while (self._token.get_token_type() == TokenType.AND):
             position = self._token.get_position()
-            self._token = self._lexer.get_next_token()
+            self.consume_token()
 
             right_not_term = self.parse_not_term()
 
@@ -447,7 +410,7 @@ class Parser:
         negation = False
         if (self._token.get_token_type() == TokenType.NOT):
             negation = True
-            self._token = self._lexer.get_next_token()
+            self.consume_token()
         
         comparison_term = self.parse_comparison_term()
         
@@ -472,7 +435,7 @@ class Parser:
 
             Class = comparison[self._token.get_token_type()]
 
-            self._token = self._lexer.get_next_token() 
+            self.consume_token() 
             position = self._token.get_position()
 
             right_additive_term = self.parse_additive_term()
@@ -492,7 +455,7 @@ class Parser:
         while self._token.get_token_type() in (TokenType.PLUS, TokenType.MINUS):
             operator = self._token.get_token_type() 
             
-            self._token = self._lexer.get_next_token() 
+            self.consume_token() 
             position = self._token.get_position()
 
             right_mult_term = self.parse_mult_term()
@@ -513,7 +476,7 @@ class Parser:
         while (self._token.get_token_type() in (TokenType.ASTERISK, TokenType.SLASH)):
             operator = self._token.get_token_type() 
 
-            self._token = self._lexer.get_next_token() 
+            self.consume_token() 
             position = self._token.get_position()
 
             right_signed_factor = self.parse_signed_factor() 
@@ -534,7 +497,7 @@ class Parser:
         unary_negation = False
         if (self._token.get_token_type() == TokenType.MINUS):
             unary_negation = True
-            self._token = self._lexer.get_next_token()
+            self.consume_token()
         
         factor = self.parse_factor()
         
@@ -546,8 +509,6 @@ class Parser:
 
     # factor ::== pair_or_expr | literal | list_def | dict_def |  select_term |  object_access;
     def parse_factor(self):
-        position = self._token.get_position()
-
         factor = self.parse_literal() or self.parse_list() or self.parse_object_access() or self.parse_pair_or_expr() or self.parse_dict() or self.parse_select()
 
         return factor
@@ -567,7 +528,7 @@ class Parser:
             return None
         
         value = self._token.get_value()
-        self._token = self._lexer.get_next_token()
+        self.consume_token()
 
         return Number(value, position)
     
@@ -578,7 +539,7 @@ class Parser:
             return None
         
         value = self._token.get_value()
-        self._token = self._lexer.get_next_token()
+        self.consume_token()
 
         return String(value, position)
     
@@ -593,7 +554,7 @@ class Parser:
         else:
             return None
 
-        self._token = self._lexer.get_next_token()
+        self.consume_token()
         return Bool(value, position)
 
     # list_def	::== '[' [ expressions_list ] ']' ;
@@ -604,7 +565,7 @@ class Parser:
         
         position = self._token.get_position()
         
-        self._token = self._lexer.get_next_token()
+        self.consume_token()
         values = self.parse_expressions_list()
 
         if values is None:
@@ -614,7 +575,7 @@ class Parser:
             raise SyntaxError("Missing ']' to close list")
         
 
-        self._token = self._lexer.get_next_token()
+        self.consume_token()
         return List(values, position)
     
 
@@ -629,7 +590,7 @@ class Parser:
         expressions.append(expression)
 
         while (self._token.get_token_type() == TokenType.COMMA):
-            self._token = self._lexer.get_next_token()
+            self.consume_token()
             expression = self.parse_expression()
             
             self.not_none(expression, MissingExpectedStatement, "Expression")
@@ -644,7 +605,7 @@ class Parser:
         if self._token.get_token_type() != TokenType.BRACKET_OPENING:
             return None
         
-        self._token = self._lexer.get_next_token()
+        self.consume_token()
 
         expression = self.parse_expression()
 
@@ -653,16 +614,14 @@ class Parser:
                 raise SyntaxError("Missing ')' to close expression in brackets")
             return expression
     
-        self._token = self._lexer.get_next_token()
+        self.consume_token()
 
         expression_second = self.parse_expression()
-
-        # raise SyntaxError("Pair started but missing second expression")
         self.not_none(expression_second, MissingExpectedStatement, "Expression")
 
         if self._token.get_token_type() != TokenType.BRACKET_CLOSING:
             raise SyntaxError("Missing ')' to close pair")
-        self._token = self._lexer.get_next_token()
+        self.consume_token()
 
         return Pair(expression, expression_second, position)
 
@@ -673,25 +632,21 @@ class Parser:
         if self._token.get_token_type() != TokenType.BRACE_OPENING:
             return None
         
-        self._token = self._lexer.get_next_token()
+        self.consume_token()
         values = self.parse_expressions_list()
 
-        if values is None:
-            values = {}
-        else:
+        if values is not None:
             for value in values:
                 if not isinstance(value, Pair):
                     raise DictInvalidElement(value, position)
 
         if self._token.get_token_type() != TokenType.BRACE_CLOSING:
             raise SyntaxError("Missing '}' to close dict")
-        
+        self.consume_token()
 
-        self._token = self._lexer.get_next_token()
         return Dict(values, position)
     
     #select_term ::== 'SELECT' expression 'FROM' expression [ 'WHERE' expression ] [ 'ORDER BY' expression ['ASC' | 'DESC'] ] ‘;’;
-
     def parse_select(self):
         if self._token.get_token_type() != TokenType.SELECT:
             return None
@@ -733,14 +688,13 @@ class Parser:
         return SelectTerm(select_expression, from_expression, position, where_expression, order_by_expression, asc_desc)
 
 
-    # non statements possible?
     # block ::== '{' {statement} '}'
     def parse_block(self):
         position = self._token.get_position()
 
         if self._token.get_token_type() != TokenType.BRACE_OPENING:
             return None
-        self._token = self._lexer.get_next_token()
+        self.consume_token()
 
         block_statements = []
 

@@ -1,55 +1,40 @@
 from parser.printer import Printer
-# from parser.syntax_tree import IfStatement, ForStatement
-# from parser.visitor import Visitor
-
-
 from parser.parser import Parser, Filter
-from lexer.source import SourceString, SourceFile
+from lexer.source import SourceFile, SourceString
 import sys
-from parser.syntax_tree import (
-    Program,
-    ForStatement,
-    WhileStatement,
-    FunStatement,
-    IfStatement,
-    OrTerm,
-    AndTerm,
-    NotTerm,
-    LessTerm,
-    MoreTerm,
-    EqualsTerm,
-    LessOrEqualTerm,
-    MoreOrEqualTerm,
-    AddTerm,
-    SubTerm,
-    MultTerm,
-    DivTerm,
-    SignedFactor,
-    Number,
-    ObjectAccess,
-    Item,
-    Identifier,
-    Assignment,
-    String,
-    Bool,
-    List,
-    Pair,
-    Dict,
-    Block
-)
+import argparse
 
+def parse_program(source, args):
+    filter = Filter(source, args.int_limit, args.string_limit, args.identifier_limit)
+    parser = Parser(filter)
+    program = parser.parse_program()
+
+    nodes = program._statements
+    printer = Printer()
+    
+    for node in nodes:
+        if node is not None:
+            node.accept(printer)
+
+def main():
+    parser = argparse.ArgumentParser(description="Parser of the Dixty programming language")
+    parser.add_argument("source", help="Path to the source file or string")
+    parser.add_argument("--int-limit", type=int, default=sys.maxsize, help="Maximum integer size")
+    parser.add_argument("--string-limit", type=int, default=10**7, help="Maximum string size")
+    parser.add_argument("--identifier-limit", type=int, default=10**7, help="Maximum identifier size")
+    parser.add_argument("--source-type", choices=["file", "string"], default="file", help="Type of source (file or string), default: file")
+    args = parser.parse_args()
+
+    try:
+        if args.source_type == "file":
+            with SourceFile(args.source) as source:
+                parse_program(source, args)
+
+        elif args.source_type == "string":
+            parse_program(source, args)
+    
+    except Exception as e:
+        print(f"Error: {str(e)}")
 
 if __name__ == "__main__":
-    # # source = SourceString("for i in list { a = 2; };")
-    # source = SourceString("""fun f(x) {result = 2+2+3; x = \"a\"; print(1);} y = 2;""")
-    with SourceFile("test_file.dx") as source:
-        filter = Filter(source)
-        parser = Parser(filter)
-        program = parser.parse_program()
-
-        nodes = program._statements
-        printer = Printer()
-        
-        for node in nodes:
-            if node is not None:
-                node.accept(printer)
+    main()

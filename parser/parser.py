@@ -54,12 +54,11 @@ from parser.errors import (
 
 class Parser:
     def __init__(self, lexer):
-        # if not isinstance(lexer, Lexer) and not isinstance(lexer, Filter):
-        #     raise TypeError("Lexer have to be type Lexer or Filter")
         self._lexer = lexer
         self.consume_token()
         self._functions = {}
     
+
     # program :== {statement};     
     def parse_program(self) -> Program:
         statements = []
@@ -67,9 +66,11 @@ class Parser:
             statements.append(statement)        
         return Program(statements, self._functions) # functions
     
+
     def consume_token(self):
         self._token = self._lexer.get_next_token()
     
+
     def must_be(self, token_type, exception):
         if (self._token.get_token_type() != token_type):
             position = self._token.get_position()
@@ -78,17 +79,19 @@ class Parser:
         self.consume_token()
         return value
     
+    
     def not_none(self, element, exception, expected):
         received = self._token.get_token_type()
         position = self._token.get_position()
         if element is None:
             raise exception(expected, received, position)
 
+
     # statement ::== for_loop_statement | while_loop_statement | fun_def_statement | return_statement | assign_or_call | if_statement;
     def parse_statement(self):
-        #position = self._token.get_position()
         statement = self.parse_for_statement() or self.parse_while_statement() or self.parse_fun_def_statement() or self.parse_return_statement() or self.parse_assign_or_call_statement() or self.parse_if_statement()
         return statement
+
 
     # for_loop_statement   ::== 'for' identifier 'in' expression block;
     def parse_for_statement(self):
@@ -110,6 +113,7 @@ class Parser:
         
         return ForStatement(identifier, expression, block, position)
 
+
     # while_loop_statement ::== 'while' '(' expression ')' 'block;
     def parse_while_statement(self):
         if self._token.get_token_type() != TokenType.WHILE:
@@ -129,6 +133,7 @@ class Parser:
         self.not_none(block, InvalidWhileLoop, "Loop block")
        
         return WhileStatement(expression, block, position)
+
 
     # fun_def_statement   ::== 'fun' identifier '(' [ parameters ] ')' block;
     def parse_fun_def_statement(self):
@@ -157,6 +162,7 @@ class Parser:
 
         return fun
 
+
     # parameters ::== identifier {',' identifier}
     def parse_parameters(self):
         
@@ -175,6 +181,7 @@ class Parser:
 
         return parameters
 
+
     # return_statement     ::== ‘return’ expression ‘;’;
     def parse_return_statement(self):
         if self._token.get_token_type() != TokenType.RETURN:
@@ -189,6 +196,7 @@ class Parser:
         self.must_be(TokenType.SEMICOLON, SemicolonMissing)
 
         return ReturnStatement(expression, position)
+
 
     # assign_or_call  ::== object_access ['=' expression] ‘;’ ;
     def parse_assign_or_call_statement(self):
@@ -208,7 +216,6 @@ class Parser:
     
         return statement
 
-    # assign_or_call  ::== object_access ['=' expression] ‘;’ ;
 
     def parse_assignment(self, object_access):
         position = self._token.get_position()
@@ -240,6 +247,7 @@ class Parser:
             left_item = ObjectAccess(left_item, position, right_item)
         
         return left_item
+
 
     # item ::== identifier {  ‘[‘ expression ‘]’ | ‘(‘ [arguments] ‘)’ }; 
     def parse_item(self):
@@ -288,19 +296,14 @@ class Parser:
         return FunCall(identifier, position, parameters) # FunCall
     
 
-
     def parse_identifier(self):
-
         if self._token.get_token_type() != TokenType.IDENTIFIER:
             return None
         
         position = self._token.get_position()
-
         name = self._token.get_value()
-
         self.consume_token()
 
-        
         return Identifier(name, position)
 
 
@@ -365,7 +368,7 @@ class Parser:
         left_and_term = self.parse_and_term()
 
         if left_and_term is None:
-            return None # ?? maybe it should be error?
+            return None
         
         while (self._token.get_token_type() == TokenType.OR):
             position = self._token.get_position()
@@ -379,6 +382,7 @@ class Parser:
         
         return left_and_term
     
+
     # and_term ::== not_term { ‘And’ not_term};
     def parse_and_term(self):
         left_not_term = self.parse_not_term()
@@ -397,7 +401,7 @@ class Parser:
             left_not_term = AndTerm(left_not_term, position, right_not_term)
         
         return left_not_term
-    
+
 
     # not_term 	   ::== [‘Not’] comparison_term;
     def parse_not_term(self):
@@ -416,6 +420,7 @@ class Parser:
             return NotTerm(comparison_term, position)
         return comparison_term
     
+
     # comparison_term ::== additive_term [('=='|'<'|'>'|'<='|'>=') additive_term];
     def parse_comparison_term(self):
         left_additive_term = self.parse_additive_term()
@@ -429,7 +434,6 @@ class Parser:
                 TokenType.LESS_OR_EQUAL : LessOrEqualTerm,
                 TokenType.MORE_OR_EQUAL : MoreOrEqualTerm
             }
-
             Class = comparison[self._token.get_token_type()]
 
             self.consume_token() 
@@ -438,7 +442,6 @@ class Parser:
             right_additive_term = self.parse_additive_term()
 
             self.not_none(right_additive_term, MissingExpectedStatement, "right_additive_term")
-            # raise SyntaxError("After comparison operator must be right additive term")
             
             left_additive_term = Class(left_additive_term, position, right_additive_term)
         
@@ -466,6 +469,7 @@ class Parser:
                
         return left_mult_term
     
+
     # mult_term ::== signed_factor {('*' | '/') signed_factor}
     def parse_mult_term(self):
         left_signed_factor = self.parse_signed_factor()
@@ -486,6 +490,7 @@ class Parser:
                 left_signed_factor = DivTerm(left_signed_factor, position, right_signed_factor)
         
         return left_signed_factor
+
 
     # signed_factor   ::== [sign] factor ;
     def parse_signed_factor(self):
@@ -518,6 +523,7 @@ class Parser:
             return literal
         return None
     
+
     def parse_number(self):
         position = self._token.get_position()
 
@@ -529,6 +535,7 @@ class Parser:
 
         return Number(value, position)
     
+
     def parse_string(self):
         position = self._token.get_position()
 
@@ -554,6 +561,7 @@ class Parser:
         self.consume_token()
         return Bool(value, position)
 
+
     # list_def	::== '[' [ expressions_list ] ']' ;
     def parse_list(self):
 
@@ -571,7 +579,6 @@ class Parser:
         if self._token.get_token_type() != TokenType.SQUARE_BRACKET_CLOSING:
             raise SyntaxError("Missing ']' to close list")
         
-
         self.consume_token()
         return List(values, position)
     
@@ -595,6 +602,7 @@ class Parser:
         
         return expressions
     
+
     # pair_or_expr ::== ‘(‘ expression [‘,' expression ] ‘)’ # or expression
     def parse_pair_or_expr(self):
         position = self._token.get_position()
@@ -622,6 +630,7 @@ class Parser:
 
         return Pair(expression, expression_second, position)
 
+
     # dict_def 	   ::== '{' [ expressions_list ]  '}';
     def parse_dict(self):
         position = self._token.get_position()
@@ -643,6 +652,7 @@ class Parser:
 
         return Dict(values, position)
     
+
     #select_term ::== 'SELECT' expression 'FROM' expression [ 'WHERE' expression ] [ 'ORDER BY' expression ['ASC' | 'DESC'] ] ‘;’;
     def parse_select(self):
         if self._token.get_token_type() != TokenType.SELECT:

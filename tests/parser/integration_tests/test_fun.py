@@ -46,6 +46,7 @@ def test_fun_one_parameter():
     parser = Parser(filter)
     program = parser.parse_program()
     assert ( len(program._statements) == 1 )
+    assert ( len(program._functions) == 1 )
     assert ( isinstance(program._statements[0], FunStatement) )
 
     assert ( isinstance(program._statements[0]._name, Identifier) )
@@ -76,6 +77,7 @@ def test_fun_two_parameter():
     parser = Parser(filter)
     program = parser.parse_program()
     assert ( len(program._statements) == 1 )
+    assert ( len(program._functions) == 1 )
     assert ( isinstance(program._statements[0], FunStatement) )
 
     assert ( isinstance(program._statements[0]._name, Identifier) )
@@ -99,6 +101,16 @@ def test_fun_two_parameter():
 
     expression = block._statements[0]._expression
     assert ( isinstance(expression, AddTerm) )
+
+def test_fun_two():
+    source = SourceString("fun add(a, b) { x = a + b; } fun sub(a, b) { x = a - b; }")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 2 )
+    assert ( len(program._functions) == 2 )
+    assert ( isinstance(program._statements[0], FunStatement) )
+
 
 def test_fun_return():
     source = SourceString("fun get(x) { return x; }")

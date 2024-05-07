@@ -21,10 +21,6 @@ class Visitor(ABC):
     @abstractmethod
     def visit_assign_statement(self, assign_statement):
         pass
-    
-    # @abstractmethod
-    # def visit_fun_call_statement(self, fun_call_statement):
-    #     pass
 
     @abstractmethod
     def visit_return_statement(self, return_statement):

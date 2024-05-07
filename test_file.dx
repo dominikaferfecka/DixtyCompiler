@@ -43,3 +43,32 @@ b = a["a"]["b"];
 c();
 
 b = a();
+
+x = 10;
+
+fun display()
+{
+     x = 20;
+     print(x);
+}
+
+display();
+
+for element in list
+{
+   print(element);
+}
+
+i = 0;
+while (i < 3)
+{
+   print(i);
+   i = i + 1;
+   for element in list
+   {
+      print(element);
+   }
+}
+
+b = a[1][2][3];
+print(x);

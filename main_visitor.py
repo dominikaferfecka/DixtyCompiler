@@ -1,6 +1,6 @@
 from parser.printer import Printer
 from parser.parser import Parser, Filter
-from lexer.source import SourceFile, SourceString
+from lexer.source import SourceFile
 import sys
 import argparse
 

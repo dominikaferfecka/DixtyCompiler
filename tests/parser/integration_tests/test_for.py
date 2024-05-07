@@ -1,35 +1,13 @@
-from parser.parser import Parser, Filter
+from parser.parser import Parser
+from lexer.filter import Filter
 from lexer.source import SourceString
-import sys
 from parser.syntax_tree import (
-    Program,
     ForStatement,
-    WhileStatement,
-    FunStatement,
-    IfStatement,
-    OrTerm,
-    AndTerm,
-    NotTerm,
-    LessTerm,
-    MoreTerm,
-    EqualsTerm,
-    LessOrEqualTerm,
-    MoreOrEqualTerm,
-    AddTerm,
-    SubTerm,
-    MultTerm,
-    DivTerm,
-    SignedFactor,
     Number,
-    ObjectAccess,
-    Item,
     Identifier,
     Assignment,
     String,
-    Bool,
     List,
-    Pair,
-    Dict,
     Block
 )
 

@@ -1,7 +1,4 @@
-from lexer.filter import Filter
-from lexer.lexer import Lexer
-from lexer.tokens import Token, TokenType
-import sys
+from lexer.tokens import TokenType
 from parser.syntax_tree import (
     Program,
     ForStatement,

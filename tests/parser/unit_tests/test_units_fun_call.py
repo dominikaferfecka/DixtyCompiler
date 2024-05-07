@@ -1,37 +1,10 @@
-from parser.parser import Parser, Filter
-from lexer.source import SourceString
+from parser.parser import Parser
 from lexer.tokens import Token, TokenType, Position
 from lexer_mock import LexerMock
 from parser.syntax_tree import (
-    Program,
-    ForStatement,
-    WhileStatement,
-    FunStatement,
-    IfStatement,
-    OrTerm,
-    AndTerm,
-    NotTerm,
-    LessTerm,
-    MoreTerm,
-    EqualsTerm,
-    LessOrEqualTerm,
-    MoreOrEqualTerm,
-    AddTerm,
-    SubTerm,
-    MultTerm,
-    DivTerm,
-    SignedFactor,
     Number,
     ObjectAccess,
-    Item,
     Identifier,
-    Assignment,
-    String,
-    Bool,
-    List,
-    Pair,
-    Dict,
-    Block,
     FunCall
 )
 
@@ -58,7 +31,6 @@ def test_fun_call_non_args():
 
 
 def test_fun_call_one_args():
-    #source = SourceString("display(x);")
     tokens = LexerMock([
         Token(TokenType.IDENTIFIER, Position(),"display"),
         Token(TokenType.BRACKET_OPENING, Position()),
@@ -82,7 +54,6 @@ def test_fun_call_one_args():
 
 
 def test_fun_call_three_args_numbers():
-    #source = SourceString("add(0, 1, 1.0);")
     tokens = LexerMock([
         Token(TokenType.IDENTIFIER, Position(),"add"),
         Token(TokenType.BRACKET_OPENING, Position()),

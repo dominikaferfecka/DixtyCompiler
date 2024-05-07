@@ -1,29 +1,14 @@
-from parser.parser import Parser, Filter
+from parser.parser import Parser
 from lexer.source import SourceString
-import sys
 from parser.syntax_tree import (
-    Program,
-    ForStatement,
-    WhileStatement,
-    FunStatement,
-    IfStatement,
-    OrTerm,
-    AndTerm,
-    NotTerm,
-    LessTerm,
-    MoreTerm,
     EqualsTerm,
     LessOrEqualTerm,
-    MoreOrEqualTerm,
     AddTerm,
-    SubTerm,
     MultTerm,
     DivTerm,
-    SignedFactor,
     Number,
     ObjectAccess,
     Item,
-    IndexAccess,
     Identifier,
     Assignment,
     String,
@@ -257,8 +242,6 @@ def test_assign_pair_empty():
 
     expression = program._statements[0]._expression
     assert ( isinstance(expression, Pair) )
-    # assert ( expression._first = 1 )
-    # assert ( expression._second = 1 )
 
 
 def test_assign_dict_empty():

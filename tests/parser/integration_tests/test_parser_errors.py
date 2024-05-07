@@ -1,39 +1,8 @@
-from parser.parser import Parser, Filter
+from parser.parser import Parser
+from lexer.filter import Filter
 from lexer.source import SourceString
 from lexer.lexer import TokenType
-import sys
-from parser.syntax_tree import (
-    Program,
-    ForStatement,
-    WhileStatement,
-    FunStatement,
-    IfStatement,
-    OrTerm,
-    AndTerm,
-    NotTerm,
-    LessTerm,
-    MoreTerm,
-    EqualsTerm,
-    LessOrEqualTerm,
-    MoreOrEqualTerm,
-    AddTerm,
-    SubTerm,
-    MultTerm,
-    DivTerm,
-    SignedFactor,
-    Number,
-    ObjectAccess,
-    Item,
-    Identifier,
-    Assignment,
-    String,
-    Bool,
-    List,
-    Pair,
-    Dict,
-    SelectTerm
-)
-
+import pytest
 
 from parser.errors import (
     SemicolonMissing,
@@ -41,16 +10,9 @@ from parser.errors import (
     InvalidFunctionDefinition,
     InvalidWhileLoop,
     InvalidForLoop,
-    InvalidIfStatement,
-    InvalidElseStatement,
-    InvalidElseIfStatement,
-    InvalidReturnStatement,
-    InvalidAssignmentStatement,
     FunctionAlreadyExists,
     DictInvalidElement
 )
-
-import pytest
 
 def test_semicolon_assign():
     with pytest.raises(SemicolonMissing):
@@ -187,7 +149,7 @@ def test_assign_dict_non_dict():
         filter = Filter(source)
         parser = Parser(filter)
         
-        program = parser.parse_program()
+        parser.parse_program()
     
     exception = exc_info.value
     assert exception.element._value == 1
@@ -200,7 +162,7 @@ def test_assign_fun_call_two():
         source = SourceString(" a = b()();")
         filter = Filter(source)
         parser = Parser(filter)
-        program = parser.parse_program()
+        parser.parse_program()
 
 
 def test_assign_to_fun_call():
@@ -208,5 +170,5 @@ def test_assign_to_fun_call():
         source = SourceString(" a() = 2;")
         filter = Filter(source)
         parser = Parser(filter)
-        program = parser.parse_program()
+        parser.parse_program()
 

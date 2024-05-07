@@ -1,25 +1,13 @@
-from parser.parser import Parser, Filter
+from parser.parser import Parser
+from lexer.filter import Filter
 from lexer.source import SourceString
-import sys
 from parser.syntax_tree import (
-    Program,
-    ForStatement,
-    WhileStatement,
-    FunStatement,
-    IfStatement,
-    OrTerm,
-    AndTerm,
-    NotTerm,
-    LessTerm,
-    MoreTerm,
     EqualsTerm,
     LessOrEqualTerm,
-    MoreOrEqualTerm,
     AddTerm,
     SubTerm,
     MultTerm,
     DivTerm,
-    SignedFactor,
     Number,
     ObjectAccess,
     Item,
@@ -195,8 +183,6 @@ def test_assign_pair_empty():
 
     expression = program._statements[0]._expression
     assert ( isinstance(expression, Pair) )
-    # assert ( expression._first = 1 )
-    # assert ( expression._second = 1 )
 
 
 def test_assign_dict_empty():
@@ -571,13 +557,6 @@ def test_assign_elements_lists():
     left = left._left # list
     assert ( isinstance(left, Identifier) )
 
-    # elements = expression._elements
-    # assert ( len(elements) == 3 )
-    # assert ( elements[0]._value == 0 )
-    # assert ( elements[1]._value == 2 )
-    # assert ( elements[2]._value == 4 )
-
-
 
 def test_assign_two_dimensions_list():
     source = SourceString("A = [ [1,2,3], [2,4,6] ];")
@@ -637,6 +616,7 @@ def test_assign_fun_call_param():
     expression = program._statements[0]._expression
     assert ( isinstance(expression, Item) )
     assert (expression._parameters[0]._value == 1)
+
 
 def test_assign_fun_call_dot():
     source = SourceString(" a = b(1).c;")

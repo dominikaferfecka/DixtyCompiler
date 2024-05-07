@@ -1,37 +1,13 @@
-from parser.parser import Parser, Filter
+from parser.parser import Parser
 from lexer.source import SourceString
 from lexer.tokens import Token, TokenType, Position
-import sys
 from lexer_mock import LexerMock
 from parser.syntax_tree import (
-    Program,
     ForStatement,
-    WhileStatement,
-    FunStatement,
-    IfStatement,
-    OrTerm,
-    AndTerm,
-    NotTerm,
-    LessTerm,
-    MoreTerm,
-    EqualsTerm,
-    LessOrEqualTerm,
-    MoreOrEqualTerm,
-    AddTerm,
-    SubTerm,
-    MultTerm,
-    DivTerm,
-    SignedFactor,
     Number,
-    ObjectAccess,
-    Item,
     Identifier,
     Assignment,
-    String,
-    Bool,
     List,
-    Pair,
-    Dict,
     Block
 )
 

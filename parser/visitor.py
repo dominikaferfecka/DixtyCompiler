@@ -1,4 +1,3 @@
-from parser.syntax_tree import Node
 from abc import ABC, abstractmethod
 
 class Visitor(ABC):

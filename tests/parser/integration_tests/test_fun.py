@@ -1,36 +1,13 @@
-from parser.parser import Parser, Filter
+from parser.parser import Parser
+from lexer.filter import Filter
 from lexer.source import SourceString
-import sys
 from parser.syntax_tree import (
-    Program,
-    ForStatement,
-    WhileStatement,
     FunStatement,
     ReturnStatement,
-    IfStatement,
-    OrTerm,
-    AndTerm,
-    NotTerm,
-    LessTerm,
-    MoreTerm,
-    EqualsTerm,
-    LessOrEqualTerm,
-    MoreOrEqualTerm,
     AddTerm,
-    SubTerm,
-    MultTerm,
-    DivTerm,
-    SignedFactor,
     Number,
-    ObjectAccess,
-    Item,
     Identifier,
     Assignment,
-    String,
-    Bool,
-    List,
-    Pair,
-    Dict,
     Block
 )
 
@@ -122,7 +99,6 @@ def test_fun_two_parameter():
 
     expression = block._statements[0]._expression
     assert ( isinstance(expression, AddTerm) )
-    #assert ( expression._value == 2)
 
 def test_fun_return():
     source = SourceString("fun get(x) { return x; }")

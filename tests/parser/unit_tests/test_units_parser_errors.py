@@ -1,40 +1,7 @@
-from parser.parser import Parser, Filter
-from lexer.source import SourceString
+from parser.parser import Parser
 from lexer.lexer import TokenType
 from lexer.tokens import Token, TokenType, Position
 from lexer_mock import LexerMock
-import sys
-from parser.syntax_tree import (
-    Program,
-    ForStatement,
-    WhileStatement,
-    FunStatement,
-    IfStatement,
-    OrTerm,
-    AndTerm,
-    NotTerm,
-    LessTerm,
-    MoreTerm,
-    EqualsTerm,
-    LessOrEqualTerm,
-    MoreOrEqualTerm,
-    AddTerm,
-    SubTerm,
-    MultTerm,
-    DivTerm,
-    SignedFactor,
-    Number,
-    ObjectAccess,
-    Item,
-    Identifier,
-    Assignment,
-    String,
-    Bool,
-    List,
-    Pair,
-    Dict,
-    SelectTerm
-)
 
 
 from parser.errors import (
@@ -43,11 +10,6 @@ from parser.errors import (
     InvalidFunctionDefinition,
     InvalidWhileLoop,
     InvalidForLoop,
-    InvalidIfStatement,
-    InvalidElseStatement,
-    InvalidElseIfStatement,
-    InvalidReturnStatement,
-    InvalidAssignmentStatement,
     FunctionAlreadyExists,
     DictInvalidElement
 )
@@ -83,7 +45,7 @@ def test_semicolon_function_call():
 
 def test_semicolon_return():
     with pytest.raises(SemicolonMissing):
-        source = SourceString("return 1")
+        #source = SourceString("return 1")
         tokens = LexerMock([
             Token(TokenType.RETURN, Position()),
             Token(TokenType.INT, Position(), 1),
@@ -169,7 +131,7 @@ def test_invalid_for_identifier():
 
 def test_invalid_for_block():
     with pytest.raises(MissingExpectedStatement) as exc_info:
-        source = SourceString("for a in list {a = 1;")
+        #source = SourceString("for a in list {a = 1;")
         tokens = LexerMock([
             Token(TokenType.FOR, Position()),
             Token(TokenType.IDENTIFIER, Position(),"a"),
@@ -265,7 +227,6 @@ def test_function_redefinition():
     assert exception.name == "print"
     assert exception.position.get_row() == 1
 
-# czy parser powinien już to wywalić?
 def test_assign_dict_non_dict():
     with pytest.raises(DictInvalidElement) as exc_info:
         #source = SourceString("dict = {1};")
@@ -280,7 +241,7 @@ def test_assign_dict_non_dict():
             ])
         parser = Parser(tokens)
         
-        program = parser.parse_program()
+        parser.parse_program()
     
     exception = exc_info.value
     assert exception.element._value == 1
@@ -302,7 +263,7 @@ def test_assign_fun_call_two():
             Token(TokenType.END_OF_TEXT, Position())
             ])
         parser = Parser(tokens)
-        program = parser.parse_program()
+        parser.parse_program()
 
 
 def test_assign_to_fun_call():
@@ -318,5 +279,5 @@ def test_assign_to_fun_call():
             Token(TokenType.END_OF_TEXT, Position())
             ])
         parser = Parser(tokens)
-        program = parser.parse_program()
+        parser.parse_program()
 

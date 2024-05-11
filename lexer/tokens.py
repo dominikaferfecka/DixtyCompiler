@@ -1,5 +1,5 @@
-from token_types import TokenType
-from position import Position
+from lexer.token_types import TokenType
+from lexer.position import Position
 
 
 class Token:
@@ -7,7 +7,7 @@ class Token:
         if isinstance(token_type, TokenType):
             self._token_type = token_type
         else:
-            raise ValueError("Invalid token type. Must be from TokenType enum.")
+            raise ValueError("Invalid token type. Must be from lexer.TokenType enum.")
 
         if isinstance(position, Position):
             self._position = position

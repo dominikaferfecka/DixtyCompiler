@@ -1,0 +1,74 @@
+a = 1;
+b = 2;
+list = [1, 2, 3];
+dict_inside = {
+   (a, "one"),
+   (b, "two")
+};
+
+dict_inside2 = {
+   (a, "one2"),
+   (b, "two")
+};
+
+dict =
+{
+    (a, 1),
+    ("two", b),
+    (list, 3),
+    ("four", dict_inside)
+};
+
+result_select = SELECT Key FROM dict;
+
+print(result_select);
+
+pair = ("value", 2);
+
+print(pair.Key);
+print(pair.Value); 
+
+print(pair);
+
+pair.Key = "new_value";
+print(pair.Key);
+
+pair.Value = 3;
+print(pair.Value); 
+
+b = a[1];
+
+b = a["a"]["b"];
+
+c();
+
+b = a();
+
+x = 10;
+
+fun display()
+{
+     x = 20;
+     print(x);
+}
+
+display();
+
+for element in list
+{
+   print(element);
+}
+
+i = 0;
+while (i < 3)
+{
+   print(i);
+   i = i + 1;
+   for element in list
+   {
+      print(element);
+   }
+}
+
+b = a[1][2][3];
+print(x);

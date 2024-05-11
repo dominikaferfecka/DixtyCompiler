@@ -1,4 +1,4 @@
-from token_types import TokenType
+from lexer.token_types import TokenType
 
 KEYWORDS = {
     # general

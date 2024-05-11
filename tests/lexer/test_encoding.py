@@ -1,5 +1,5 @@
-from lexer import Lexer, TokenType
-from source import SourceString, SourceFile
+from lexer.lexer import Lexer, TokenType
+from lexer.source import SourceString, SourceFile
 
 
 def test_char_not_english():
@@ -42,7 +42,7 @@ def test_cyrillic_characters():
 
 
 def test_chars_not_english_from_file():
-    with SourceFile("tests/test_file.txt") as source:
+    with SourceFile("tests/lexer/test_file.txt") as source:
         lexer = Lexer(source)
         token = lexer.get_next_token()
         assert (token.get_token_type() == TokenType.STRING)

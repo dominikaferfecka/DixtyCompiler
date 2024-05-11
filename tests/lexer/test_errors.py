@@ -1,8 +1,8 @@
-from lexer import Lexer
-from source import SourceString
+from lexer.lexer import Lexer
+from lexer.source import SourceString
 import pytest
 
-from errors import (
+from lexer.errors import (
    IntLimitExceeded,
    StringLimitExceeded,
    IdentifierLimitExceeded,

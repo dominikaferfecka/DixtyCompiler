@@ -1,21 +1,24 @@
-from filter import Filter, TokenType
-from source import SourceFile, SourceString
+from parser.printer import Printer
+from parser.parser import Parser
+from lexer.filter import Filter
+from lexer.source import SourceFile
 import sys
 import argparse
 
-def get_tokens_from_filter(source, args):
+def parse_program(source, args):
     filter = Filter(source, args.int_limit, args.string_limit, args.identifier_limit)
+    parser = Parser(filter)
+    program = parser.parse_program()
 
-    token = filter.get_next_token()
-    while token is None or token.get_token_type() != TokenType.END_OF_TEXT:
-        if token:
-            print(token)
-        token = filter.get_next_token()
-    print(token)
-
+    nodes = program._statements
+    printer = Printer()
+    
+    for node in nodes:
+        if node is not None:
+            node.accept(printer)
 
 def main():
-    parser = argparse.ArgumentParser(description="Lexer of the Dixty programming language")
+    parser = argparse.ArgumentParser(description="Parser of the Dixty programming language")
     parser.add_argument("source", help="Path to the source file or string")
     parser.add_argument("--int-limit", type=int, default=sys.maxsize, help="Maximum integer size")
     parser.add_argument("--string-limit", type=int, default=10**7, help="Maximum string size")
@@ -23,21 +26,16 @@ def main():
     parser.add_argument("--source-type", choices=["file", "string"], default="file", help="Type of source (file or string), default: file")
     args = parser.parse_args()
 
-    source = None
-
     try:
-    
         if args.source_type == "file":
             with SourceFile(args.source) as source:
-                get_tokens_from_filter(source, args)
+                parse_program(source, args)
 
         elif args.source_type == "string":
-            source = SourceString(args.source)
-            get_tokens_from_filter(source, args)
+            parse_program(source, args)
     
     except Exception as e:
         print(f"Error: {str(e)}")
-
 
 if __name__ == "__main__":
     main()

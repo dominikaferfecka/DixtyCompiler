@@ -1,5 +1,5 @@
-from lexer import Lexer, TokenType
-from source import SourceString
+from lexer.lexer import Lexer, TokenType
+from lexer.source import SourceString
 
 # TESTS FOR EACH TOKEN
 

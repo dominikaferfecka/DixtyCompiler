@@ -32,7 +32,7 @@ class Printer(Visitor):
         print(f"{indent}IfStatement - memory: [{hex(id(if_statement))}], position [{if_statement._position}]") 
         if_statement._expression.accept(self, indent + self._new_indent)
         if_statement._block.accept(self, indent + self._new_indent)
-        for else_if in if_statement.else_if_statement:
+        for else_if in if_statement._else_if_statement:
             else_if.accept(self, indent + self._new_indent)
         if_statement._else_statement.accept(self, indent + self._new_indent)
     

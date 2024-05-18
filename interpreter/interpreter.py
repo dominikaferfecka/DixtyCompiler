@@ -4,6 +4,7 @@ from parser.visitor import Visitor
 class Interpreter(Visitor):
     def __init__(self):
         self._last_result = None
+        self._if_done = False
     
     def get_last_result(self):
         last_result = self._last_result
@@ -33,13 +34,32 @@ class Interpreter(Visitor):
 
 
     def visit_if_statement(self, if_statement, arg):
-        print("if statement")
+        if_statement._expression.accept(self, arg)
+        expression = self.get_last_result()
+        print(f"if statement ({expression})")
+        self._if_done = False
+        if expression:
+            if_statement._block.accept(self, arg)
+            self._if_done = True
+        else:
+            for else_if in if_statement._else_if_statement:
+                if self._if_done is False:
+                    else_if.accept(self, arg)
+        if self._if_done is False:
+            if_statement._else_statement.accept(self, arg)
 
     def visit_else_if_statement(self, else_if_statement, arg):
-        print("else_if_statement")
+        else_if_statement._expression.accept(self, arg)
+        expression = self.get_last_result()
+        print(f"else_if statement ({expression})")
+        if expression:
+            else_if_statement._block.accept(self, arg)
+            self._if_done = True
     
     def visit_else_statement(self, else_statement, arg):
-        print("else statement")
+        print(f"else statement")
+        else_statement._block.accept(self, arg)
+        self._if_done = True
        
     def visit_or_term(self, or_term, arg):
         or_term._left_and_term.accept(self, arg)
@@ -228,6 +248,8 @@ class Interpreter(Visitor):
 
     def visit_block(self, block, arg):
         print("block")
+        for statement in block._statements:
+            statement.accept(self, arg)
 
     def visit_select_term(self, select_term, arg):
         print("select_term")

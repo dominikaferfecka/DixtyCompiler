@@ -60,7 +60,13 @@ class Interpreter(Visitor):
         print(f"else statement")
         else_statement._block.accept(self, arg)
         self._if_done = True
-       
+    
+    def visit_block(self, block, arg):
+        print("block")
+        for statement in block._statements:
+            statement.accept(self, arg)
+    
+
     def visit_or_term(self, or_term, arg):
         or_term._left_and_term.accept(self, arg)
         left_not_term = self.get_last_result()
@@ -188,30 +194,6 @@ class Interpreter(Visitor):
         self._last_result = signed_factor
         print(f"signed factor: {self._last_result}")
 
-    def visit_literal(self, literal, arg):
-        print("literal")
-
-    def visit_number(self, number, arg):
-        self._last_result = number._value
-        print(f"number {self._last_result}")
-
-    def visit_string(self, string, arg):
-        self._last_result = string._value
-        print(f"string {self._last_result}")
-    
-    def visit_bool(self, bool, arg):
-        self._last_result = bool._value
-        print(f"bool {self._last_result}")
-
-    def visit_list(self, list, arg):
-        print("list")
-
-    def visit_pair(self, pair, arg):
-        print("pair")
-
-    def visit_dict(self, dict, arg):
-        print("dict")
-        
     def visit_object_access(self, object_access, arg):
         object_access._left_item.accept(self, arg)
         left_item = self.get_last_result()
@@ -242,16 +224,54 @@ class Interpreter(Visitor):
         parameters = self.get_last_result()
         print(f"fun_call: {left} ( {parameters} )")
 
+    def visit_list(self, list, arg):
+        result_list = []
+        for element in  list._values:
+            element.accept(self, arg)
+            parsed_element = self.get_last_result()
+            result_list.append(parsed_element)
+        self._last_result = result_list
+        print(f"list {self._last_result}")
+
+    def visit_pair(self, pair, arg):
+        pair._first.accept(self, arg)
+        first = self.get_last_result()
+        pair._second.accept(self, arg)
+        second = self.get_last_result()
+        self._last_result = (first, second)
+        print(f"pair {self._last_result}")
+
+    def visit_dict(self, dict, arg):
+        result_dict = {}
+        if dict._values is not None:
+            for value in dict._values:
+                value.accept(self, arg)
+                pair = self.get_last_result()
+                result_dict[pair[0]] = pair[1]
+        self._last_result = result_dict
+        print(f"dict {self._last_result}")
+
+    def visit_select_term(self, select_term, arg):
+        print("select_term")
+
     def visit_identifier(self, identifier, arg):
         self._last_result = identifier._name
         print(f"identifier {self._last_result}")
 
-    def visit_block(self, block, arg):
-        print("block")
-        for statement in block._statements:
-            statement.accept(self, arg)
+    def visit_literal(self, literal, arg):
+        print("literal")
 
-    def visit_select_term(self, select_term, arg):
-        print("select_term")
+    def visit_number(self, number, arg):
+        self._last_result = number._value
+        print(f"number {self._last_result}")
+
+    def visit_string(self, string, arg):
+        self._last_result = string._value
+        print(f"string {self._last_result}")
+    
+    def visit_bool(self, bool, arg):
+        self._last_result = bool._value
+        print(f"bool {self._last_result}")
+
 
 

@@ -52,3 +52,16 @@ else {
     c = 6;
     d = 7;
 }
+
+listA = [1, 2, 3];
+listB = [1.0, 2.0, 3.0];
+listC = ["a", "b", "c"];
+listD = [1, 1.0, "a"];
+list_empty = [];
+
+pairA = ("one", 1);
+pairB = (3, 2.0);
+
+dictA = {};
+dictB = { ("one", 1), ("two", 2)};
+

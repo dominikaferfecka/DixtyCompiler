@@ -58,7 +58,6 @@ class Printer(Visitor):
     def visit_not_term(self, not_term, indent=""):
         print(f"{indent}NotTerm - memory: [{hex(id(not_term))}], position [{not_term._position}]") 
         not_term._comparison_term.accept(self, indent + self._new_indent)
-        not_term._rcomparison_term.accept(self, indent + self._new_indent)
     
     def visit_add_term(self, add_term, indent=""):
         print(f"{indent}AddTerm - memory: [{hex(id(add_term))}], position [{add_term._position}]") 

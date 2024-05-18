@@ -42,9 +42,9 @@ class Interpreter(Visitor):
         print("else statement")
        
     def visit_or_term(self, or_term, arg):
-        or_term._left_not_term.accept(self, arg)
+        or_term._left_and_term.accept(self, arg)
         left_not_term = self.get_last_result()
-        or_term._right_not_term.accept(self, arg)
+        or_term._right_and_term.accept(self, arg)
         right_not_term = self.get_last_result()
 
         self._last_result = left_not_term or right_not_term
@@ -96,7 +96,7 @@ class Interpreter(Visitor):
         left_additive_term = self.get_last_result()
         less_or_equal_term._right_additive_term.accept(self, arg)
         rigth_additive_term = self.get_last_result()
-        self._last_result = left_additive_term < rigth_additive_term
+        self._last_result = left_additive_term <= rigth_additive_term
         print(f"less_or_equal_term {self._last_result}")
 
     def visit_more_or_equal_term(self, more_or_equal_term, arg):
@@ -104,17 +104,23 @@ class Interpreter(Visitor):
         left_additive_term = self.get_last_result()
         more_or_equal_term._right_additive_term.accept(self, arg)
         rigth_additive_term = self.get_last_result()
-        self._last_result = left_additive_term < rigth_additive_term
+        self._last_result = left_additive_term <= rigth_additive_term
         print(f"more_or_equal_term {self._last_result}")
     
+    def check_types(self, left, right, type):
+        return isinstance(left, type) and isinstance(right, type)
+
+
     def visit_add_term(self, add_term, arg):
         add_term._left_mult_term.accept(self, arg)
         left_mult_term = self.get_last_result()
         add_term._right_mult_term.accept(self, arg)
         right_mult_term = self.get_last_result()
 
-        # sprawdź typy
-        self._last_result = left_mult_term + right_mult_term
+        if self.check_types(left_mult_term, right_mult_term, int) or self.check_types(left_mult_term, right_mult_term, float) or self.check_types(left_mult_term, right_mult_term, str):
+            self._last_result = left_mult_term + right_mult_term
+        else:
+            raise SyntaxError    
         print(f"add_term: {self._last_result}")
 
     def visit_sub_term(self, sub_term, arg):
@@ -123,7 +129,10 @@ class Interpreter(Visitor):
         sub_term._right_mult_term.accept(self, arg)
         right_mult_term = self.get_last_result()
 
-        self._last_result = left_mult_term - right_mult_term
+        if self.check_types(left_mult_term, right_mult_term, int) or self.check_types(left_mult_term, right_mult_term, float):
+            self._last_result = left_mult_term + right_mult_term
+        else:
+            raise SyntaxError   
         print(f"sub_term: {self._last_result}")
     
     def visit_mult_term(self, mult_term, arg):
@@ -132,7 +141,10 @@ class Interpreter(Visitor):
         mult_term._right_signed_factor.accept(self, arg)
         right_signed_factor = self.get_last_result()
 
-        self._last_result = left_signed_factor * right_signed_factor
+        if self.check_types(left_signed_factor, right_signed_factor, int) or self.check_types(left_signed_factor, right_signed_factor, float):
+            self._last_result = left_signed_factor * right_signed_factor
+        else:
+            raise SyntaxError  
         print(f"mult_term: {self._last_result}")
 
     def visit_div_term(self, div_term, arg):
@@ -141,7 +153,13 @@ class Interpreter(Visitor):
         div_term._right_signed_factor.accept(self, arg)
         right_signed_factor = self.get_last_result()
 
-        self._last_result = left_signed_factor * right_signed_factor
+        if self.check_types(left_signed_factor, right_signed_factor, int):
+            self._last_result = int(left_signed_factor / right_signed_factor) # ??
+        elif self.check_types(left_signed_factor, right_signed_factor, float):
+            self._last_result = left_signed_factor / right_signed_factor
+        else:
+            raise SyntaxError  
+
         print(f"div_term: {self._last_result}")
     
     def visit_signed_factor(self, signed_factor, arg):

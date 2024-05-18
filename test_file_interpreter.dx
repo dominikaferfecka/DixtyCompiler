@@ -3,8 +3,19 @@ b = 10 - 5 + 3;
 c = 5 * 8;
 d = 10 /  5;
 e = 2 * 5 / 2; 
-f = 2 * (3 + 4) - 6 / 2; 
+f = (2 * (3 + 3) - 6) / 3; 
 
 g = 2 == 2;
 h = 3 >= 1;
 i = 6 < 10;
+
+j = True Or False;
+k = False Or False;
+l = False And True;
+m = True And True;
+n = Not True;
+o = Not False;
+
+p = 1 + 3 == 1 + 6 / 2;
+r = 9 / 3 + 1 <= 4 And 3 > 2;
+s = "a" + "b" + "c";

@@ -121,7 +121,7 @@ class AndTerm(Node):
 class NotTerm(Node):
     def __init__(self, comparison_term, position):
         super().__init__()
-        self._comparision_term = comparison_term
+        self._comparison_term = comparison_term
         self._position = position
 
     def accept(self, visitor, arg=""):

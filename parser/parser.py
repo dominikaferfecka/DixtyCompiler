@@ -615,8 +615,7 @@ class Parser:
         expression = self.parse_expression()
 
         if self._token.get_token_type() != TokenType.COMMA:
-            if self._token.get_token_type() != TokenType.BRACKET_CLOSING:
-                raise SyntaxError("Missing ')' to close expression in brackets")
+            self.must_be(TokenType.BRACKET_CLOSING, MissingExpectedStatement)
             return expression
     
         self.consume_token()

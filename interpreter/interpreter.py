@@ -113,6 +113,7 @@ class Interpreter(Visitor):
         add_term._right_mult_term.accept(self, arg)
         right_mult_term = self.get_last_result()
 
+        # sprawdź typy
         self._last_result = left_mult_term + right_mult_term
         print(f"add_term: {self._last_result}")
 
@@ -164,16 +165,6 @@ class Interpreter(Visitor):
         self._last_result = bool._value
         print(f"bool {self._last_result}")
 
-    def visit_item_statement(self, item, arg):
-        print("item_statement")
-
-    def visit_index_access(self, index_access, arg):
-        print("index access")
-    
-    def visit_fun_call(self, call_access, arg):
-        print("fun call")
-
-
     def visit_list(self, list, arg):
         print("list")
 
@@ -184,13 +175,38 @@ class Interpreter(Visitor):
         print("dict")
         
     def visit_object_access(self, object_access, arg):
-        print("object_access")
+        object_access._left_item.accept(self, arg)
+        left_item = self.get_last_result()
+        object_access._right_item.accept(self, arg)
+        right_item = self.get_last_result()
+
+        self._last_result = object_access
+
+        print(f"object_access: {left_item} . {right_item}")
 
     def visit_item(self, item, arg):
         print("item")
+    
+    def visit_item_statement(self, item, arg):
+        print("item_statement")
+
+    def visit_index_access(self, index_access, arg):
+        index_access._left.accept(self, arg)
+        left = self.get_last_result()
+        index_access._index_object(self, arg)
+        index_object = self.get_last_result()
+        print(f"index access: {left} [ {index_object} ]")
+    
+    def visit_fun_call(self, fun_call, arg):
+        fun_call._left.accept(self, arg)
+        left = self.get_last_result()
+        fun_call._parameters(self, arg)
+        parameters = self.get_last_result()
+        print(f"fun_call: {left} ( {parameters} )")
 
     def visit_identifier(self, identifier, arg):
-        print("identifier")
+        self._last_result = identifier._name
+        print(f"identifier {self._last_result}")
 
     def visit_block(self, block, arg):
         print("block")

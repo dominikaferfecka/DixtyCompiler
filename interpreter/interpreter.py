@@ -1,10 +1,20 @@
 from parser.parser import Parser
 from parser.visitor import Visitor
+from interpreter.context import Context, Scope
 
 class Interpreter(Visitor):
     def __init__(self):
         self._last_result = None
         self._if_done = False
+        self._current_context = Context()
+        self._contexts = []
+    
+    def add_context(self):
+        self._contexts.append(self._current_context)
+        self._current_context = Context()
+
+    def remove_context(self):
+        self._current_context = self._contexts.pop()
     
     def get_last_result(self):
         last_result = self._last_result
@@ -12,6 +22,12 @@ class Interpreter(Visitor):
         return last_result
 
     def visit_for_statement(self, for_statement, arg):
+        for_statement._identifier.accept(self, arg)
+        variable = self.get_last_result()
+        for_statement._expression.accept(self, arg)
+        iterating = self.get_last_result()
+        for variable in iterating:
+            for_statement._block.accept(self, arg)
         print("for statement")
     
     def visit_while_statement(self, while_statement, arg):
@@ -28,8 +44,11 @@ class Interpreter(Visitor):
         object_access = self.get_last_result()
         assign_statement._expression.accept(self, arg)
         expression = self.get_last_result()
-        # create variable
-        # add value
+
+        self._current_context.set_scope_variable(object_access, expression)
+
+        print([scope._variables for scope in self._current_context._scopes])
+
         print(f"assign_statement {object_access} = {expression}")
 
 

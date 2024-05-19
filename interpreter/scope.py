@@ -1,3 +1,5 @@
+from interpreter.assign import IdentifierEvaulation, IndexAcccesEvaulation
+
 class Scope:
     def __init__(self):
         self._variables = {}
@@ -10,7 +12,8 @@ class Scope:
 
     def set_variable(self, name, value):
         # create or modify
-        self._variables[name] = value
+        if not isinstance(name, IndexAcccesEvaulation):
+            self._variables[name._name] = value
 
     def set_function(self):
         pass

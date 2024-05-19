@@ -4,7 +4,7 @@ class Context:
     def __init__(self):
         self._scopes = [Scope()]
         self._nested = 0
-        return_type = None
+        self._return_type = None
     
     def add_scope(self):
         self._scopes.append(Scope())
@@ -14,9 +14,9 @@ class Context:
         self._scopes.pop()
         self._nested -= 1
 
-    def get_scope_variable(self):
+    def get_scope_variable(self, name):
         for scope in reversed(self._scopes):
-            variable = scope.get_variable()
+            variable = scope.get_variable(name)
             if variable is not None:
                 break
         return variable

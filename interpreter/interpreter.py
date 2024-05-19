@@ -1,4 +1,4 @@
-from parser.parser import Parser
+from parser.parser import Parser, Identifier
 from parser.visitor import Visitor
 from interpreter.context import Context, Scope
 
@@ -44,8 +44,13 @@ class Interpreter(Visitor):
         object_access = self.get_last_result()
         assign_statement._expression.accept(self, arg)
         expression = self.get_last_result()
+        print(type(object_access))
+        print(type(expression))
+        
+        if isinstance(expression, Identifier): #?
+            expression = self._current_context.get_scope_variable(expression._name)
 
-        self._current_context.set_scope_variable(object_access, expression)
+        self._current_context.set_scope_variable(object_access._name, expression)
 
         print([scope._variables for scope in self._current_context._scopes])
 
@@ -81,9 +86,11 @@ class Interpreter(Visitor):
         self._if_done = True
     
     def visit_block(self, block, arg):
+        self._current_context.add_scope()
         print("block")
         for statement in block._statements:
             statement.accept(self, arg)
+        self._current_context.remove_scope()
     
 
     def visit_or_term(self, or_term, arg):
@@ -232,14 +239,17 @@ class Interpreter(Visitor):
     def visit_index_access(self, index_access, arg):
         index_access._left.accept(self, arg)
         left = self.get_last_result()
-        index_access._index_object(self, arg)
+        index_access._index_object.accept(self, arg)
         index_object = self.get_last_result()
-        print(f"index access: {left} [ {index_object} ]")
+
+        left_object = self._current_context.get_scope_variable(left._name)
+        self._last_result = left_object[index_object]
+        print(f"index access: {left} [ {index_object} ] - {self._last_result}")
     
     def visit_fun_call(self, fun_call, arg):
         fun_call._left.accept(self, arg)
         left = self.get_last_result()
-        fun_call._parameters(self, arg)
+        fun_call._parameters.accept(self, arg)
         parameters = self.get_last_result()
         print(f"fun_call: {left} ( {parameters} )")
 
@@ -274,7 +284,7 @@ class Interpreter(Visitor):
         print("select_term")
 
     def visit_identifier(self, identifier, arg):
-        self._last_result = identifier._name
+        self._last_result = identifier
         print(f"identifier {self._last_result}")
 
     def visit_literal(self, literal, arg):

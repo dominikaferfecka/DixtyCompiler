@@ -323,9 +323,9 @@ class IndexAccess(Item):
 
 
 class FunCall(Item):
-    def __init__(self, left, position, parameters):
+    def __init__(self, left, position, arguments):
         super().__init__(left, position)
-        self._parameters = parameters
+        self._arguments = arguments
     
     def accept(self, visitor, arg=""):
         visitor.visit_fun_call(self, arg)

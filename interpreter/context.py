@@ -2,8 +2,8 @@ from interpreter.scope import Scope
 from interpreter.errors import ( VariableNotExists)
 
 class Context:
-    def __init__(self):
-        self._scopes = [Scope()]
+    def __init__(self, functions):
+        self._scopes = [Scope(functions)]
         self._nested = 0
         self._return_type = None
     
@@ -28,8 +28,9 @@ class Context:
     def set_scope_variable(self, name, value):
         self._scopes[-1].set_variable(name, value)
 
-    def get_scope_function(self):
-        pass
+    def get_scope_function(self, name):
+        function = self._scopes[-1].get_function(name)
+        return function
 
     def set_scope_function(self):
         pass

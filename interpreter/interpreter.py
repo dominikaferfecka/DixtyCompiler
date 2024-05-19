@@ -4,15 +4,16 @@ from interpreter.context import Context, Scope
 from interpreter.assign import IdentifierEvaulation, IndexAcccesEvaulation
 
 class Interpreter(Visitor):
-    def __init__(self):
+    def __init__(self, functions):
+        self._functions = functions
         self._last_result = None
         self._if_done = False
-        self._current_context = Context()
+        self._current_context = Context(functions)
         self._contexts = []
     
     def add_context(self):
         self._contexts.append(self._current_context)
-        self._current_context = Context()
+        self._current_context = Context(self._functions)
 
     def remove_context(self):
         self._current_context = self._contexts.pop()
@@ -337,25 +338,56 @@ class Interpreter(Visitor):
     def visit_index_access(self, index_access, arg):
         index_access._left.accept(self, arg)
         left = self.get_last_result()
-        if isinstance(left, IndexAcccesEvaulation):
-            left = left._value
+        # if isinstance(left, IndexAcccesEvaulation):
+        #     left = left._value
         index_access._index_object.accept(self, arg)
         index_object = self.get_last_result()
 
+        if isinstance(left, IndexAcccesEvaulation):
+            indexes = left._index_access_list
+            indexes.append(index_object)
+        else:
+            indexes = [index_object]
 
         # left_object = self.evaulate(left)
         # self._last_result = left_object[index_object]
 
-        self._last_result = IndexAcccesEvaulation(self, left, index_object)
+        # self._last_result = IndexAcccesEvaulation(self, left, index_object)
+        self._last_result = IndexAcccesEvaulation(self, left, indexes)
         
         print(f"index access: {left} [ {index_object} ] - {self._last_result}")
     
     def visit_fun_call(self, fun_call, arg):
         fun_call._left.accept(self, arg)
-        left = self.get_last_result()
-        fun_call._parameters.accept(self, arg)
-        parameters = self.get_last_result()
-        print(f"fun_call: {left} ( {parameters} )")
+        identifier = self.get_last_result()
+        arguments = fun_call._arguments
+
+        fun_def = self._current_context.get_scope_function(identifier._name)
+        parameters = fun_def._parameters
+
+        # if parameters is None:
+        #     parameters = []
+        if arguments is None:
+            arguments = []
+
+        if not len(parameters) == len(arguments):
+            raise SyntaxError
+        
+        self.add_context()
+        #self._current_context.add_scope()
+        arguments_parsed = []
+        for argument, parameter in zip(arguments,parameters):
+            argument.accept(self, arg)
+            print(f"parameter: {parameter._name}")
+            argument_parsed = self.get_last_result()
+            arguments_parsed.append(argument_parsed)
+            self._current_context.set_scope_variable(parameter, argument_parsed)
+        
+        print(f"fun_call: {identifier._name} ( {arguments_parsed} )")
+        
+        fun_def._block.accept(self, arg)
+        #self._current_context.remove_scope()
+        self.remove_context()
 
     def visit_list(self, list, arg):
         result_list = []
@@ -380,7 +412,10 @@ class Interpreter(Visitor):
             for value in dict._values:
                 value.accept(self, arg)
                 pair = self.get_last_result()
-                result_dict[pair[0]] = pair[1]
+                pair_key = self.evaulate(pair[0])
+                pair_value = self.evaulate(pair[1])
+                print(f" pair {pair_value}")
+                result_dict[pair_key] = pair_value
         self._last_result = result_dict
         print(f"dict {self._last_result}")
 

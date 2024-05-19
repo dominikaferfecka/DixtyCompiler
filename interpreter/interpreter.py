@@ -21,17 +21,45 @@ class Interpreter(Visitor):
         self._last_result = None
         return last_result
 
+    def evaulate_identifier(self, element):
+        if isinstance(element, Identifier): #?
+            element = self._current_context.get_scope_variable(element._name)
+        return element
+
     def visit_for_statement(self, for_statement, arg):
         for_statement._identifier.accept(self, arg)
+        self._current_context.add_scope()
         variable = self.get_last_result()
         for_statement._expression.accept(self, arg)
         iterating = self.get_last_result()
-        for variable in iterating:
+        
+        print(f"iterating {iterating}")
+        print(type(iterating))
+
+        iterating = self.evaulate_identifier(iterating)
+        
+        print(f"iterating {iterating}")
+        print(type(iterating))
+        for value in iterating:
+            self._current_context.set_scope_variable(variable._name, value )
             for_statement._block.accept(self, arg)
         print("for statement")
+        self._current_context.remove_scope()
     
     def visit_while_statement(self, while_statement, arg):
         print("while statement")
+        self._current_context.add_scope()
+        while_statement._expression.accept(self, arg)
+        expression = self.get_last_result()
+        print(expression)
+
+
+        while expression:
+            while_statement._block.accept(self)
+            while_statement._expression.accept(self, arg)
+            expression = self.get_last_result()
+        self._current_context.remove_scope()
+
     
     def visit_fun_def_statement(self, fun_def_statement, arg):
         print("fun_def statement")
@@ -44,11 +72,10 @@ class Interpreter(Visitor):
         object_access = self.get_last_result()
         assign_statement._expression.accept(self, arg)
         expression = self.get_last_result()
-        print(type(object_access))
-        print(type(expression))
+        # print(type(object_access))
+        # print(type(expression))
         
-        if isinstance(expression, Identifier): #?
-            expression = self._current_context.get_scope_variable(expression._name)
+        expression = self.evaulate_identifier(expression)
 
         self._current_context.set_scope_variable(object_access._name, expression)
 
@@ -63,8 +90,10 @@ class Interpreter(Visitor):
         print(f"if statement ({expression})")
         self._if_done = False
         if expression:
+            self._current_context.add_scope()
             if_statement._block.accept(self, arg)
             self._if_done = True
+            self._current_context.remove_scope()
         else:
             for else_if in if_statement._else_if_statement:
                 if self._if_done is False:
@@ -77,20 +106,22 @@ class Interpreter(Visitor):
         expression = self.get_last_result()
         print(f"else_if statement ({expression})")
         if expression:
+            self._current_context.add_scope()
             else_if_statement._block.accept(self, arg)
             self._if_done = True
+            self._current_context.remove_scope()
     
     def visit_else_statement(self, else_statement, arg):
         print(f"else statement")
+        self._current_context.add_scope()
         else_statement._block.accept(self, arg)
         self._if_done = True
+        self._current_context.remove_scope()
     
     def visit_block(self, block, arg):
-        self._current_context.add_scope()
         print("block")
         for statement in block._statements:
             statement.accept(self, arg)
-        self._current_context.remove_scope()
     
 
     def visit_or_term(self, or_term, arg):
@@ -121,42 +152,95 @@ class Interpreter(Visitor):
         equal_term._left_additive_term.accept(self, arg)
         left_additive_term = self.get_last_result()
         equal_term._right_additive_term.accept(self, arg)
-        rigth_additive_term = self.get_last_result()
+        right_additive_term = self.get_last_result()
 
-        self._last_result = left_additive_term == rigth_additive_term
+        left_additive_term = self.evaulate_identifier(left_additive_term)
+        right_additive_term = self.evaulate_identifier(right_additive_term)
+
+        if self.check_types(left_additive_term, right_additive_term, int):
+            self._last_result = int(left_additive_term / right_additive_term) # ??
+        elif self.check_types(left_additive_term, right_additive_term, float):
+            self._last_result = left_additive_term / right_additive_term
+        else:
+            raise SyntaxError  
+
+        self._last_result = left_additive_term == right_additive_term
         print(f"equal_term {self._last_result}")
 
     def visit_less_term(self, less_term, arg):
         less_term._left_additive_term.accept(self, arg)
         left_additive_term = self.get_last_result()
         less_term._right_additive_term.accept(self, arg)
-        rigth_additive_term = self.get_last_result()
+        right_additive_term = self.get_last_result()
 
-        self._last_result = left_additive_term < rigth_additive_term
+        left_additive_term = self.evaulate_identifier(left_additive_term)
+        right_additive_term = self.evaulate_identifier(right_additive_term)
+
+        if self.check_types(left_additive_term, right_additive_term, int):
+            self._last_result = int(left_additive_term / right_additive_term) # ??
+        elif self.check_types(left_additive_term, right_additive_term, float):
+            self._last_result = left_additive_term / right_additive_term
+        else:
+            raise SyntaxError  
+
+        self._last_result = left_additive_term < right_additive_term
         print(f"less_term {self._last_result}")
 
     def visit_more_term(self, more_term, arg):
         more_term._left_additive_term.accept(self, arg)
         left_additive_term = self.get_last_result()
         more_term._right_additive_term.accept(self, arg)
-        rigth_additive_term = self.get_last_result()
-        self._last_result = left_additive_term > rigth_additive_term
+        right_additive_term = self.get_last_result()
+        
+        left_additive_term = self.evaulate_identifier(left_additive_term)
+        right_additive_term = self.evaulate_identifier(right_additive_term)
+
+        if self.check_types(left_additive_term, right_additive_term, int):
+            self._last_result = int(left_additive_term / right_additive_term) # ??
+        elif self.check_types(left_additive_term, right_additive_term, float):
+            self._last_result = left_additive_term / right_additive_term
+        else:
+            raise SyntaxError  
+        
+        self._last_result = left_additive_term > right_additive_term
         print(f"more_term {self._last_result}")
 
     def visit_less_or_equal_term(self, less_or_equal_term, arg):
         less_or_equal_term._left_additive_term.accept(self, arg)
         left_additive_term = self.get_last_result()
         less_or_equal_term._right_additive_term.accept(self, arg)
-        rigth_additive_term = self.get_last_result()
-        self._last_result = left_additive_term <= rigth_additive_term
+        right_additive_term = self.get_last_result()
+
+        left_additive_term = self.evaulate_identifier(left_additive_term)
+        right_additive_term = self.evaulate_identifier(right_additive_term)
+
+        if self.check_types(left_additive_term, right_additive_term, int):
+            self._last_result = int(left_additive_term / right_additive_term) # ??
+        elif self.check_types(left_additive_term, right_additive_term, float):
+            self._last_result = left_additive_term / right_additive_term
+        else:
+            raise SyntaxError  
+        
+        self._last_result = left_additive_term <= right_additive_term
         print(f"less_or_equal_term {self._last_result}")
 
     def visit_more_or_equal_term(self, more_or_equal_term, arg):
         more_or_equal_term._left_additive_term.accept(self, arg)
         left_additive_term = self.get_last_result()
         more_or_equal_term._right_additive_term.accept(self, arg)
-        rigth_additive_term = self.get_last_result()
-        self._last_result = left_additive_term <= rigth_additive_term
+        right_additive_term = self.get_last_result()
+
+        left_additive_term = self.evaulate_identifier(left_additive_term)
+        right_additive_term = self.evaulate_identifier(right_additive_term)
+
+        if self.check_types(left_additive_term, right_additive_term, int):
+            self._last_result = int(left_additive_term / right_additive_term) # ??
+        elif self.check_types(left_additive_term, right_additive_term, float):
+            self._last_result = left_additive_term / right_additive_term
+        else:
+            raise SyntaxError  
+        
+        self._last_result = left_additive_term <= right_additive_term
         print(f"more_or_equal_term {self._last_result}")
     
     def check_types(self, left, right, type):
@@ -168,6 +252,14 @@ class Interpreter(Visitor):
         left_mult_term = self.get_last_result()
         add_term._right_mult_term.accept(self, arg)
         right_mult_term = self.get_last_result()
+
+        print(left_mult_term)
+        print(type(left_mult_term))
+        print(right_mult_term)
+        print(type(right_mult_term))
+
+        left_mult_term = self.evaulate_identifier(left_mult_term)
+        right_mult_term = self.evaulate_identifier(right_mult_term)
 
         if self.check_types(left_mult_term, right_mult_term, int) or self.check_types(left_mult_term, right_mult_term, float) or self.check_types(left_mult_term, right_mult_term, str):
             self._last_result = left_mult_term + right_mult_term
@@ -181,6 +273,9 @@ class Interpreter(Visitor):
         sub_term._right_mult_term.accept(self, arg)
         right_mult_term = self.get_last_result()
 
+        left_mult_term = self.evaulate_identifier(left_mult_term)
+        right_mult_term = self.evaulate_identifier(right_mult_term)
+
         if self.check_types(left_mult_term, right_mult_term, int) or self.check_types(left_mult_term, right_mult_term, float):
             self._last_result = left_mult_term + right_mult_term
         else:
@@ -193,6 +288,9 @@ class Interpreter(Visitor):
         mult_term._right_signed_factor.accept(self, arg)
         right_signed_factor = self.get_last_result()
 
+        left_signed_factor = self.evaulate_identifier(left_signed_factor)
+        right_signed_factor = self.evaulate_identifier(right_signed_factor)
+
         if self.check_types(left_signed_factor, right_signed_factor, int) or self.check_types(left_signed_factor, right_signed_factor, float):
             self._last_result = left_signed_factor * right_signed_factor
         else:
@@ -204,6 +302,9 @@ class Interpreter(Visitor):
         left_signed_factor = self.get_last_result()
         div_term._right_signed_factor.accept(self, arg)
         right_signed_factor = self.get_last_result()
+
+        left_signed_factor = self.evaulate_identifier(left_signed_factor)
+        right_signed_factor = self.evaulate_identifier(right_signed_factor)
 
         if self.check_types(left_signed_factor, right_signed_factor, int):
             self._last_result = int(left_signed_factor / right_signed_factor) # ??
@@ -242,7 +343,7 @@ class Interpreter(Visitor):
         index_access._index_object.accept(self, arg)
         index_object = self.get_last_result()
 
-        left_object = self._current_context.get_scope_variable(left._name)
+        left_object = self.evaulate_identifier(left)
         self._last_result = left_object[index_object]
         print(f"index access: {left} [ {index_object} ] - {self._last_result}")
     

@@ -1,4 +1,5 @@
 from interpreter.scope import Scope
+from interpreter.errors import ( VariableNotExists)
 
 class Context:
     def __init__(self):
@@ -19,6 +20,9 @@ class Context:
             variable = scope.get_variable(name)
             if variable is not None:
                 break
+        if variable is None:
+            return None
+            # raise VariableNotExists(name)
         return variable
 
     def set_scope_variable(self, name, value):

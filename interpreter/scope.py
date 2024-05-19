@@ -1,5 +1,3 @@
-from interpreter.errors import ( VariableNotExists)
-
 class Scope:
     def __init__(self):
         self._variables = {}
@@ -7,7 +5,7 @@ class Scope:
     
     def get_variable(self, name):
         if not name in self._variables.keys():
-            raise VariableNotExists(name)
+            return None
         return self._variables[name]
 
     def set_variable(self, name, value):

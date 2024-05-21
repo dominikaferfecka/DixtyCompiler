@@ -337,7 +337,8 @@ class Interpreter(Visitor):
         object_access._right_item.accept(self, left_item)
         right_item = self.get_last_result()
 
-        self._last_result = object_access
+        # self._last_result = object_access
+        self._last_result = right_item
 
         print(f"object_access: {left_item} . {right_item}")
 

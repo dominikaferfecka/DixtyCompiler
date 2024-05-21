@@ -192,3 +192,6 @@ b = 7;
 a = [1, 2, 3, 4];
 a.insert(2, 10);
 b = 7;
+
+a = { ("one",1), ("two",2)};
+b = a.contains_key("one");

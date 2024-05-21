@@ -43,8 +43,15 @@ def insert_list(interpreter, object):
     print(f"value {value}")
     object._value.insert(index, value)
 
-def contains_key(interpreter, dict):
-    pass
+def contains_key(interpreter, object):
+    value = interpreter._current_context.get_scope_variable("value")
+    print(object._value.keys())
+    if value in object._value.keys():
+        interpreter._last_result = True
+    else:
+        interpreter._last_result = False
+
+
 
 def to_float():
     pass
@@ -60,7 +67,8 @@ BUILTINS = {
     "len" : FunEmbedded("len", ["list"], length),
     "append" : FunEmbedded("append", ["value"], append_list),
     "remove" : FunEmbedded("remove", ["index"], remove_list),
-    "insert" : FunEmbedded("insert", ["index", "value"], insert_list)
+    "insert" : FunEmbedded("insert", ["index", "value"], insert_list),
+    "contains_key" : FunEmbedded("contains_key", ["value"], contains_key)
 }
 
 

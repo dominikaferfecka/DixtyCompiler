@@ -206,6 +206,10 @@ class Parser:
         if isinstance(object_access, FunCall):
             self.must_be(TokenType.SEMICOLON, SemicolonMissing)
             return object_access
+        elif isinstance(object_access, ObjectAccess):
+            if isinstance(object_access._right_item, FunCall):
+                self.must_be(TokenType.SEMICOLON, SemicolonMissing)
+                return object_access
 
         statement = self.parse_assignment(object_access)
 
@@ -243,7 +247,11 @@ class Parser:
 
             right_item = self.parse_item()
             self.not_none(right_item, MissingExpectedStatement, "right_item")
-            
+
+            # if isinstance(right_item, FunCall):
+            #     left_item = MethodCall(left, name, position, arguments)
+            # else:
+            #     left_item = ObjectAccess(left_item, position, right_item)
             left_item = ObjectAccess(left_item, position, right_item)
         
         return left_item

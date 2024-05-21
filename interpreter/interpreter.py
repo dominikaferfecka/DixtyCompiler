@@ -334,7 +334,7 @@ class Interpreter(Visitor):
     def visit_object_access(self, object_access, arg):
         object_access._left_item.accept(self, arg)
         left_item = self.get_last_result()
-        object_access._right_item.accept(self, arg)
+        object_access._right_item.accept(self, left_item)
         right_item = self.get_last_result()
 
         self._last_result = object_access
@@ -369,8 +369,8 @@ class Interpreter(Visitor):
         
         print(f"index access: {left} [ {index_object} ] - {self._last_result}")
     
-    def visit_fun_call(self, fun_call, arg):
-        fun_call._left.accept(self, arg)
+    def visit_fun_call(self, fun_call, object):
+        fun_call._left.accept(self, None)
         identifier = self.get_last_result()
         arguments = fun_call._arguments
 
@@ -398,7 +398,7 @@ class Interpreter(Visitor):
         for argument, parameter in zip(arguments,parameters):
             #print(f"parameter: {parameter._name}")
             print(f"argument {argument}")
-            argument.accept(self, arg)
+            argument.accept(self,  None)
             argument_parsed = self.get_last_result()
             print(f"argument_parsed {argument_parsed}")
             argument_parsed = self.evaulate(argument_parsed)
@@ -409,9 +409,9 @@ class Interpreter(Visitor):
         print(f"fun_call: {identifier._name} ( {arguments_parsed} )")
         
         if isinstance(fun_def, FunEmbedded):
-            fun_def.run(self._current_context)
+            fun_def.run(self, object)
         else:
-            fun_def._block.accept(self, arg)
+            fun_def._block.accept(self, None)
 
         #returned_value = self.get_last_result()
 

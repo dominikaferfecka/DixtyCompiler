@@ -120,8 +120,8 @@ class Printer(Visitor):
     def visit_fun_call(self, call_access, indent=""):
         print(f"{indent}FunCall - memory: [{hex(id(call_access))}], position [{call_access._position}]") 
         call_access._left.accept(self, indent + self._new_indent)
-        if call_access._parameters is not None:
-            for parameter in call_access._parameters:
+        if call_access._arguments is not None:
+            for parameter in call_access._arguments:
                 parameter.accept(self, indent + self._new_indent)
 
     def visit_signed_factor(self, signed_factor, indent=""):

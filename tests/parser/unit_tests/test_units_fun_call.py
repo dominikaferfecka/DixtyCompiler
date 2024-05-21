@@ -27,7 +27,7 @@ def test_fun_call_non_args():
     assert ( isinstance(program._statements[0]._left, Identifier) )
     assert ( program._statements[0]._left._name == "start" )
 
-    assert ( program._statements[0]._parameters == None )
+    assert ( program._statements[0]._arguments == None )
 
 
 def test_fun_call_one_args():
@@ -47,7 +47,7 @@ def test_fun_call_one_args():
     assert ( isinstance(program._statements[0]._left, Identifier) )
     assert ( program._statements[0]._left._name == "display" )
 
-    parameters = program._statements[0]._parameters
+    parameters = program._statements[0]._arguments
     assert ( len(parameters) == 1 )
     assert ( isinstance(parameters[0], Identifier))
     assert( parameters[0]._name == "x")
@@ -74,7 +74,7 @@ def test_fun_call_three_args_numbers():
     assert ( isinstance(program._statements[0]._left, Identifier) )
     assert ( program._statements[0]._left._name == "add" )
 
-    parameters = program._statements[0]._parameters
+    parameters = program._statements[0]._arguments
     assert ( len(parameters) == 3 )
     assert ( isinstance(parameters[0], Number))
     assert( parameters[0]._value == 0)
@@ -104,8 +104,30 @@ def test_fun_call_object_access():
     assert ( isinstance(program._statements[0], FunCall) )
 
     assert ( program._statements[0]._left._name == "print" )
-    parameters = program._statements[0]._parameters 
+    parameters = program._statements[0]._arguments
 
     assert ( isinstance(parameters[0], ObjectAccess) )
     assert ( parameters[0]._left_item._name == "pair" )
     assert ( parameters[0]._right_item._name == "Key" )
+
+
+def test_fun_method_call():
+    #source = SourceString("a.b();")
+    tokens = LexerMock([
+        Token(TokenType.IDENTIFIER, Position(),"a"),
+        Token(TokenType.DOT, Position()),
+        Token(TokenType.IDENTIFIER, Position(), "b"),
+        Token(TokenType.BRACKET_OPENING, Position()),
+        Token(TokenType.BRACKET_CLOSING, Position()),
+        Token(TokenType.SEMICOLON, Position()),
+        Token(TokenType.END_OF_TEXT, Position())
+        ])
+    parser = Parser(tokens)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], ObjectAccess) )
+    method_call = program._statements[0]._right_item
+    assert ( isinstance(method_call, FunCall) )
+
+    assert ( method_call._left._name == "b" )
+    assert ( program._statements[0]._left_item._name == "a" )

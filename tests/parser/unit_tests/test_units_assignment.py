@@ -558,7 +558,7 @@ def test_assign_fun_call():
 
     expression = program._statements[0]._expression
     assert ( isinstance(expression, Item) )
-    assert (expression._parameters == None)
+    assert (expression._arguments == None)
 
 
 def test_assign_fun_call_dot():

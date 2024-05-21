@@ -167,3 +167,12 @@ fun iter(a)
 
 b = 2;
 c = iter(b);
+
+print("testing");
+
+a = [1, 2, 3];
+b = len(a);
+
+a = [1, 2, 3];
+a.append(4);
+b = 6;

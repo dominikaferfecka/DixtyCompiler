@@ -103,11 +103,15 @@ class Interpreter(Visitor):
             self._if_done = True
             self._current_context.remove_scope()
         else:
-            for else_if in if_statement._else_if_statement:
-                if self._if_done is False:
-                    else_if.accept(self, arg)
+            else_if_list = if_statement._else_if_statement
+            if else_if_list is not None:
+                for else_if in else_if_list:
+                    if self._if_done is False:
+                        else_if.accept(self, arg)
         if self._if_done is False:
-            if_statement._else_statement.accept(self, arg)
+            else_statement = if_statement._else_statement
+            if else_statement is not None:
+                else_statement.accept(self, arg)
 
     def visit_else_if_statement(self, else_if_statement, arg):
         else_if_statement._expression.accept(self, arg)

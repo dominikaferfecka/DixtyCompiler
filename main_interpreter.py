@@ -20,7 +20,7 @@ def parse_program(source):
             node.accept(interpreter)
 
 def main():
-    with SourceFile("test_file_interpreter2.dx") as source:
+    with SourceFile("test_file_interpreter.dx") as source:
         parse_program(source)
    
 

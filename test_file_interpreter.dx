@@ -151,3 +151,19 @@ fun add(x, y)
 a =  3;
 b = 2;
 c = add(a, b);
+
+
+fun iter(a)
+{
+    for i in [1,2,3,4,5]
+    {
+        a = i;
+        if (a == 3)
+        {
+            return a;
+        }
+    }
+}
+
+b = 2;
+c = iter(b);

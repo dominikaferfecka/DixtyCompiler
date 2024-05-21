@@ -2,10 +2,12 @@ from parser.parser import Parser, Identifier
 from parser.visitor import Visitor
 from interpreter.context import Context, Scope
 from interpreter.assign import IdentifierEvaulation, IndexAcccesEvaulation
+from interpreter.builtins import FunEmbedded
 
 class Interpreter(Visitor):
-    def __init__(self, functions):
+    def __init__(self, functions, builtins):
         self._functions = functions
+        self._functions.update(builtins)
         self._last_result = None
         self._if_done = False
         self._current_context = Context(functions)
@@ -373,6 +375,13 @@ class Interpreter(Visitor):
         arguments = fun_call._arguments
 
         fun_def = self._current_context.get_scope_function(identifier._name)
+        
+        if fun_def is None:
+            raise SyntaxError
+
+        # if isinstance(fun_def, FunEmbedded):
+        #     pass
+        # else:
         parameters = fun_def._parameters
 
         # if parameters is None:
@@ -387,7 +396,7 @@ class Interpreter(Visitor):
         #self._current_context.add_scope()
         arguments_parsed = []
         for argument, parameter in zip(arguments,parameters):
-            print(f"parameter: {parameter._name}")
+            #print(f"parameter: {parameter._name}")
             print(f"argument {argument}")
             argument.accept(self, arg)
             argument_parsed = self.get_last_result()
@@ -396,10 +405,13 @@ class Interpreter(Visitor):
             print(f"argument_parsed_evaulate {argument_parsed}")
             arguments_parsed.append(argument_parsed)
             self._current_context.set_scope_variable(parameter, argument_parsed)
-        
+            
         print(f"fun_call: {identifier._name} ( {arguments_parsed} )")
         
-        fun_def._block.accept(self, arg)
+        if isinstance(fun_def, FunEmbedded):
+            fun_def.run(self._current_context)
+        else:
+            fun_def._block.accept(self, arg)
 
         #returned_value = self.get_last_result()
 

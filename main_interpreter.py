@@ -13,14 +13,14 @@ def parse_program(source):
     program = parser.parse_program()
 
     nodes = program._statements
-    interpreter = Interpreter()
+    interpreter = Interpreter(program._functions)
     
     for node in nodes:
         if node is not None:
             node.accept(interpreter)
 
 def main():
-    with SourceFile("test_file_interpreter.dx") as source:
+    with SourceFile("test_file_interpreter2.dx") as source:
         parse_program(source)
    
 

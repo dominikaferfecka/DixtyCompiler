@@ -2,8 +2,12 @@ from interpreter.scope import Scope
 from interpreter.errors import ( VariableNotExists)
 
 class Context:
-    def __init__(self, functions):
-        self._scopes = [Scope(functions)]
+    def __init__(self, functions, scopes=None):
+        if scopes is None:
+            self._scopes = [Scope(functions)]
+        else:
+            self._scopes = scopes
+            self._scopes.append(Scope(functions))
         self._nested = 0
         self._return_type = None
     

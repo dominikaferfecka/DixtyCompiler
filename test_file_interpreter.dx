@@ -133,3 +133,21 @@ B(1, 2);
 
 
 d = 6;
+
+fun increase(a)
+{
+    a = 3;
+    return a;
+}
+
+b = 2;
+c = increase(b);
+
+fun add(x, y)
+{
+    return x + y;
+}
+
+a =  3;
+b = 2;
+c = add(a, b);

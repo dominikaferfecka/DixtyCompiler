@@ -10,11 +10,13 @@ class Interpreter(Visitor):
         self._if_done = False
         self._current_context = Context(functions)
         self._contexts = []
+        #self._return_type = None
+        self._return = False # if true stop visiting in block statemet till fundef
+
     
     def add_context(self):
         self._contexts.append(self._current_context)
-        self._current_context = Context(self._functions)
-
+        self._current_context = Context(self._functions, self._current_context._scopes)
     def remove_context(self):
         self._current_context = self._contexts.pop()
     
@@ -70,7 +72,10 @@ class Interpreter(Visitor):
         print("fun_def statement")
 
     def visit_return_statement(self, return_statement, arg):
-        print("return statement")
+        self._last_result = None # clear in case there was no value after return
+        return_statement._expression.accept(self, arg)
+        self._return = True
+        print(f"return statement {return_statement}")
  
     def visit_assign_statement(self, assign_statement, arg):
         assign_statement._object_access.accept(self, arg)
@@ -124,7 +129,8 @@ class Interpreter(Visitor):
     def visit_block(self, block, arg):
         print("block")
         for statement in block._statements:
-            statement.accept(self, arg)
+            if not self._return:
+                statement.accept(self, arg)
     
 
     def visit_or_term(self, or_term, arg):
@@ -377,15 +383,23 @@ class Interpreter(Visitor):
         #self._current_context.add_scope()
         arguments_parsed = []
         for argument, parameter in zip(arguments,parameters):
-            argument.accept(self, arg)
             print(f"parameter: {parameter._name}")
+            print(f"argument {argument}")
+            argument.accept(self, arg)
             argument_parsed = self.get_last_result()
+            print(f"argument_parsed {argument_parsed}")
+            argument_parsed = self.evaulate(argument_parsed)
+            print(f"argument_parsed_evaulate {argument_parsed}")
             arguments_parsed.append(argument_parsed)
             self._current_context.set_scope_variable(parameter, argument_parsed)
         
         print(f"fun_call: {identifier._name} ( {arguments_parsed} )")
         
         fun_def._block.accept(self, arg)
+
+        #returned_value = self.get_last_result()
+
+        self._return = False
         #self._current_context.remove_scope()
         self.remove_context()
 

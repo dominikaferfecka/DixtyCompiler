@@ -199,3 +199,25 @@ b = a.contains_key("one");
 a = 1;
 b = toFloat(a);
 c = toString(a);
+
+a = "b";
+print(a == "b");
+
+a = { ("one", 1), ("two", 2)};
+fun increase(x)
+{
+    return x + 2;
+}
+b = SELECT increase(Value) FROM a;
+c = 2;
+
+
+a = { ("one", 2), ("two", 5), ("three", 6), ("four", 4)};
+fun increase(x)
+{
+    return x + 2;
+}
+b = SELECT increase(Value) FROM a WHERE 2 == 2 ORDER_BY Value DESC;
+c = 2;
+
+

@@ -179,10 +179,16 @@ class Interpreter(Visitor):
         left_additive_term = self.evaulate(left_additive_term)
         right_additive_term = self.evaulate(right_additive_term)
 
+        print(left_additive_term)
+        print(right_additive_term)
         if self.check_types(left_additive_term, right_additive_term, int):
-            self._last_result = int(left_additive_term / right_additive_term) # ??
+            self._last_result = left_additive_term == right_additive_term
         elif self.check_types(left_additive_term, right_additive_term, float):
-            self._last_result = left_additive_term / right_additive_term
+            self._last_result = left_additive_term == right_additive_term
+        elif self.check_types(left_additive_term, right_additive_term, str):
+            self._last_result = left_additive_term == right_additive_term
+        elif self.check_types(left_additive_term, right_additive_term, bool):
+            self._last_result = left_additive_term == right_additive_term
         else:
             raise SyntaxError  
 
@@ -199,9 +205,11 @@ class Interpreter(Visitor):
         right_additive_term = self.evaulate(right_additive_term)
 
         if self.check_types(left_additive_term, right_additive_term, int):
-            self._last_result = int(left_additive_term / right_additive_term) # ??
+            self._last_result = left_additive_term < right_additive_term
         elif self.check_types(left_additive_term, right_additive_term, float):
-            self._last_result = left_additive_term / right_additive_term
+            self._last_result = left_additive_term < right_additive_term
+        elif self.check_types(left_additive_term, right_additive_term, str):
+            self._last_result = left_additive_term < right_additive_term
         else:
             raise SyntaxError  
 
@@ -218,9 +226,11 @@ class Interpreter(Visitor):
         right_additive_term = self.evaulate(right_additive_term)
 
         if self.check_types(left_additive_term, right_additive_term, int):
-            self._last_result = int(left_additive_term / right_additive_term) # ??
+            self._last_result = left_additive_term > right_additive_term
         elif self.check_types(left_additive_term, right_additive_term, float):
-            self._last_result = left_additive_term / right_additive_term
+            self._last_result = left_additive_term > right_additive_term
+        elif self.check_types(left_additive_term, right_additive_term, str):
+            self._last_result = left_additive_term > right_additive_term
         else:
             raise SyntaxError  
         
@@ -237,9 +247,11 @@ class Interpreter(Visitor):
         right_additive_term = self.evaulate(right_additive_term)
 
         if self.check_types(left_additive_term, right_additive_term, int):
-            self._last_result = int(left_additive_term / right_additive_term) # ??
+            self._last_result = left_additive_term <= right_additive_term
         elif self.check_types(left_additive_term, right_additive_term, float):
-            self._last_result = left_additive_term / right_additive_term
+            self._last_result = left_additive_term <= right_additive_term
+        elif self.check_types(left_additive_term, right_additive_term, str):
+            self._last_result = left_additive_term <= right_additive_term
         else:
             raise SyntaxError  
         
@@ -256,9 +268,11 @@ class Interpreter(Visitor):
         right_additive_term = self.evaulate(right_additive_term)
 
         if self.check_types(left_additive_term, right_additive_term, int):
-            self._last_result = int(left_additive_term / right_additive_term) # ??
+            self._last_result = left_additive_term >= right_additive_term
         elif self.check_types(left_additive_term, right_additive_term, float):
-            self._last_result = left_additive_term / right_additive_term
+            self._last_result = left_additive_term >= right_additive_term
+        elif self.check_types(left_additive_term, right_additive_term, str):
+            self._last_result = left_additive_term >= right_additive_term
         else:
             raise SyntaxError  
         
@@ -461,14 +475,7 @@ class Interpreter(Visitor):
         self._current_context.add_scope()
         print(f"select_term {select_term}")
         select_expression = select_term._select_expression
-        # select_term._select_expression.accept(self, arg)
-        # select_expression = self.get_last_result()
         print(f"SELECT {select_expression}")
-
-        # select_term._select_expression.accept(self, arg)
-        # select_expression = self.get_last_result()
-        # print(f"SELECT {select_expression}")
-        # select = select_expression._name
 
         # GET DICT
         select_term._from_expression.accept(self, arg)
@@ -477,33 +484,31 @@ class Interpreter(Visitor):
         print(f"FROM {from_expression}")
         print(f"FROM object {from_object}")
 
-        where_expression =  select_term._where_expression
-
-        if where_expression is not None:
-            where_expression.accept(self, arg)
-            where_expression = self.get_last_result()
-            # where_object = self.evaulate(where_expression)
-            print(f"WHERE {where_expression}")
-            # print(f"WHERE object {where_object}")
-        else:
-            where_expression = True
-
-
-
         result = []
         # print key
         for key, value in from_object.items():
             self._current_context.set_scope_variable("Key", key)
             self._current_context.set_scope_variable("Value", value)
 
-            if where_expression:
+            where_expression =  select_term._where_expression
+            print(f"WHERE {where_expression}")
+            if where_expression is not None:
+                where_expression.accept(self, arg)
+                where_expression = self.get_last_result()
+                # where_object = self.evaulate(where_expression)
+                print(f"WHERE {where_expression}")
+                # print(f"WHERE object {where_object}")
+            else:
+                where_expression = True
+
+            if where_expression is True:
+                print("HERE")
                 select_term._select_expression.accept(self, arg)
                 select_expression = self.get_last_result()
                 print(f"SELECT object {select_expression}")
                 select_expression = self.evaulate(select_expression)
                 print( select_expression )
                 result.append(select_expression)
-
 
         order_by_expression =  select_term._order_by_expression
         if order_by_expression is not None:
@@ -513,8 +518,9 @@ class Interpreter(Visitor):
             else:
                 result.sort()
 
+        self._last_result = result
         print(f"result {result}")
-        #self._current_context.remove_scope()
+        self._current_context.remove_scope()
 
         print("select_term")
 

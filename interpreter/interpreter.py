@@ -458,6 +458,64 @@ class Interpreter(Visitor):
         print(f"dict {self._last_result}")
 
     def visit_select_term(self, select_term, arg):
+        self._current_context.add_scope()
+        print(f"select_term {select_term}")
+        select_expression = select_term._select_expression
+        # select_term._select_expression.accept(self, arg)
+        # select_expression = self.get_last_result()
+        print(f"SELECT {select_expression}")
+
+        # select_term._select_expression.accept(self, arg)
+        # select_expression = self.get_last_result()
+        # print(f"SELECT {select_expression}")
+        # select = select_expression._name
+
+        # GET DICT
+        select_term._from_expression.accept(self, arg)
+        from_expression = self.get_last_result()
+        from_object = self.evaulate(from_expression)
+        print(f"FROM {from_expression}")
+        print(f"FROM object {from_object}")
+
+        where_expression =  select_term._where_expression
+
+        if where_expression is not None:
+            where_expression.accept(self, arg)
+            where_expression = self.get_last_result()
+            # where_object = self.evaulate(where_expression)
+            print(f"WHERE {where_expression}")
+            # print(f"WHERE object {where_object}")
+        else:
+            where_expression = True
+
+
+
+        result = []
+        # print key
+        for key, value in from_object.items():
+            self._current_context.set_scope_variable("Key", key)
+            self._current_context.set_scope_variable("Value", value)
+
+            if where_expression:
+                select_term._select_expression.accept(self, arg)
+                select_expression = self.get_last_result()
+                print(f"SELECT object {select_expression}")
+                select_expression = self.evaulate(select_expression)
+                print( select_expression )
+                result.append(select_expression)
+
+
+        order_by_expression =  select_term._order_by_expression
+        if order_by_expression is not None:
+            asc_desc = select_term._asc_desc
+            if asc_desc == "DESC":
+                result.sort(reverse=True)
+            else:
+                result.sort()
+
+        print(f"result {result}")
+        #self._current_context.remove_scope()
+
         print("select_term")
 
     def visit_identifier(self, identifier, arg):

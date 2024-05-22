@@ -12,9 +12,10 @@ class Context:
             #self._scopes.append(Scope(functions))
         self._nested = 0
         self._return_type = None
+        self._functions = functions
     
     def add_scope(self):
-        self._scopes.append(Scope())
+        self._scopes.append(Scope(self._functions))
         self._nested += 1
 
     def remove_scope(self):

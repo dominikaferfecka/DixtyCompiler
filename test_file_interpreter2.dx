@@ -1,1 +1,7 @@
-print("asdasd");
+a = { ("one", 2), ("two", 5), ("three", 6), ("four", 4)};
+fun increase(x)
+{
+    return x + 2;
+}
+b = SELECT increase(Value) FROM a WHERE 2 == 2 ORDER_BY Value DESC;
+c = 2;

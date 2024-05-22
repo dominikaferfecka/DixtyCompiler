@@ -17,10 +17,17 @@ class Interpreter(Visitor):
 
     
     def add_context(self):
+        print(f"SCOPE {[scope._variables for scope in self._current_context._scopes]}")
         self._contexts.append(self._current_context)
         self._current_context = Context(self._functions, self._current_context._scopes)
+        print(f"CONTEXT add: {self._contexts}")
+        print(f"SCOPE {[scope._variables for scope in self._current_context._scopes]}")
+    
     def remove_context(self):
         self._current_context = self._contexts.pop()
+        print(f"SCOPE {[scope._variables for scope in self._current_context._scopes]}")
+        print(f"CONTEXT remove: {self._contexts}")
+        print(f"SCOPE {[scope._variables for scope in self._current_context._scopes]}")
     
     def get_last_result(self):
         last_result = self._last_result

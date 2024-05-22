@@ -195,3 +195,7 @@ b = 7;
 
 a = { ("one",1), ("two",2)};
 b = a.contains_key("one");
+
+a = 1;
+b = toFloat(a);
+c = toString(a);

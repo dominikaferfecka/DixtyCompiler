@@ -51,16 +51,22 @@ def contains_key(interpreter, object):
     else:
         interpreter._last_result = False
 
+def to_float(interpreter, left):
+    value = interpreter._current_context.get_scope_variable("value")
+    if isinstance(value, int) or isinstance(value, str):
+        interpreter._last_result = float(value)
+    else:
+        raise SyntaxError
 
+def to_int(interpreter, left):
+    value = interpreter._current_context.get_scope_variable("value")
+    if isinstance(value, float) or isinstance(value, str):
+        interpreter._last_result = int(value)
 
-def to_float():
-    pass
-
-def to_int():
-    pass
-
-def to_string():
-    pass
+def to_string(interpreter, left):
+    value = interpreter._current_context.get_scope_variable("value")
+    if isinstance(value, int) or isinstance(value, float):
+        interpreter._last_result = str(value)
 
 BUILTINS = {
     "print" : FunEmbedded("print", ["message"], display),
@@ -68,7 +74,10 @@ BUILTINS = {
     "append" : FunEmbedded("append", ["value"], append_list),
     "remove" : FunEmbedded("remove", ["index"], remove_list),
     "insert" : FunEmbedded("insert", ["index", "value"], insert_list),
-    "contains_key" : FunEmbedded("contains_key", ["value"], contains_key)
+    "contains_key" : FunEmbedded("contains_key", ["value"], contains_key),
+    "toFloat" : FunEmbedded("toFloat", ["value"], to_float),
+    "toInt" : FunEmbedded("toInt", ["value"], to_int),
+    "toString" : FunEmbedded("toString", ["value"], to_string)
 }
 
 

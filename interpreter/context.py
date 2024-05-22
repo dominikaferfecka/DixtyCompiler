@@ -1,5 +1,6 @@
 from interpreter.scope import Scope
 from interpreter.errors import ( VariableNotExists)
+import copy
 
 class Context:
     def __init__(self, functions, scopes=None):
@@ -7,7 +8,8 @@ class Context:
             self._scopes = [Scope(functions)]
         else:
             self._scopes = scopes
-            self._scopes.append(Scope(functions))
+            self._scopes = copy.deepcopy(scopes)
+            #self._scopes.append(Scope(functions))
         self._nested = 0
         self._return_type = None
     

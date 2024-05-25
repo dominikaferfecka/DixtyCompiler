@@ -15,7 +15,8 @@ class FunEmbedded:
 
 def display(interpreter, left):
     message = interpreter._current_context.get_scope_variable("message")
-    print(f"printing {message}")
+    print(message)
+    #print(f"#printing {message}")
 
 def length(interpreter, left):
     list = interpreter._current_context.get_scope_variable("list")
@@ -24,28 +25,28 @@ def length(interpreter, left):
 def append_list(interpreter, object):
     value = interpreter._current_context.get_scope_variable("value")
     # list.append(value)
-    print(f"value {value}")
-    print(f"object {object._value}")
+    #print(f"value {value}")
+    #print(f"object {object._value}")
     # list.append(value)
     object._value.append(value)
-    print(f"object changed: {object._value}")
-    print("vvvv")
+    #print(f"object changed: {object._value}")
+    #print("vvvv")
 
 def remove_list(interpreter, object):
     index = interpreter._current_context.get_scope_variable("index")
-    print(f"index {index}")
-    print(f"object {object._value}")
+    #print(f"index {index}")
+    #print(f"object {object._value}")
     object._value.remove(index)
 
 def insert_list(interpreter, object):
     value = interpreter._current_context.get_scope_variable("value")
     index = interpreter._current_context.get_scope_variable("index")
-    print(f"value {value}")
+    #print(f"value {value}")
     object._value.insert(index, value)
 
 def contains_key(interpreter, object):
     value = interpreter._current_context.get_scope_variable("value")
-    print(object._value.keys())
+    #print(object._value.keys())
     if value in object._value.keys():
         interpreter._last_result = True
     else:
@@ -83,5 +84,5 @@ BUILTINS = {
 
 
 
-# fun = BUILTINS["print"]
+# fun = BUILTINS["#print"]
 # fun.run()

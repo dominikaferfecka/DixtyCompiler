@@ -220,4 +220,8 @@ fun increase(x)
 b = SELECT increase(Value) FROM a WHERE 2 == 2 ORDER_BY Value DESC;
 c = 2;
 
+b = SELECT (Key, Value) FROM a WHERE Value == 2 ORDER_BY Value DESC;
+c = 2;
 
+b = SELECT (Key, Value) FROM a WHERE Key[0] == "t" ORDER_BY Value DESC;
+c = 2;

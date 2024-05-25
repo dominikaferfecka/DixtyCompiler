@@ -17,8 +17,8 @@ class IndexAcccesEvaulation:
 
         self._index_access_list = indexes
         left = interpreter.evaulate(left_object)
-        print(indexes)
-        print(left)
+        # print(indexes)
+        # print(left)
         self._value = left[indexes[-1]]
 
 

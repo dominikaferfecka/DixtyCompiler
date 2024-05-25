@@ -44,7 +44,7 @@ class Scope:
         pass
 
     def get_function(self, name):
-        print(name)
+        #print(name)
         if name in self._functions.keys():
             return self._functions[name]
 

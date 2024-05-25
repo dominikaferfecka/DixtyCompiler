@@ -309,7 +309,7 @@ class Interpreter(Visitor):
         right_mult_term = self.evaulate(right_mult_term)
 
         if self.check_types(left_mult_term, right_mult_term, int) or self.check_types(left_mult_term, right_mult_term, float):
-            self._last_result = left_mult_term + right_mult_term
+            self._last_result = left_mult_term - right_mult_term
         else:
             raise SyntaxError   
         #print(f"sub_term: {self._last_result}")

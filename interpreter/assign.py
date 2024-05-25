@@ -19,7 +19,13 @@ class IndexAcccesEvaulation:
         left = interpreter.evaulate(left_object)
         # print(indexes)
         # print(left)
-        self._value = left[indexes[-1]]
+        if isinstance(left, list):
+            self._value = left[indexes[-1]]
+        else:
+            keys = left.keys()
+            key = [indexes[-1]]
+            key = interpreter.evaulate(key[0])
+            self._value = left[key]
 
 
         #         left = interpreter.evaulate_identifier(left)

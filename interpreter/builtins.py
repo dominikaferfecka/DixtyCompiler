@@ -18,8 +18,8 @@ def display(interpreter, left):
     print(message)
     #print(f"#printing {message}")
 
-def length(interpreter, left):
-    list = interpreter._current_context.get_scope_variable("list")
+def length(interpreter, object):
+    list = interpreter.evaulate(object)
     interpreter._last_result = len(list)
 
 def append_list(interpreter, object):
@@ -52,33 +52,33 @@ def contains_key(interpreter, object):
     else:
         interpreter._last_result = False
 
-def to_float(interpreter, left):
-    value = interpreter._current_context.get_scope_variable("value")
+def to_float(interpreter, object):
+    value = interpreter.evaulate(object)
     if isinstance(value, int) or isinstance(value, str):
         interpreter._last_result = float(value)
     else:
         raise SyntaxError
 
-def to_int(interpreter, left):
-    value = interpreter._current_context.get_scope_variable("value")
+def to_int(interpreter, object):
+    value = interpreter.evaulate(object)
     if isinstance(value, float) or isinstance(value, str):
         interpreter._last_result = int(value)
 
-def to_string(interpreter, left):
-    value = interpreter._current_context.get_scope_variable("value")
+def to_string(interpreter, object):
+    value = interpreter.evaulate(object)
     if isinstance(value, int) or isinstance(value, float):
         interpreter._last_result = str(value)
 
 BUILTINS = {
     "print" : FunEmbedded("print", ["message"], display),
-    "len" : FunEmbedded("len", ["list"], length),
+    "len" : FunEmbedded("len", [], length),
     "append" : FunEmbedded("append", ["value"], append_list),
     "remove" : FunEmbedded("remove", ["index"], remove_list),
     "insert" : FunEmbedded("insert", ["index", "value"], insert_list),
     "contains_key" : FunEmbedded("contains_key", ["value"], contains_key),
-    "toFloat" : FunEmbedded("toFloat", ["value"], to_float),
-    "toInt" : FunEmbedded("toInt", ["value"], to_int),
-    "toString" : FunEmbedded("toString", ["value"], to_string)
+    "ToFloat" : FunEmbedded("ToFloat", [], to_float),
+    "ToInt" : FunEmbedded("ToInt", [], to_int),
+    "ToString" : FunEmbedded("ToString", [], to_string)
 }
 
 

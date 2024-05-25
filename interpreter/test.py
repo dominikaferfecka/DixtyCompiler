@@ -13,10 +13,15 @@
 # print(a)  # Output: [[1, 2, 3], [10, 5, 6]]
 
 
-a = { "one": 1}
-b = {"two": 2}
-# c = a | b
-a.update(b)
-print(a)
+# a = { "one": 1}
+# b = {"two": 2}
+# # c = a | b
 # a.update(b)
 # print(a)
+# # a.update(b)
+# # print(a)
+
+
+list = {"one":1, "two":2}
+for element in list.items():
+    print(element)

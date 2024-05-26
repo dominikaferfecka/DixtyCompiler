@@ -204,20 +204,17 @@ a = "b";
 print(a == "b");
 
 a = { ("one", 1), ("two", 2)};
-fun increase(x)
+fun increase2(x)
 {
     return x + 2;
 }
-b = SELECT increase(Value) FROM a;
+b = SELECT increase2(Value) FROM a;
 c = 2;
 
 
 a = { ("one", 2), ("two", 5), ("three", 6), ("four", 4)};
-fun increase(x)
-{
-    return x + 2;
-}
-b = SELECT increase(Value) FROM a WHERE 2 == 2 ORDER_BY Value DESC;
+
+b = SELECT increase2(Value) FROM a WHERE 2 == 2 ORDER_BY Value DESC;
 c = 2;
 
 b = SELECT (Key, Value) FROM a WHERE Value == 2 ORDER_BY Value DESC;

@@ -15,6 +15,8 @@ class FunEmbedded:
 
 def display(interpreter, left):
     message = interpreter._current_context.get_scope_variable("message")
+    
+    message = interpreter.evaulate(message)
     print(message)
     #print(f"#printing {message}")
 

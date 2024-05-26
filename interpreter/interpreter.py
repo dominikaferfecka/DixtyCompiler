@@ -44,6 +44,11 @@ class Interpreter(Visitor):
             element = element._value
         elif isinstance(element, IndexAcccesEvaulation):
             element = element._value
+        elif isinstance(element, list):
+            result = []
+            for el in element:
+                result.append(self.evaulate(el))
+            element = result
         return element
 
 
@@ -214,7 +219,6 @@ class Interpreter(Visitor):
         else:
             raise SyntaxError  
 
-        self._last_result = left_additive_term < right_additive_term
         #print(f"less_term {self._last_result}")
 
     def visit_more_term(self, more_term, arg):
@@ -234,8 +238,7 @@ class Interpreter(Visitor):
             self._last_result = left_additive_term > right_additive_term
         else:
             raise SyntaxError  
-        
-        self._last_result = left_additive_term > right_additive_term
+    
         #print(f"more_term {self._last_result}")
 
     def visit_less_or_equal_term(self, less_or_equal_term, arg):
@@ -256,7 +259,6 @@ class Interpreter(Visitor):
         else:
             raise SyntaxError  
         
-        self._last_result = left_additive_term <= right_additive_term
         #print(f"less_or_equal_term {self._last_result}")
 
     def visit_more_or_equal_term(self, more_or_equal_term, arg):
@@ -277,7 +279,6 @@ class Interpreter(Visitor):
         else:
             raise SyntaxError  
         
-        self._last_result = left_additive_term <= right_additive_term
         #print(f"more_or_equal_term {self._last_result}")
     
     def check_types(self, left, right, type):

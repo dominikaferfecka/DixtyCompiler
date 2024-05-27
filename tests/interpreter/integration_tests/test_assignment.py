@@ -36,6 +36,12 @@ def test_assign_string(setup_interpreter, capsys):
     assert (captured.out == "test\n")
 
 
+def test_assign_string_empty(setup_interpreter, capsys):
+    setup_interpreter(SourceString("a=\"\"; print(a);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "\n")
+
+
 def test_assign_string_complicated(setup_interpreter, capsys):
     setup_interpreter(SourceString("a=\"!@'/#\\\\*%\\\"^ \"; print(a);"))
     captured = capsys.readouterr()

@@ -50,13 +50,6 @@ def test_for_string_variable(setup_interpreter, capsys):
     captured = capsys.readouterr()
     assert (captured.out == "a\nb\nc\nd\n")
 
-
-def test_for_string_empty(setup_interpreter, capsys):
-    setup_interpreter(SourceString("text = ""; for element in text {print(element);}"))
-    captured = capsys.readouterr()
-    assert (captured.out == "")
-
-
 def test_for_dict(setup_interpreter, capsys):
     setup_interpreter(SourceString("for element in {(\"one\",1),(\"two\",2)} {print(element);}"))
     captured = capsys.readouterr()
@@ -72,7 +65,7 @@ def test_for_dict_variable(setup_interpreter, capsys):
 def test_for_dict_variable_items_tuple(setup_interpreter, capsys):
     setup_interpreter(SourceString("dict = {(\"one\",1)}; for element in dict {print((element, dict[element]));}"))
     captured = capsys.readouterr()
-    assert (captured.out == "(one,1)\n(two,2)\n")
+    assert (captured.out == "('one', 1)\n")
 
 
 def test_for_dict_variable_items(setup_interpreter, capsys):

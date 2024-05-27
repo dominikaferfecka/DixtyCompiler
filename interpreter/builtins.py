@@ -1,4 +1,20 @@
 
+from interpreter.errors import (
+    VariableNotExists,
+    FunctionNotDeclared,
+    IncorrectArgumentsNumber,
+    UnsupportedTypesToMakeOperation,
+    CannotAddUnsupportedTypes,
+    CannotSubUnsupportedTypes,
+    CannotMultUnsupportedTypes,
+    CannotDivUnsupportedTypes,
+    CannotCompareUnsupportedTypes,
+    AlreadyExistingDictKey,
+    NotExistingDictKey,
+    CannotConvertType
+)
+
+
 class FunEmbedded:
     def __init__(self, name, parameters, action):
         super().__init__()
@@ -60,12 +76,12 @@ def add_item(interpreter, object):
     if not key in object._value.keys():
         object._value[key] = value
     else:
-        raise SyntaxError
+        raise AlreadyExistingDictKey(key)
 
 def remove_item(interpreter, object):
     key = interpreter._current_context.get_scope_variable("key")
     if not key in object._value.keys():
-        raise SyntaxError
+        raise NotExistingDictKey(key)
     else:
         del object._value[key]
 
@@ -74,19 +90,32 @@ def remove_item(interpreter, object):
 def to_float(interpreter, object):
     value = interpreter.evaulate(object)
     if isinstance(value, int) or isinstance(value, str):
-        interpreter._last_result = float(value)
+        try:
+            interpreter._last_result = float(value)
+        except ValueError as e:
+            raise CannotConvertType(type(value), float) from e
     else:
-        raise SyntaxError
+        raise CannotConvertType(type(value), float)
 
 def to_int(interpreter, object):
     value = interpreter.evaulate(object)
     if isinstance(value, float) or isinstance(value, str):
-        interpreter._last_result = int(value)
+        try:
+            interpreter._last_result = int(value)
+        except ValueError as e:
+            raise CannotConvertType(type(value), str) from e
+    else:
+        raise CannotConvertType(type(value), int)
 
 def to_string(interpreter, object):
     value = interpreter.evaulate(object)
     if isinstance(value, int) or isinstance(value, float):
-        interpreter._last_result = str(value)
+        try:
+            interpreter._last_result = str(value)
+        except ValueError as e:
+            raise CannotConvertType(type(value), int) from e
+    else:
+        raise CannotConvertType(type(value), str)
 
 BUILTINS = {
     "print" : FunEmbedded("print", ["message"], display),

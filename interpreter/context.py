@@ -2,6 +2,22 @@ from interpreter.scope import Scope
 from interpreter.errors import ( VariableNotExists)
 import copy
 
+
+from interpreter.errors import (
+    VariableNotExists,
+    FunctionNotDeclared,
+    IncorrectArgumentsNumber,
+    UnsupportedTypesToMakeOperation,
+    CannotAddUnsupportedTypes,
+    CannotSubUnsupportedTypes,
+    CannotMultUnsupportedTypes,
+    CannotDivUnsupportedTypes,
+    CannotCompareUnsupportedTypes,
+    NotExistingDictKey,
+    CannotConvertType
+)
+
+
 class Context:
     def __init__(self, functions, scopes=None):
         if scopes is None:
@@ -28,8 +44,7 @@ class Context:
             if variable is not None:
                 break
         if variable is None:
-            return None
-            # raise VariableNotExists(name)
+            raise VariableNotExists(name)
         return variable
 
     def set_scope_variable(self, name, value):

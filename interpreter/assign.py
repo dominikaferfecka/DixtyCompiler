@@ -1,9 +1,15 @@
+from interpreter.errors import (
+    VariableNotExists)
+
 class IdentifierEvaulation:
     def __init__(self, interpreter, object):
         self._interpreter = interpreter
         self._object = object
         self._name = object._name
-        self._value = interpreter._current_context.get_scope_variable(object._name)
+        try:
+            self._value = interpreter._current_context.get_scope_variable(object._name)
+        except VariableNotExists: 
+            self._value = None
 
 class IndexAcccesEvaulation:
     def __init__(self, interpreter, left_object, indexes):
@@ -12,8 +18,6 @@ class IndexAcccesEvaulation:
         # if isinstance(left_object, IndexAcccesEvaulation):
         #     self._name = left_object._name
         self._left_object = left_object
-
-
 
         self._index_access_list = indexes
         left = interpreter.evaulate(left_object)

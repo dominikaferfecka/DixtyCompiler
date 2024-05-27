@@ -3,6 +3,17 @@ from parser.visitor import Visitor
 from interpreter.context import Context, Scope
 from interpreter.assign import IdentifierEvaulation, IndexAcccesEvaulation
 from interpreter.builtins import FunEmbedded
+from interpreter.errors import (
+    VariableNotExists,
+    FunctionNotDeclared,
+    IncorrectArgumentsNumber,
+    UnsupportedTypesToMakeOperation,
+    CannotAddUnsupportedTypes,
+    CannotSubUnsupportedTypes,
+    CannotMultUnsupportedTypes,
+    CannotDivUnsupportedTypes,
+    CannotCompareUnsupportedTypes
+)
 
 class Interpreter(Visitor):
     def __init__(self, functions, builtins):
@@ -12,7 +23,6 @@ class Interpreter(Visitor):
         self._if_done = False
         self._current_context = Context(functions)
         self._contexts = []
-        #self._return_type = None
         self._return = False # if true stop visiting in block statemet till fundef
 
     
@@ -34,10 +44,6 @@ class Interpreter(Visitor):
         self._last_result = None
         return last_result
 
-    # def evaulate(self, element):
-    #     if isinstance(element, Identifier): #?
-    #         element = self._current_context.get_scope_variable(element._name)
-    #     return element
 
     def evaulate(self, element):
         if isinstance(element, IdentifierEvaulation): #?
@@ -52,6 +58,9 @@ class Interpreter(Visitor):
         elif isinstance(element, tuple):
             element = (self.evaulate(element[0]), self.evaulate(element[1]))
         return element
+
+    def check_types(self, left, right, type):
+        return isinstance(left, type) and isinstance(right, type)
 
 
     def visit_for_statement(self, for_statement, arg):
@@ -179,6 +188,7 @@ class Interpreter(Visitor):
         #print(f"not_term {self._last_result}")
 
     def visit_equal_term(self, equal_term, arg):
+        position = equal_term._position
         equal_term._left_additive_term.accept(self, arg)
         left_additive_term = self.get_last_result()
         equal_term._right_additive_term.accept(self, arg)
@@ -198,12 +208,14 @@ class Interpreter(Visitor):
         elif self.check_types(left_additive_term, right_additive_term, bool):
             self._last_result = left_additive_term == right_additive_term
         else:
-            raise SyntaxError  
+            raise CannotCompareUnsupportedTypes(left_additive_term, right_additive_term, position) 
 
         self._last_result = left_additive_term == right_additive_term
         #print(f"equal_term {self._last_result}")
 
     def visit_less_term(self, less_term, arg):
+        position = less_term._position
+        
         less_term._left_additive_term.accept(self, arg)
         left_additive_term = self.get_last_result()
         less_term._right_additive_term.accept(self, arg)
@@ -219,11 +231,13 @@ class Interpreter(Visitor):
         elif self.check_types(left_additive_term, right_additive_term, str):
             self._last_result = left_additive_term < right_additive_term
         else:
-            raise SyntaxError  
+            raise CannotCompareUnsupportedTypes(left_additive_term, right_additive_term, position) 
 
         #print(f"less_term {self._last_result}")
 
     def visit_more_term(self, more_term, arg):
+        position = more_term._position
+
         more_term._left_additive_term.accept(self, arg)
         left_additive_term = self.get_last_result()
         more_term._right_additive_term.accept(self, arg)
@@ -239,11 +253,13 @@ class Interpreter(Visitor):
         elif self.check_types(left_additive_term, right_additive_term, str):
             self._last_result = left_additive_term > right_additive_term
         else:
-            raise SyntaxError  
+            raise CannotCompareUnsupportedTypes(left_additive_term, right_additive_term, position) 
     
         #print(f"more_term {self._last_result}")
 
     def visit_less_or_equal_term(self, less_or_equal_term, arg):
+        position = less_or_equal_term._position
+
         less_or_equal_term._left_additive_term.accept(self, arg)
         left_additive_term = self.get_last_result()
         less_or_equal_term._right_additive_term.accept(self, arg)
@@ -259,11 +275,13 @@ class Interpreter(Visitor):
         elif self.check_types(left_additive_term, right_additive_term, str):
             self._last_result = left_additive_term <= right_additive_term
         else:
-            raise SyntaxError  
+            raise CannotCompareUnsupportedTypes(left_additive_term, right_additive_term, position) 
         
         #print(f"less_or_equal_term {self._last_result}")
 
     def visit_more_or_equal_term(self, more_or_equal_term, arg):
+        position = more_or_equal_term._position
+
         more_or_equal_term._left_additive_term.accept(self, arg)
         left_additive_term = self.get_last_result()
         more_or_equal_term._right_additive_term.accept(self, arg)
@@ -279,15 +297,13 @@ class Interpreter(Visitor):
         elif self.check_types(left_additive_term, right_additive_term, str):
             self._last_result = left_additive_term >= right_additive_term
         else:
-            raise SyntaxError  
+            raise CannotCompareUnsupportedTypes(left_additive_term, right_additive_term, position) 
         
         #print(f"more_or_equal_term {self._last_result}")
     
-    def check_types(self, left, right, type):
-        return isinstance(left, type) and isinstance(right, type)
-
-
     def visit_add_term(self, add_term, arg):
+        position = add_term._position
+
         add_term._left_mult_term.accept(self, arg)
         left_mult_term = self.get_last_result()
         add_term._right_mult_term.accept(self, arg)
@@ -299,10 +315,12 @@ class Interpreter(Visitor):
         if self.check_types(left_mult_term, right_mult_term, int) or self.check_types(left_mult_term, right_mult_term, float) or self.check_types(left_mult_term, right_mult_term, str):
             self._last_result = left_mult_term + right_mult_term
         else:
-            raise SyntaxError    
+            raise CannotAddUnsupportedTypes(left_mult_term, right_mult_term, position) 
         #print(f"add_term: {self._last_result}")
 
     def visit_sub_term(self, sub_term, arg):
+        position = sub_term._position
+
         sub_term._left_mult_term.accept(self, arg)
         left_mult_term = self.get_last_result()
         sub_term._right_mult_term.accept(self, arg)
@@ -314,10 +332,12 @@ class Interpreter(Visitor):
         if self.check_types(left_mult_term, right_mult_term, int) or self.check_types(left_mult_term, right_mult_term, float):
             self._last_result = left_mult_term - right_mult_term
         else:
-            raise SyntaxError   
+            raise CannotSubUnsupportedTypes(left_mult_term, right_mult_term, position) 
         #print(f"sub_term: {self._last_result}")
     
     def visit_mult_term(self, mult_term, arg):
+        position = mult_term._position
+
         mult_term._left_signed_factor.accept(self, arg)
         left_signed_factor = self.get_last_result()
         mult_term._right_signed_factor.accept(self, arg)
@@ -329,10 +349,12 @@ class Interpreter(Visitor):
         if self.check_types(left_signed_factor, right_signed_factor, int) or self.check_types(left_signed_factor, right_signed_factor, float):
             self._last_result = left_signed_factor * right_signed_factor
         else:
-            raise SyntaxError  
+            raise CannotMultUnsupportedTypes(left_signed_factor, right_signed_factor, position) 
         #print(f"mult_term: {self._last_result}")
 
     def visit_div_term(self, div_term, arg):
+        position = div_term._position
+
         div_term._left_signed_factor.accept(self, arg)
         left_signed_factor = self.get_last_result()
         div_term._right_signed_factor.accept(self, arg)
@@ -346,7 +368,7 @@ class Interpreter(Visitor):
         elif self.check_types(left_signed_factor, right_signed_factor, float):
             self._last_result = left_signed_factor / right_signed_factor
         else:
-            raise SyntaxError  
+            raise CannotDivUnsupportedTypes(left_signed_factor, right_signed_factor, position) 
 
         #print(f"div_term: {self._last_result}")
     
@@ -398,6 +420,7 @@ class Interpreter(Visitor):
         #print(f"index access: {left} [ {index_object} ] - {self._last_result}")
     
     def visit_fun_call(self, fun_call, object):
+        position = fun_call._position
         fun_call._left.accept(self, None)
         identifier = self.get_last_result()
         arguments = fun_call._arguments
@@ -405,7 +428,7 @@ class Interpreter(Visitor):
         fun_def = self._current_context.get_scope_function(identifier._name)
         
         if fun_def is None:
-            raise SyntaxError
+            raise FunctionNotDeclared(identifier._name, position)
 
         # if isinstance(fun_def, FunEmbedded):
         #     pass
@@ -418,7 +441,7 @@ class Interpreter(Visitor):
             arguments = []
 
         if not len(parameters) == len(arguments):
-            raise SyntaxError
+            raise IncorrectArgumentsNumber(identifier._name, len(parameters), len(arguments), position)
         
         self.add_context()
         #self._current_context.add_scope()

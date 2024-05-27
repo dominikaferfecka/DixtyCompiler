@@ -267,6 +267,13 @@ def test_string():
     assert (token.get_value() == "a")
 
 
+def test_string_empty():
+    lexer = Lexer(SourceString("\"\""))
+    token = lexer.get_next_token()
+    assert (token.get_token_type() == TokenType.STRING)
+    assert (token.get_value() == "")
+
+
 def test_integer():
     lexer = Lexer(SourceString("1"))
     token = lexer.get_next_token()

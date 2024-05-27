@@ -1,22 +1,6 @@
 from interpreter.scope import Scope
-from interpreter.errors import ( VariableNotExists)
+from interpreter.errors import VariableNotExists
 import copy
-
-
-from interpreter.errors import (
-    VariableNotExists,
-    FunctionNotDeclared,
-    IncorrectArgumentsNumber,
-    UnsupportedTypesToMakeOperation,
-    CannotAddUnsupportedTypes,
-    CannotSubUnsupportedTypes,
-    CannotMultUnsupportedTypes,
-    CannotDivUnsupportedTypes,
-    CannotCompareUnsupportedTypes,
-    NotExistingDictKey,
-    CannotConvertType
-)
-
 
 class Context:
     def __init__(self, functions, scopes=None):
@@ -25,7 +9,6 @@ class Context:
         else:
             self._scopes = scopes
             self._scopes = copy.deepcopy(scopes)
-            #self._scopes.append(Scope(functions))
         self._nested = 0
         self._return_type = None
         self._functions = functions
@@ -53,6 +36,3 @@ class Context:
     def get_scope_function(self, name):
         function = self._scopes[-1].get_function(name)
         return function
-
-    def set_scope_function(self):
-        pass

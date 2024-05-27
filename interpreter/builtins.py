@@ -1,19 +1,9 @@
 
 from interpreter.errors import (
-    VariableNotExists,
-    FunctionNotDeclared,
-    IncorrectArgumentsNumber,
-    UnsupportedTypesToMakeOperation,
-    CannotAddUnsupportedTypes,
-    CannotSubUnsupportedTypes,
-    CannotMultUnsupportedTypes,
-    CannotDivUnsupportedTypes,
-    CannotCompareUnsupportedTypes,
     AlreadyExistingDictKey,
     NotExistingDictKey,
     CannotConvertType
 )
-
 
 class FunEmbedded:
     def __init__(self, name, parameters, action):
@@ -25,16 +15,11 @@ class FunEmbedded:
     def run(self,  *args):
         self._action(*args)
 
-    # def run(self, interpreter):
-    #     self._action(interpreter)
-
-
 def display(interpreter, left):
     message = interpreter._current_context.get_scope_variable("message")
     
     message = interpreter.evaulate(message)
     print(message)
-    #print(f"#printing {message}")
 
 def length(interpreter, object):
     list = interpreter.evaulate(object)
@@ -42,29 +27,20 @@ def length(interpreter, object):
 
 def append_list(interpreter, object):
     value = interpreter._current_context.get_scope_variable("value")
-    # list.append(value)
-    #print(f"value {value}")
-    #print(f"object {object._value}")
-    # list.append(value)
     object._value.append(value)
-    #print(f"object changed: {object._value}")
-    #print("vvvv")
 
 def remove_list(interpreter, object):
     index = interpreter._current_context.get_scope_variable("index")
-    #print(f"index {index}")
-    #print(f"object {object._value}")
     object._value.remove(index)
 
 def insert_list(interpreter, object):
     value = interpreter._current_context.get_scope_variable("value")
     index = interpreter._current_context.get_scope_variable("index")
-    #print(f"value {value}")
     object._value.insert(index, value)
 
 def contains_key(interpreter, object):
     value = interpreter._current_context.get_scope_variable("value")
-    #print(object._value.keys())
+
     if value in object._value.keys():
         interpreter._last_result = True
     else:
@@ -73,6 +49,7 @@ def contains_key(interpreter, object):
 def add_item(interpreter, object):
     key = interpreter._current_context.get_scope_variable("key")
     value = interpreter._current_context.get_scope_variable("value")
+    
     if not key in object._value.keys():
         object._value[key] = value
     else:
@@ -80,15 +57,16 @@ def add_item(interpreter, object):
 
 def remove_item(interpreter, object):
     key = interpreter._current_context.get_scope_variable("key")
+    
     if not key in object._value.keys():
         raise NotExistingDictKey(key)
     else:
         del object._value[key]
 
         
-
 def to_float(interpreter, object):
     value = interpreter.evaulate(object)
+    
     if isinstance(value, int) or isinstance(value, str):
         try:
             interpreter._last_result = float(value)
@@ -117,6 +95,7 @@ def to_string(interpreter, object):
     else:
         raise CannotConvertType(type(value), str)
 
+
 BUILTINS = {
     "print" : FunEmbedded("print", ["message"], display),
     "len" : FunEmbedded("len", [], length),
@@ -130,9 +109,3 @@ BUILTINS = {
     "ToInt" : FunEmbedded("ToInt", [], to_int),
     "ToString" : FunEmbedded("ToString", [], to_string)
 }
-
-
-
-
-# fun = BUILTINS["#print"]
-# fun.run()

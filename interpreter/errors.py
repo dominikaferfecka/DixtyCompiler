@@ -7,9 +7,11 @@ class FunctionNotDeclared(Exception):
     def __init__(self, name, position):
         super().__init__(f'Tried to use not defined function: [{name}] at {position}')
 
+
 class FunctionAlreadyDeclared(Exception):
     def __init__(self, name, position):
         super().__init__(f'Tried to declare already existing function: [{name}] at {position}')
+
 
 class IncorrectArgumentsNumber(Exception):
     def __init__(self, function_name, expected, received, position):
@@ -25,25 +27,31 @@ class CannotAddUnsupportedTypes(UnsupportedTypesToMakeOperation):
     def __init__(self, left, right, position):
         super().__init__(left, right, "adding", position)
 
+
 class CannotSubUnsupportedTypes(UnsupportedTypesToMakeOperation):
     def __init__(self, left, right, position):
         super().__init__(left, right, "subtraction", position)
+
 
 class CannotMultUnsupportedTypes(UnsupportedTypesToMakeOperation):
     def __init__(self, left, right, position):
         super().__init__(left, right, "multiplication", position)
 
+
 class CannotDivUnsupportedTypes(UnsupportedTypesToMakeOperation):
     def __init__(self, left, right, position):
         super().__init__(left, right, "division", position)
+
 
 class CannotCompareUnsupportedTypes(UnsupportedTypesToMakeOperation):
     def __init__(self, left, right, position):
         super().__init__(left, right, "comparison", position)
 
+
 class AlreadyExistingDictKey(Exception):
     def __init__(self, name):
         super().__init__(f'Tried to add key to dict which already exists: [{name}]')
+
 
 class NotExistingDictKey(Exception):
     def __init__(self, name):

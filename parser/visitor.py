@@ -134,10 +134,6 @@ class Visitor(ABC):
         pass
 
     @abstractmethod
-    def visit_item(self, item):
-        pass
-
-    @abstractmethod
     def visit_identifier(self, identifier):
         pass
 

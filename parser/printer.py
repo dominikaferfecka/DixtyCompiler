@@ -159,9 +159,6 @@ class Printer(Visitor):
         object_access._left_item.accept(self, indent + self._new_indent)
         object_access._right_item.accept(self, indent + self._new_indent)
 
-    def visit_item(self, item, indent=""):
-        print(f"{indent}Item - memory: [{hex(id(item))}], position [{item._position}], value: [{item._name}]") 
-
     def visit_identifier(self, identifier, indent=""):
         print(f"{indent}Identifier - memory: [{hex(id(identifier))}], position [{identifier._position}], name [{identifier._name}]") 
 

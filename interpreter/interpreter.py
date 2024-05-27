@@ -49,8 +49,11 @@ class Interpreter(Visitor):
             element = (self.evaulate(element[0]), self.evaulate(element[1]))
         return element
 
-    def check_types(self, left, right, type):
-        return isinstance(left, type) and isinstance(right, type)
+    def check_types(self, left, right, types):
+        for type in types:
+            if isinstance(left, type) and isinstance(right, type):
+                return True
+        return False
 
 
     def visit_for_statement(self, for_statement, arg):
@@ -170,13 +173,7 @@ class Interpreter(Visitor):
         left_additive_term = self.evaulate(left_additive_term)
         right_additive_term = self.evaulate(right_additive_term)
 
-        if self.check_types(left_additive_term, right_additive_term, int):
-            self._last_result = left_additive_term == right_additive_term
-        elif self.check_types(left_additive_term, right_additive_term, float):
-            self._last_result = left_additive_term == right_additive_term
-        elif self.check_types(left_additive_term, right_additive_term, str):
-            self._last_result = left_additive_term == right_additive_term
-        elif self.check_types(left_additive_term, right_additive_term, bool):
+        if self.check_types(left_additive_term, right_additive_term, [int, float, str, bool]):
             self._last_result = left_additive_term == right_additive_term
         else:
             raise CannotCompareUnsupportedTypes(left_additive_term, right_additive_term, position) 
@@ -194,16 +191,11 @@ class Interpreter(Visitor):
         left_additive_term = self.evaulate(left_additive_term)
         right_additive_term = self.evaulate(right_additive_term)
 
-        if self.check_types(left_additive_term, right_additive_term, int):
-            self._last_result = left_additive_term < right_additive_term
-        elif self.check_types(left_additive_term, right_additive_term, float):
-            self._last_result = left_additive_term < right_additive_term
-        elif self.check_types(left_additive_term, right_additive_term, str):
+        if self.check_types(left_additive_term, right_additive_term, [int, float, str]):
             self._last_result = left_additive_term < right_additive_term
         else:
             raise CannotCompareUnsupportedTypes(left_additive_term, right_additive_term, position) 
 
-        #print(f"less_term {self._last_result}")
 
     def visit_more_term(self, more_term, arg):
         position = more_term._position
@@ -216,16 +208,11 @@ class Interpreter(Visitor):
         left_additive_term = self.evaulate(left_additive_term)
         right_additive_term = self.evaulate(right_additive_term)
 
-        if self.check_types(left_additive_term, right_additive_term, int):
-            self._last_result = left_additive_term > right_additive_term
-        elif self.check_types(left_additive_term, right_additive_term, float):
-            self._last_result = left_additive_term > right_additive_term
-        elif self.check_types(left_additive_term, right_additive_term, str):
+        if self.check_types(left_additive_term, right_additive_term, [int, float, str]):
             self._last_result = left_additive_term > right_additive_term
         else:
             raise CannotCompareUnsupportedTypes(left_additive_term, right_additive_term, position) 
     
-        #print(f"more_term {self._last_result}")
 
     def visit_less_or_equal_term(self, less_or_equal_term, arg):
         position = less_or_equal_term._position
@@ -238,16 +225,11 @@ class Interpreter(Visitor):
         left_additive_term = self.evaulate(left_additive_term)
         right_additive_term = self.evaulate(right_additive_term)
 
-        if self.check_types(left_additive_term, right_additive_term, int):
-            self._last_result = left_additive_term <= right_additive_term
-        elif self.check_types(left_additive_term, right_additive_term, float):
-            self._last_result = left_additive_term <= right_additive_term
-        elif self.check_types(left_additive_term, right_additive_term, str):
+        if self.check_types(left_additive_term, right_additive_term, [int, float, str]):
             self._last_result = left_additive_term <= right_additive_term
         else:
             raise CannotCompareUnsupportedTypes(left_additive_term, right_additive_term, position) 
-        
-        #print(f"less_or_equal_term {self._last_result}")
+
 
     def visit_more_or_equal_term(self, more_or_equal_term, arg):
         position = more_or_equal_term._position
@@ -260,16 +242,11 @@ class Interpreter(Visitor):
         left_additive_term = self.evaulate(left_additive_term)
         right_additive_term = self.evaulate(right_additive_term)
 
-        if self.check_types(left_additive_term, right_additive_term, int):
-            self._last_result = left_additive_term >= right_additive_term
-        elif self.check_types(left_additive_term, right_additive_term, float):
-            self._last_result = left_additive_term >= right_additive_term
-        elif self.check_types(left_additive_term, right_additive_term, str):
+        if self.check_types(left_additive_term, right_additive_term, [int, float, str]):
             self._last_result = left_additive_term >= right_additive_term
         else:
             raise CannotCompareUnsupportedTypes(left_additive_term, right_additive_term, position) 
         
-        #print(f"more_or_equal_term {self._last_result}")
     
     def visit_add_term(self, add_term, arg):
         position = add_term._position
@@ -282,11 +259,10 @@ class Interpreter(Visitor):
         left_mult_term = self.evaulate(left_mult_term)
         right_mult_term = self.evaulate(right_mult_term)
 
-        if self.check_types(left_mult_term, right_mult_term, int) or self.check_types(left_mult_term, right_mult_term, float) or self.check_types(left_mult_term, right_mult_term, str):
+        if self.check_types(left_mult_term, right_mult_term, [int, float, str]):
             self._last_result = left_mult_term + right_mult_term
         else:
             raise CannotAddUnsupportedTypes(left_mult_term, right_mult_term, position) 
-        #print(f"add_term: {self._last_result}")
 
     def visit_sub_term(self, sub_term, arg):
         position = sub_term._position
@@ -299,7 +275,7 @@ class Interpreter(Visitor):
         left_mult_term = self.evaulate(left_mult_term)
         right_mult_term = self.evaulate(right_mult_term)
 
-        if self.check_types(left_mult_term, right_mult_term, int) or self.check_types(left_mult_term, right_mult_term, float):
+        if self.check_types(left_mult_term, right_mult_term, [int, float]):
             self._last_result = left_mult_term - right_mult_term
         else:
             raise CannotSubUnsupportedTypes(left_mult_term, right_mult_term, position) 
@@ -315,7 +291,7 @@ class Interpreter(Visitor):
         left_signed_factor = self.evaulate(left_signed_factor)
         right_signed_factor = self.evaulate(right_signed_factor)
 
-        if self.check_types(left_signed_factor, right_signed_factor, int) or self.check_types(left_signed_factor, right_signed_factor, float):
+        if self.check_types(left_signed_factor, right_signed_factor, [int, float]):
             self._last_result = left_signed_factor * right_signed_factor
         else:
             raise CannotMultUnsupportedTypes(left_signed_factor, right_signed_factor, position) 
@@ -331,13 +307,12 @@ class Interpreter(Visitor):
         left_signed_factor = self.evaulate(left_signed_factor)
         right_signed_factor = self.evaulate(right_signed_factor)
 
-        if self.check_types(left_signed_factor, right_signed_factor, int):
-            self._last_result = int(left_signed_factor / right_signed_factor) # ??
-        elif self.check_types(left_signed_factor, right_signed_factor, float):
+        if self.check_types(left_signed_factor, right_signed_factor, [int]):
+            self._last_result = int(left_signed_factor / right_signed_factor)
+        elif self.check_types(left_signed_factor, right_signed_factor, [float]):
             self._last_result = left_signed_factor / right_signed_factor
         else:
             raise CannotDivUnsupportedTypes(left_signed_factor, right_signed_factor, position) 
-
 
     def visit_signed_factor(self, signed_factor, arg):
         signed_factor._factor.accept(self, arg)
@@ -351,10 +326,6 @@ class Interpreter(Visitor):
         right_item = self.get_last_result()
 
         self._last_result = right_item
-
-
-    def visit_item(self, item, arg):
-        pass
     
     def visit_item_statement(self, item, arg):
         pass

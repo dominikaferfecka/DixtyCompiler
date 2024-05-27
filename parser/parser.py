@@ -676,13 +676,15 @@ class Parser:
         from_expression = self.parse_expression()
         self.not_none(from_expression, MissingExpectedStatement, "FROM_expression")
 
-        if self._token.get_token_type() != TokenType.WHERE:
+        if self._token.get_token_type() != TokenType.WHERE and self._token.get_token_type() != TokenType.ORDER_BY:
             return SelectTerm(select_expression, from_expression, position)
         
-        self.consume_token()
+        where_expression = None
+        if self._token.get_token_type() == TokenType.WHERE:
+            self.consume_token()
 
-        where_expression = self.parse_expression()
-        self.not_none(where_expression, MissingExpectedStatement, "WHERE_expression")
+            where_expression = self.parse_expression()
+            self.not_none(where_expression, MissingExpectedStatement, "WHERE_expression")
 
         if self._token.get_token_type() != TokenType.ORDER_BY:
             return SelectTerm(select_expression, from_expression, position, where_expression)

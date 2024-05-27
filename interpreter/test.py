@@ -22,6 +22,11 @@
 # # print(a)
 
 
-list = {"one":1, "two":2}
-for element in list.items():
-    print(element)
+# list = {"one":1, "two":2}
+# for element in list.items():
+#     print(element)
+
+
+a = (1, 2)
+a[0] = 3
+print(a)

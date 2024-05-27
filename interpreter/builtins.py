@@ -54,6 +54,14 @@ def contains_key(interpreter, object):
     else:
         interpreter._last_result = False
 
+def add_item(interpreter, object):
+    key = interpreter._current_context.get_scope_variable("key")
+    value = interpreter._current_context.get_scope_variable("value")
+    if not key in object._value.keys():
+        object._value[key] = value
+    else:
+        raise SyntaxError
+
 def to_float(interpreter, object):
     value = interpreter.evaulate(object)
     if isinstance(value, int) or isinstance(value, str):
@@ -78,6 +86,7 @@ BUILTINS = {
     "remove" : FunEmbedded("remove", ["index"], remove_list),
     "insert" : FunEmbedded("insert", ["index", "value"], insert_list),
     "contains_key" : FunEmbedded("contains_key", ["value"], contains_key),
+    "add" : FunEmbedded("add", ["key", "value"], add_item),
     "ToFloat" : FunEmbedded("ToFloat", [], to_float),
     "ToInt" : FunEmbedded("ToInt", [], to_int),
     "ToString" : FunEmbedded("ToString", [], to_string)

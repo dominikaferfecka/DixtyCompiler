@@ -49,6 +49,8 @@ class Interpreter(Visitor):
             for el in element:
                 result.append(self.evaulate(el))
             element = result
+        elif isinstance(element, tuple):
+            element = (self.evaulate(element[0]), self.evaulate(element[1]))
         return element
 
 

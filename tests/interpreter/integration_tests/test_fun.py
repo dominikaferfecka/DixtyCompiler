@@ -38,13 +38,13 @@ def test_fun_one_argument_variable(setup_interpreter, capsys):
 
 
 def test_fun_two_arguments_variable(setup_interpreter, capsys):
-    setup_interpreter(SourceString("fun add(a, b){return a + b;} a = 2; b = 3; result = add(a,b); print(result);"))
+    setup_interpreter(SourceString("fun add_numbers(a, b){return a + b;} a = 2; b = 3; result = add_numbers(a,b); print(result);"))
     captured = capsys.readouterr()
     assert (captured.out == "5\n")
 
 
 def test_fun_four_arguments_variable(setup_interpreter, capsys):
-    setup_interpreter(SourceString("fun add(a, b, c, d){return a + b + c + d;} a = 2; b = 3; c=4; d=5; result = add(a,b,c,d); print(result);"))
+    setup_interpreter(SourceString("fun add_numbers(a, b, c, d){return a + b + c + d;} a = 2; b = 3; c=4; d=5; result = add_numbers(a,b,c,d); print(result);"))
     captured = capsys.readouterr()
     assert (captured.out == "14\n")
 
@@ -57,7 +57,7 @@ def test_fun_variables_scope(setup_interpreter, capsys):
 
 # variables scope - same name
 def test_fun_variables_scope(setup_interpreter, capsys):
-    setup_interpreter(SourceString("a = 1; b = 2; c = 3; fun add(a, b) { c = 10; return a + b + c;} result = add(a, b); print(result); "))
+    setup_interpreter(SourceString("a = 1; b = 2; c = 3; fun add_numbers(a, b) { c = 10; return a + b + c;} result = add_numbers(a, b); print(result); "))
     captured = capsys.readouterr()
     assert (captured.out == "13\n")
 

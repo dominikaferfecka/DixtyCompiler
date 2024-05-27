@@ -80,9 +80,6 @@ class Interpreter(Visitor):
             expression = self.get_last_result()
         self._current_context.remove_scope()
 
-    
-    def visit_fun_def_statement(self, fun_def_statement, arg):
-        pass
 
     def visit_return_statement(self, return_statement, arg):
         self._last_result = None # clear in case there was no value after return
@@ -326,9 +323,6 @@ class Interpreter(Visitor):
         right_item = self.get_last_result()
 
         self._last_result = right_item
-    
-    def visit_item_statement(self, item, arg):
-        pass
 
     def visit_index_access(self, index_access, arg):
         index_access._left.accept(self, arg)
@@ -452,9 +446,6 @@ class Interpreter(Visitor):
     def visit_identifier(self, identifier, arg):
         self._last_result = IdentifierEvaulation(self, identifier)
 
-    def visit_literal(self, literal, arg):
-        pass
-
     def visit_number(self, number, arg):
         self._last_result = number._value
 
@@ -463,3 +454,12 @@ class Interpreter(Visitor):
     
     def visit_bool(self, bool, arg):
         self._last_result = bool._value
+
+    # def visit_literal(self, literal, arg):
+    #     pass
+
+    def visit_item_statement(self, item, arg):
+        pass
+
+    def visit_fun_def_statement(self, fun_def_statement, arg):
+        pass

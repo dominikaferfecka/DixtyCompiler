@@ -127,8 +127,8 @@ class Printer(Visitor):
     def visit_signed_factor(self, signed_factor, indent=""):
         print(f"{indent}SignedFactor - memory: [{hex(id(signed_factor))}], position [{signed_factor._position}], factor: [{signed_factor._factor}]") 
 
-    def visit_literal(self, literal, indent=""):
-        print(f"{indent}Literal - memory: [{hex(id(literal))}], position [{literal._position}], factor: [{literal._factor}]") 
+    # def visit_literal(self, literal, indent=""):
+    #     print(f"{indent}Literal - memory: [{hex(id(literal))}], position [{literal._position}], factor: [{literal._factor}]") 
 
     def visit_number(self, number, indent=""):
         print(f"{indent}Number - memory: [{hex(id(number))}], position [{number._position}], value: [{number._value}]") 

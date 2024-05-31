@@ -48,6 +48,21 @@ class CannotCompareUnsupportedTypes(UnsupportedTypesToMakeOperation):
         super().__init__(left, right, "comparison", position)
 
 
+class CannotMakeOrOnNotBoolTypes(UnsupportedTypesToMakeOperation):
+    def __init__(self, left, right, position):
+        super().__init__(left, right, "or", position)
+
+
+class CannotMakeAndOnNotBoolTypes(UnsupportedTypesToMakeOperation):
+    def __init__(self, left, right, position):
+        super().__init__(left, right, "and", position)
+
+
+class CannotMakeNotOnNotBoolTypes(UnsupportedTypesToMakeOperation):
+    def __init__(self, left, position):
+        super().__init__(left, "", "not", position)
+
+
 class AlreadyExistingDictKey(Exception):
     def __init__(self, name):
         super().__init__(f'Tried to add key to dict which already exists: [{name}]')

@@ -15,7 +15,10 @@ from interpreter.errors import (
     CannotMultUnsupportedTypes,
     CannotDivUnsupportedTypes,
     CannotCompareUnsupportedTypes,
-    CannotConvertType
+    CannotConvertType,
+    CannotMakeNotOnNotBoolTypes,
+    CannotMakeAndOnNotBoolTypes,
+    CannotMakeOrOnNotBoolTypes
 )
 
 
@@ -109,6 +112,21 @@ def test_div_str_str(setup_interpreter):
     with pytest.raises(CannotDivUnsupportedTypes):
         setup_interpreter(SourceString("a = \"abc\" / \"d\";"))
 
+def test_or_int_int(setup_interpreter):
+    with pytest.raises(CannotMakeOrOnNotBoolTypes):
+        setup_interpreter(SourceString("a = 1 Or 1;"))
+
+
+def test_and_int_int(setup_interpreter):
+    with pytest.raises(CannotMakeAndOnNotBoolTypes):
+        setup_interpreter(SourceString("a = 1 And 1;"))
+
+
+def test_not_int_int(setup_interpreter):
+    with pytest.raises(CannotMakeNotOnNotBoolTypes):
+        setup_interpreter(SourceString("a = Not 1;"))
+
+
 def test_not_existing_variable(setup_interpreter):
     with pytest.raises(VariableNotExists):
         setup_interpreter(SourceString("print(a);"))
@@ -148,6 +166,7 @@ def test_string_to_float(setup_interpreter):
 def test_int_to_int(setup_interpreter):
     with pytest.raises(CannotConvertType):
         setup_interpreter(SourceString("a = 1; a.ToInt();"))
+
 
 def test_fun_return_empty(setup_interpreter, capsys):
     setup_interpreter(SourceString("fun increase(x){x = x + 1; return;} increase(my_x);"))

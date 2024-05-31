@@ -9,7 +9,10 @@ from interpreter.errors import (
     CannotSubUnsupportedTypes,
     CannotMultUnsupportedTypes,
     CannotDivUnsupportedTypes,
-    CannotCompareUnsupportedTypes
+    CannotCompareUnsupportedTypes,
+    CannotMakeOrOnNotBoolTypes,
+    CannotMakeAndOnNotBoolTypes,
+    CannotMakeNotOnNotBoolTypes
 )
 
 class Interpreter(Visitor):
@@ -139,25 +142,38 @@ class Interpreter(Visitor):
     
 
     def visit_or_term(self, or_term, arg):
+        position = or_term._position
         or_term._left_and_term.accept(self, arg)
-        left_not_term = self.get_last_result()
+        left_and_term = self.get_last_result()
         or_term._right_and_term.accept(self, arg)
-        right_not_term = self.get_last_result()
-
-        self._last_result = left_not_term or right_not_term
+        right_and_term = self.get_last_result()
+        
+        if self.check_types(left_and_term, right_and_term, [bool]):
+            self._last_result = left_and_term or right_and_term
+        else:
+            raise CannotMakeOrOnNotBoolTypes(left_and_term, right_and_term, position) 
 
     def visit_and_term(self, and_term, arg):
+        position = and_term._position
         and_term._left_not_term.accept(self, arg)
         left_not_term = self.get_last_result()
         and_term._right_not_term.accept(self, arg)
         right_not_term = self.get_last_result()
-
-        self._last_result = left_not_term and right_not_term
+        
+        if self.check_types(left_not_term, right_not_term, [bool]):
+            self._last_result = left_not_term and right_not_term
+        else:
+            raise CannotMakeAndOnNotBoolTypes(left_not_term, right_not_term, position) 
     
     def visit_not_term(self, not_term, arg):
+        position = not_term._position
         not_term._comparison_term.accept(self, arg)
         comparison_term = self.get_last_result()
-        self._last_result = not comparison_term
+        
+        if self.check_types(not_term, bool, [bool]):
+            self._last_result = not comparison_term
+        else:
+            raise CannotMakeNotOnNotBoolTypes(not_term, position) 
 
     def visit_equal_term(self, equal_term, arg):
         position = equal_term._position

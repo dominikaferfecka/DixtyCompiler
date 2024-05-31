@@ -12,84 +12,78 @@ class FunEmbedded:
         self._parameters = parameters
         self._action = action
     
-    def run(self,  *args):
-        self._action(*args)
-
-def display(interpreter, left):
-    message = interpreter._current_context.get_scope_variable("message")
+    def accept(self, visitor, *args):
+        visitor.visit_fun_embedded(self, *args)
     
-    message = interpreter.evaulate(message)
+def display(arguments_parsed):
+    message = arguments_parsed[0]
     print(message)
 
-def length(interpreter, object):
-    list = interpreter.evaulate(object)
-    interpreter._last_result = len(list)
+def length(arguments_parsed, object):
+    return len(object)
 
-def append_list(interpreter, object):
-    value = interpreter._current_context.get_scope_variable("value")
-    object._value.append(value)
+def append_list(arguments_parsed, object):
+    value = arguments_parsed[0]
+    object.append(value)
 
-def remove_list(interpreter, object):
-    index = interpreter._current_context.get_scope_variable("index")
-    object._value.remove(index)
+def remove_list(arguments_parsed, object):
+    index = arguments_parsed[0]
+    object.remove(index)
 
-def insert_list(interpreter, object):
-    value = interpreter._current_context.get_scope_variable("value")
-    index = interpreter._current_context.get_scope_variable("index")
-    object._value.insert(index, value)
+def insert_list(arguments_parsed, object):
+    index = arguments_parsed[0]
+    value = arguments_parsed[1]
+    object.insert(index, value)
 
-def contains_key(interpreter, object):
-    value = interpreter._current_context.get_scope_variable("value")
+def contains_key(arguments_parsed, object):
+    value = arguments_parsed[0]
 
-    if value in object._value.keys():
-        interpreter._last_result = True
+    if value in object.keys():
+        return True
     else:
-        interpreter._last_result = False
+        return False
 
-def add_item(interpreter, object):
-    key = interpreter._current_context.get_scope_variable("key")
-    value = interpreter._current_context.get_scope_variable("value")
+def add_item(arguments_parsed, object):
+    key = arguments_parsed[0]
+    value = arguments_parsed[1]
     
-    if not key in object._value.keys():
-        object._value[key] = value
+    if not key in object.keys():
+        object[key] = value
     else:
         raise AlreadyExistingDictKey(key)
 
-def remove_item(interpreter, object):
-    key = interpreter._current_context.get_scope_variable("key")
+def remove_item(arguments_parsed, object):
+    key = arguments_parsed[0]
     
-    if not key in object._value.keys():
+    if not key in object.keys():
         raise NotExistingDictKey(key)
     else:
-        del object._value[key]
+        del object[key]
 
         
-def to_float(interpreter, object):
-    value = interpreter.evaulate(object)
-    
+def to_float(arguments_parsed, value):
+
     if isinstance(value, int) or isinstance(value, str):
         try:
-            interpreter._last_result = float(value)
+            return float(value)
         except ValueError as e:
             raise CannotConvertType(type(value), float) from e
     else:
         raise CannotConvertType(type(value), float)
 
-def to_int(interpreter, object):
-    value = interpreter.evaulate(object)
+def to_int(arguments_parsed, value):
     if isinstance(value, float) or isinstance(value, str):
         try:
-            interpreter._last_result = int(value)
+            return int(value)
         except ValueError as e:
             raise CannotConvertType(type(value), str) from e
     else:
         raise CannotConvertType(type(value), int)
 
-def to_string(interpreter, object):
-    value = interpreter.evaulate(object)
+def to_string(arguments_parsed, value):
     if isinstance(value, int) or isinstance(value, float):
         try:
-            interpreter._last_result = str(value)
+           return str(value)
         except ValueError as e:
             raise CannotConvertType(type(value), int) from e
     else:

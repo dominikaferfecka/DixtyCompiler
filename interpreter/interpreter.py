@@ -1,7 +1,7 @@
 from parser.visitor import Visitor
 from interpreter.context import Context
 from interpreter.assign import IdentifierEvaulation, IndexAcccesEvaulation
-from interpreter.builtins import FunEmbedded
+from interpreter.builtins import FunEmbedded, BUILTINS
 from interpreter.errors import (
     FunctionNotDeclared,
     IncorrectArgumentsNumber,
@@ -16,7 +16,7 @@ from interpreter.errors import (
 )
 
 class Interpreter(Visitor):
-    def __init__(self, functions, builtins):
+    def __init__(self, functions, builtins=BUILTINS):
         self._functions = functions
         self._functions.update(builtins)
         self._last_result = None
@@ -62,90 +62,90 @@ class Interpreter(Visitor):
         return False
 
 
-    def visit_for_statement(self, for_statement, arg):
-        for_statement._identifier.accept(self, arg)
+    def visit_for_statement(self, for_statement, *args):
+        for_statement._identifier.accept(self, *args)
         variable = self.get_last_result()
-        for_statement._expression.accept(self, arg)
+        for_statement._expression.accept(self, *args)
         iterating = self.get_last_result()
         
         iterating = self.evaulate(iterating)
         for value in iterating:
             self._current_context.set_scope_variable(variable, value )
-            for_statement._block.accept(self, arg)
+            for_statement._block.accept(self, *args)
     
-    def visit_while_statement(self, while_statement, arg):
-        while_statement._expression.accept(self, arg)
+    def visit_while_statement(self, while_statement, *args):
+        while_statement._expression.accept(self, *args)
         expression = self.get_last_result()
 
         while expression:
             for statement in while_statement._block._statements:
                 if not self._return:
-                    statement.accept(self, arg)
-            while_statement._expression.accept(self, arg)
+                    statement.accept(self, *args)
+            while_statement._expression.accept(self, *args)
             expression = self.get_last_result()
 
 
-    def visit_return_statement(self, return_statement, arg):
+    def visit_return_statement(self, return_statement, *args):
         self._last_result = None # clear in case there was no value after return
         if return_statement._expression is not None:
-            return_statement._expression.accept(self, arg)
+            return_statement._expression.accept(self, *args)
         self._return = True
 
 
-    def visit_assign_statement(self, assign_statement, arg):
-        assign_statement._object_access.accept(self, arg)
+    def visit_assign_statement(self, assign_statement, *args):
+        assign_statement._object_access.accept(self, *args)
         object_access = self.get_last_result()
-        assign_statement._expression.accept(self, arg)
+        assign_statement._expression.accept(self, *args)
         expression = self.get_last_result()
         expression = self.evaulate(expression)
 
         self._current_context.set_scope_variable(object_access, expression)
 
 
-    def visit_if_statement(self, if_statement, arg):
-        if_statement._expression.accept(self, arg)
+    def visit_if_statement(self, if_statement, *args):
+        if_statement._expression.accept(self, *args)
         expression = self.get_last_result()
 
         self._if_done = False
         if expression:
-            if_statement._block.accept(self, arg)
+            if_statement._block.accept(self, *args)
             self._if_done = True
         else:
             else_if_list = if_statement._else_if_statement
             if else_if_list is not None:
                 for else_if in else_if_list:
                     if self._if_done is False:
-                        else_if.accept(self, arg)
+                        else_if.accept(self, *args)
         if self._if_done is False:
             else_statement = if_statement._else_statement
             if else_statement is not None:
-                else_statement.accept(self, arg)
+                else_statement.accept(self, *args)
 
-    def visit_else_if_statement(self, else_if_statement, arg):
-        else_if_statement._expression.accept(self, arg)
+    def visit_else_if_statement(self, else_if_statement, *args):
+        else_if_statement._expression.accept(self, *args)
         expression = self.get_last_result()
 
         if expression:
-            else_if_statement._block.accept(self, arg)
+            else_if_statement._block.accept(self, *args)
             self._if_done = True
     
-    def visit_else_statement(self, else_statement, arg):
-        else_statement._block.accept(self, arg)
+    def visit_else_statement(self, else_statement, *args):
+        else_statement._block.accept(self, *args)
         self._if_done = True
 
-    def visit_block(self, block, arg):
+    def visit_block(self, block, *args):
         self._current_context.add_scope()
         for statement in block._statements:
             if not self._return:
-                statement.accept(self, arg)
+                statement.accept(self, *args)
         self._current_context.remove_scope()
     
 
-    def visit_or_term(self, or_term, arg):
+    def visit_or_term(self, or_term, *args):
         position = or_term._position
-        or_term._left_and_term.accept(self, arg)
+        or_term._left_and_term.accept(self, *args)
         left_and_term = self.get_last_result()
-        or_term._right_and_term.accept(self, arg)
+        or_term._right_and_term.accept(self, *args)
         right_and_term = self.get_last_result()
         
         if self.check_types(left_and_term, right_and_term, [bool]):
@@ -153,11 +153,11 @@ class Interpreter(Visitor):
         else:
             raise CannotMakeOrOnNotBoolTypes(left_and_term, right_and_term, position) 
 
-    def visit_and_term(self, and_term, arg):
+    def visit_and_term(self, and_term, *args):
         position = and_term._position
-        and_term._left_not_term.accept(self, arg)
+        and_term._left_not_term.accept(self, *args)
         left_not_term = self.get_last_result()
-        and_term._right_not_term.accept(self, arg)
+        and_term._right_not_term.accept(self, *args)
         right_not_term = self.get_last_result()
         
         if self.check_types(left_not_term, right_not_term, [bool]):
@@ -165,9 +165,9 @@ class Interpreter(Visitor):
         else:
             raise CannotMakeAndOnNotBoolTypes(left_not_term, right_not_term, position) 
     
-    def visit_not_term(self, not_term, arg):
+    def visit_not_term(self, not_term, *args):
         position = not_term._position
-        not_term._comparison_term.accept(self, arg)
+        not_term._comparison_term.accept(self, *args)
         comparison_term = self.get_last_result()
         
         if self.check_types(not_term, bool, [bool]):
@@ -175,11 +175,11 @@ class Interpreter(Visitor):
         else:
             raise CannotMakeNotOnNotBoolTypes(not_term, position) 
 
-    def visit_equal_term(self, equal_term, arg):
+    def visit_equal_term(self, equal_term, *args):
         position = equal_term._position
-        equal_term._left_additive_term.accept(self, arg)
+        equal_term._left_additive_term.accept(self, *args)
         left_additive_term = self.get_last_result()
-        equal_term._right_additive_term.accept(self, arg)
+        equal_term._right_additive_term.accept(self, *args)
         right_additive_term = self.get_last_result()
 
         left_additive_term = self.evaulate(left_additive_term)
@@ -192,12 +192,12 @@ class Interpreter(Visitor):
 
         self._last_result = left_additive_term == right_additive_term
 
-    def visit_less_term(self, less_term, arg):
+    def visit_less_term(self, less_term, *args):
         position = less_term._position
         
-        less_term._left_additive_term.accept(self, arg)
+        less_term._left_additive_term.accept(self, *args)
         left_additive_term = self.get_last_result()
-        less_term._right_additive_term.accept(self, arg)
+        less_term._right_additive_term.accept(self, *args)
         right_additive_term = self.get_last_result()
 
         left_additive_term = self.evaulate(left_additive_term)
@@ -209,12 +209,12 @@ class Interpreter(Visitor):
             raise CannotCompareUnsupportedTypes(left_additive_term, right_additive_term, position) 
 
 
-    def visit_more_term(self, more_term, arg):
+    def visit_more_term(self, more_term, *args):
         position = more_term._position
 
-        more_term._left_additive_term.accept(self, arg)
+        more_term._left_additive_term.accept(self, *args)
         left_additive_term = self.get_last_result()
-        more_term._right_additive_term.accept(self, arg)
+        more_term._right_additive_term.accept(self, *args)
         right_additive_term = self.get_last_result()
         
         left_additive_term = self.evaulate(left_additive_term)
@@ -226,12 +226,12 @@ class Interpreter(Visitor):
             raise CannotCompareUnsupportedTypes(left_additive_term, right_additive_term, position) 
     
 
-    def visit_less_or_equal_term(self, less_or_equal_term, arg):
+    def visit_less_or_equal_term(self, less_or_equal_term, *args):
         position = less_or_equal_term._position
 
-        less_or_equal_term._left_additive_term.accept(self, arg)
+        less_or_equal_term._left_additive_term.accept(self, *args)
         left_additive_term = self.get_last_result()
-        less_or_equal_term._right_additive_term.accept(self, arg)
+        less_or_equal_term._right_additive_term.accept(self, *args)
         right_additive_term = self.get_last_result()
 
         left_additive_term = self.evaulate(left_additive_term)
@@ -243,12 +243,12 @@ class Interpreter(Visitor):
             raise CannotCompareUnsupportedTypes(left_additive_term, right_additive_term, position) 
 
 
-    def visit_more_or_equal_term(self, more_or_equal_term, arg):
+    def visit_more_or_equal_term(self, more_or_equal_term, *args):
         position = more_or_equal_term._position
 
-        more_or_equal_term._left_additive_term.accept(self, arg)
+        more_or_equal_term._left_additive_term.accept(self, *args)
         left_additive_term = self.get_last_result()
-        more_or_equal_term._right_additive_term.accept(self, arg)
+        more_or_equal_term._right_additive_term.accept(self, *args)
         right_additive_term = self.get_last_result()
 
         left_additive_term = self.evaulate(left_additive_term)
@@ -260,12 +260,12 @@ class Interpreter(Visitor):
             raise CannotCompareUnsupportedTypes(left_additive_term, right_additive_term, position) 
         
     
-    def visit_add_term(self, add_term, arg):
+    def visit_add_term(self, add_term, *args):
         position = add_term._position
 
-        add_term._left_mult_term.accept(self, arg)
+        add_term._left_mult_term.accept(self, *args)
         left_mult_term = self.get_last_result()
-        add_term._right_mult_term.accept(self, arg)
+        add_term._right_mult_term.accept(self, *args)
         right_mult_term = self.get_last_result()
 
         left_mult_term = self.evaulate(left_mult_term)
@@ -276,12 +276,12 @@ class Interpreter(Visitor):
         else:
             raise CannotAddUnsupportedTypes(left_mult_term, right_mult_term, position) 
 
-    def visit_sub_term(self, sub_term, arg):
+    def visit_sub_term(self, sub_term, *args):
         position = sub_term._position
 
-        sub_term._left_mult_term.accept(self, arg)
+        sub_term._left_mult_term.accept(self, *args)
         left_mult_term = self.get_last_result()
-        sub_term._right_mult_term.accept(self, arg)
+        sub_term._right_mult_term.accept(self, *args)
         right_mult_term = self.get_last_result()
 
         left_mult_term = self.evaulate(left_mult_term)
@@ -292,12 +292,12 @@ class Interpreter(Visitor):
         else:
             raise CannotSubUnsupportedTypes(left_mult_term, right_mult_term, position) 
     
-    def visit_mult_term(self, mult_term, arg):
+    def visit_mult_term(self, mult_term, *args):
         position = mult_term._position
 
-        mult_term._left_signed_factor.accept(self, arg)
+        mult_term._left_signed_factor.accept(self, *args)
         left_signed_factor = self.get_last_result()
-        mult_term._right_signed_factor.accept(self, arg)
+        mult_term._right_signed_factor.accept(self, *args)
         right_signed_factor = self.get_last_result()
 
         left_signed_factor = self.evaulate(left_signed_factor)
@@ -308,12 +308,12 @@ class Interpreter(Visitor):
         else:
             raise CannotMultUnsupportedTypes(left_signed_factor, right_signed_factor, position) 
 
-    def visit_div_term(self, div_term, arg):
+    def visit_div_term(self, div_term, *args):
         position = div_term._position
 
-        div_term._left_signed_factor.accept(self, arg)
+        div_term._left_signed_factor.accept(self, *args)
         left_signed_factor = self.get_last_result()
-        div_term._right_signed_factor.accept(self, arg)
+        div_term._right_signed_factor.accept(self, *args)
         right_signed_factor = self.get_last_result()
 
         left_signed_factor = self.evaulate(left_signed_factor)
@@ -326,23 +326,23 @@ class Interpreter(Visitor):
         else:
             raise CannotDivUnsupportedTypes(left_signed_factor, right_signed_factor, position) 
 
-    def visit_signed_factor(self, signed_factor, arg):
-        signed_factor._factor.accept(self, arg)
+    def visit_signed_factor(self, signed_factor, *args):
+        signed_factor._factor.accept(self, *args)
         signed_factor = self.get_last_result()
         self._last_result = signed_factor
 
-    def visit_object_access(self, object_access, arg):
-        object_access._left_item.accept(self, arg)
+    def visit_object_access(self, object_access, *args):
+        object_access._left_item.accept(self, *args)
         left_item = self.get_last_result()
         object_access._right_item.accept(self, left_item)
         right_item = self.get_last_result()
 
         self._last_result = right_item
 
-    def visit_index_access(self, index_access, arg):
-        index_access._left.accept(self, arg)
+    def visit_index_access(self, index_access, *args):
+        index_access._left.accept(self, *args)
         left = self.get_last_result()
-        index_access._index_object.accept(self, arg)
+        index_access._index_object.accept(self, *args)
         index_object = self.get_last_result()
 
         if isinstance(left, IndexAcccesEvaulation):
@@ -354,9 +354,10 @@ class Interpreter(Visitor):
         self._last_result = IndexAcccesEvaulation(self, left, indexes)
         
     
-    def visit_fun_call(self, fun_call, object):
+    def visit_fun_call(self, fun_call, *args):
         position = fun_call._position
-        fun_call._left.accept(self, None)
+        # fun_call._left.accept(self, None)
+        fun_call._left.accept(self, *args)
         identifier = self.get_last_result()
         arguments = fun_call._arguments
 
@@ -377,51 +378,75 @@ class Interpreter(Visitor):
         self._current_context.add_scope()
         arguments_parsed = []
         for argument, parameter in zip(arguments,parameters):
-            argument.accept(self,  None)
+            # argument.accept(self,  None)
+            argument.accept(self, *args)
             argument_parsed = self.get_last_result()
             argument_parsed = self.evaulate(argument_parsed)
             arguments_parsed.append(argument_parsed)
             self._current_context.set_scope_variable(parameter, argument_parsed)
         
+        # if isinstance(fun_def, FunEmbedded):
+        #     fun_def.run(self, object)
+        # else:
+        #     fun_def._block.accept(self, None)
+
+        # self._return = False
+        # self._current_context.remove_scope()
+        # self.remove_context()
         if isinstance(fun_def, FunEmbedded):
-            fun_def.run(self, object)
+            fun_def.accept(self, arguments_parsed, *args)
         else:
-            fun_def._block.accept(self, None)
+            fun_def._block.accept(self, *args)
 
         self._return = False
         self._current_context.remove_scope()
         self.remove_context()
+    
+    def visit_fun_embedded(self, fun_def, arguments_parsed, *args):
 
-    def visit_list(self, list, arg):
+        if len(args) > 0:
+            object = args[0]
+            object = self.evaulate(object)
+            returned = fun_def._action(arguments_parsed, object)
+
+        else:
+        # fun_def.run(self, object)
+
+            returned = fun_def._action(arguments_parsed)
+        if returned is not None:
+            self._last_result = returned
+        
+
+    def visit_list(self, list, *args):
         result_list = []
         for element in  list._values:
-            element.accept(self, arg)
+            element.accept(self, *args)
             parsed_element = self.get_last_result()
             result_list.append(parsed_element)
         self._last_result = result_list
 
-    def visit_pair(self, pair, arg):
-        pair._first.accept(self, arg)
+    def visit_pair(self, pair, *args):
+        pair._first.accept(self, *args)
         first = self.get_last_result()
-        pair._second.accept(self, arg)
+        pair._second.accept(self, *args)
         second = self.get_last_result()
         self._last_result = (first, second)
 
-    def visit_dict(self, dict, arg):
+    def visit_dict(self, dict, *args):
         result_dict = {}
         if dict._values is not None:
             for value in dict._values:
-                value.accept(self, arg)
+                value.accept(self, *args)
                 pair = self.get_last_result()
                 pair_key = self.evaulate(pair[0])
                 pair_value = self.evaulate(pair[1])
                 result_dict[pair_key] = pair_value
         self._last_result = result_dict
 
-    def visit_select_term(self, select_term, arg):
+    def visit_select_term(self, select_term, *args):
         select_expression = select_term._select_expression
 
-        select_term._from_expression.accept(self, arg)
+        select_term._from_expression.accept(self, *args)
         from_expression = self.get_last_result()
         from_object = self.evaulate(from_expression)
 
@@ -433,13 +458,13 @@ class Interpreter(Visitor):
 
             where_expression =  select_term._where_expression
             if where_expression is not None:
-                where_expression.accept(self, arg)
+                where_expression.accept(self, *args)
                 where_expression = self.get_last_result()
             else:
                 where_expression = True
 
             if where_expression is True:
-                select_term._select_expression.accept(self, arg)
+                select_term._select_expression.accept(self, *args)
                 select_expression = self.get_last_result()
                 if isinstance(select_expression, tuple):
                     select_expression = (self.evaulate(self.evaulate(select_expression[0])), self.evaulate(self.evaulate(select_expression)[1])) 
@@ -458,23 +483,23 @@ class Interpreter(Visitor):
 
         self._last_result = result
 
-    def visit_identifier(self, identifier, arg):
+    def visit_identifier(self, identifier, *args):
         self._last_result = IdentifierEvaulation(self, identifier)
 
-    def visit_number(self, number, arg):
+    def visit_number(self, number, *args):
         self._last_result = number._value
 
-    def visit_string(self, string, arg):
+    def visit_string(self, string, *args):
         self._last_result = string._value
     
-    def visit_bool(self, bool, arg):
+    def visit_bool(self, bool, *args):
         self._last_result = bool._value
 
-    # def visit_literal(self, literal, arg):
+    # def visit_literal(self, literal, *args):
     #     pass
 
-    def visit_item_statement(self, item, arg):
+    def visit_item_statement(self, item, *args):
         pass
 
-    def visit_fun_def_statement(self, fun_def_statement, arg):
+    def visit_fun_def_statement(self, fun_def_statement, *args):
         pass

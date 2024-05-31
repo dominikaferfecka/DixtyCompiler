@@ -72,7 +72,6 @@ def test_list_in_list_append(setup_interpreter, capsys):
     captured = capsys.readouterr()
     assert (captured.out == "[[1, 2, 3, 1], [4, 5, 6], [7, 8, 9]]\n")
 
-
 def test_list_in_list_append_list(setup_interpreter, capsys):
     setup_interpreter(SourceString("a = 1; b = 5; my_list = [[a, 2, 3], [4, b, 6], [7, 8, 9]]; my_list.append([9, 8, 7]); print(my_list);"))
     captured = capsys.readouterr()

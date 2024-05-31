@@ -1,9 +1,8 @@
 from interpreter.assign import IdentifierEvaulation, IndexAcccesEvaulation
 
 class Scope:
-    def __init__(self, functions=None):
+    def __init__(self):
         self._variables = {}
-        self._functions = functions
     
     def get_variable(self, name):
         if not name in self._variables.keys():
@@ -31,8 +30,5 @@ class Scope:
         else:
             self._variables[object._name] = value
 
-    def get_function(self, name):
-        if name in self._functions.keys():
-            return self._functions[name]
 
 

@@ -3,23 +3,23 @@ from interpreter.errors import VariableNotExists
 import copy
 
 class Context:
-    def __init__(self, functions, scopes=None):
+    def __init__(self, scopes=None):
         if scopes is None:
-            self._scopes = [Scope(functions)]
+            self._scopes = [Scope()]
         else:
             self._scopes = scopes
             self._scopes = copy.deepcopy(scopes)
         self._nested = 0
         self._return_type = None
-        self._functions = functions
     
     def add_scope(self):
-        self._scopes.append(Scope(self._functions))
+        self._scopes.append(Scope())
         self._nested += 1
 
     def remove_scope(self):
-        self._scopes.pop()
-        self._nested -= 1
+        if self._nested > 0:
+            self._scopes.pop()
+            self._nested -= 1        
 
     def get_scope_variable(self, name):
         for scope in reversed(self._scopes):
@@ -33,6 +33,4 @@ class Context:
     def set_scope_variable(self, name, value):
         self._scopes[-1].set_variable(name, value)
 
-    def get_scope_function(self, name):
-        function = self._scopes[-1].get_function(name)
-        return function
+

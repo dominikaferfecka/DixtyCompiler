@@ -148,3 +148,8 @@ def test_string_to_float(setup_interpreter):
 def test_int_to_int(setup_interpreter):
     with pytest.raises(CannotConvertType):
         setup_interpreter(SourceString("a = 1; a.ToInt();"))
+
+def test_fun_return_empty(setup_interpreter, capsys):
+    setup_interpreter(SourceString("fun increase(x){x = x + 1; return;} increase(my_x);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "3\n2\n")

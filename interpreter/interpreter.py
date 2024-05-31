@@ -18,17 +18,20 @@ class Interpreter(Visitor):
         self._functions.update(builtins)
         self._last_result = None
         self._if_done = False
-        self._current_context = Context(functions)
+        self._current_context = Context()
         self._contexts = []
         self._return = False 
 
-    
     def add_context(self):
         self._contexts.append(self._current_context)
-        self._current_context = Context(self._functions, self._current_context._scopes)
+        self._current_context = Context(self._current_context._scopes)
     
     def remove_context(self):
         self._current_context = self._contexts.pop()
+
+    def get_function(self, name):
+        if name in self._functions.keys():
+            return self._functions[name]
     
     def get_last_result(self):
         last_result = self._last_result
@@ -58,7 +61,6 @@ class Interpreter(Visitor):
 
     def visit_for_statement(self, for_statement, arg):
         for_statement._identifier.accept(self, arg)
-        self._current_context.add_scope()
         variable = self.get_last_result()
         for_statement._expression.accept(self, arg)
         iterating = self.get_last_result()
@@ -67,25 +69,26 @@ class Interpreter(Visitor):
         for value in iterating:
             self._current_context.set_scope_variable(variable, value )
             for_statement._block.accept(self, arg)
-        self._current_context.remove_scope()
     
     def visit_while_statement(self, while_statement, arg):
-        self._current_context.add_scope()
         while_statement._expression.accept(self, arg)
         expression = self.get_last_result()
 
         while expression:
-            while_statement._block.accept(self)
+            for statement in while_statement._block._statements:
+                if not self._return:
+                    statement.accept(self, arg)
             while_statement._expression.accept(self, arg)
             expression = self.get_last_result()
-        self._current_context.remove_scope()
 
 
     def visit_return_statement(self, return_statement, arg):
         self._last_result = None # clear in case there was no value after return
-        return_statement._expression.accept(self, arg)
+        if return_statement._expression is not None:
+            return_statement._expression.accept(self, arg)
         self._return = True
- 
+
+
     def visit_assign_statement(self, assign_statement, arg):
         assign_statement._object_access.accept(self, arg)
         object_access = self.get_last_result()
@@ -102,10 +105,8 @@ class Interpreter(Visitor):
 
         self._if_done = False
         if expression:
-            self._current_context.add_scope()
             if_statement._block.accept(self, arg)
             self._if_done = True
-            self._current_context.remove_scope()
         else:
             else_if_list = if_statement._else_if_statement
             if else_if_list is not None:
@@ -122,21 +123,19 @@ class Interpreter(Visitor):
         expression = self.get_last_result()
 
         if expression:
-            self._current_context.add_scope()
             else_if_statement._block.accept(self, arg)
             self._if_done = True
-            self._current_context.remove_scope()
     
     def visit_else_statement(self, else_statement, arg):
-        self._current_context.add_scope()
         else_statement._block.accept(self, arg)
         self._if_done = True
-        self._current_context.remove_scope()
-    
+
     def visit_block(self, block, arg):
+        self._current_context.add_scope()
         for statement in block._statements:
             if not self._return:
                 statement.accept(self, arg)
+        self._current_context.remove_scope()
     
 
     def visit_or_term(self, or_term, arg):
@@ -332,7 +331,7 @@ class Interpreter(Visitor):
 
         if isinstance(left, IndexAcccesEvaulation):
             indexes = left._index_access_list
-            indexes.append(index_object)
+            indexes.append(index_object) 
         else:
             indexes = [index_object]
 
@@ -345,7 +344,7 @@ class Interpreter(Visitor):
         identifier = self.get_last_result()
         arguments = fun_call._arguments
 
-        fun_def = self._current_context.get_scope_function(identifier._name)
+        fun_def = self.get_function(identifier._name)
         
         if fun_def is None:
             raise FunctionNotDeclared(identifier._name, position)
@@ -359,6 +358,7 @@ class Interpreter(Visitor):
             raise IncorrectArgumentsNumber(identifier._name, len(parameters), len(arguments), position)
         
         self.add_context()
+        self._current_context.add_scope()
         arguments_parsed = []
         for argument, parameter in zip(arguments,parameters):
             argument.accept(self,  None)
@@ -373,6 +373,7 @@ class Interpreter(Visitor):
             fun_def._block.accept(self, None)
 
         self._return = False
+        self._current_context.remove_scope()
         self.remove_context()
 
     def visit_list(self, list, arg):
@@ -402,7 +403,6 @@ class Interpreter(Visitor):
         self._last_result = result_dict
 
     def visit_select_term(self, select_term, arg):
-        self._current_context.add_scope()
         select_expression = select_term._select_expression
 
         select_term._from_expression.accept(self, arg)
@@ -441,7 +441,6 @@ class Interpreter(Visitor):
                 result.sort()
 
         self._last_result = result
-        self._current_context.remove_scope()
 
     def visit_identifier(self, identifier, arg):
         self._last_result = IdentifierEvaulation(self, identifier)

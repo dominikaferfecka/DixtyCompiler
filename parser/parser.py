@@ -191,7 +191,7 @@ class Parser:
         self.consume_token()
         
         expression = self.parse_expression()
-        self.not_none(expression, InvalidReturnStatement, "Expression")
+        #self.not_none(expression, InvalidReturnStatement, "Expression")
         
         self.must_be(TokenType.SEMICOLON, SemicolonMissing)
 

@@ -18,7 +18,8 @@ from interpreter.errors import (
     CannotConvertType,
     CannotMakeNotOnNotBoolTypes,
     CannotMakeAndOnNotBoolTypes,
-    CannotMakeOrOnNotBoolTypes
+    CannotMakeOrOnNotBoolTypes,
+    CannotDivByZero
 )
 
 
@@ -111,6 +112,19 @@ def test_div_str_int(setup_interpreter):
 def test_div_str_str(setup_interpreter):
     with pytest.raises(CannotDivUnsupportedTypes):
         setup_interpreter(SourceString("a = \"abc\" / \"d\";"))
+
+def test_div_by_zero_int(setup_interpreter):
+    with pytest.raises(CannotDivByZero):
+        setup_interpreter(SourceString("a = 2 / 0;"))
+
+def test_div_by_zero_float(setup_interpreter):
+    with pytest.raises(CannotDivByZero):
+        setup_interpreter(SourceString("a = 2 / 0.0;"))
+
+def test_div_by_zero_variable(setup_interpreter):
+    with pytest.raises(CannotDivByZero):
+        setup_interpreter(SourceString("b = 0; a = 2 / b;"))
+
 
 def test_or_int_int(setup_interpreter):
     with pytest.raises(CannotMakeOrOnNotBoolTypes):

@@ -43,6 +43,11 @@ class CannotDivUnsupportedTypes(UnsupportedTypesToMakeOperation):
         super().__init__(left, right, "division", position)
 
 
+class CannotDivByZero(Exception):
+    def __init__(self, position):
+        super().__init__(f'Tried to divied by zero at: [{position}]')
+
+
 class CannotCompareUnsupportedTypes(UnsupportedTypesToMakeOperation):
     def __init__(self, left, right, position):
         super().__init__(left, right, "comparison", position)

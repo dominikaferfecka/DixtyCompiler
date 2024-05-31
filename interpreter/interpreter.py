@@ -12,7 +12,8 @@ from interpreter.errors import (
     CannotCompareUnsupportedTypes,
     CannotMakeOrOnNotBoolTypes,
     CannotMakeAndOnNotBoolTypes,
-    CannotMakeNotOnNotBoolTypes
+    CannotMakeNotOnNotBoolTypes,
+    CannotDivByZero
 )
 
 class Interpreter(Visitor):
@@ -318,6 +319,9 @@ class Interpreter(Visitor):
 
         left_signed_factor = self.evaulate(left_signed_factor)
         right_signed_factor = self.evaulate(right_signed_factor)
+
+        if right_signed_factor == 0:
+            raise CannotDivByZero(position)
 
         if self.check_types(left_signed_factor, right_signed_factor, [int]):
             self._last_result = int(left_signed_factor / right_signed_factor)

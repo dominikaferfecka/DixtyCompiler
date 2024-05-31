@@ -19,7 +19,8 @@ from interpreter.errors import (
     CannotMakeNotOnNotBoolTypes,
     CannotMakeAndOnNotBoolTypes,
     CannotMakeOrOnNotBoolTypes,
-    CannotDivByZero
+    CannotDivByZero,
+    RecursionLimitExceeded
 )
 
 
@@ -186,3 +187,10 @@ def test_fun_return_empty(setup_interpreter, capsys):
     setup_interpreter(SourceString("fun increase(x){x = x + 1; return;} increase(my_x);"))
     captured = capsys.readouterr()
     assert (captured.out == "3\n2\n")
+
+
+def test_fun_endless_recursive(setup_interpreter, capsys):
+    with pytest.raises(RecursionLimitExceeded):
+        setup_interpreter(SourceString("fun sth(n) { sth(n); } sth(1);"))
+        captured = capsys.readouterr()
+        assert (captured.out == "120\n")

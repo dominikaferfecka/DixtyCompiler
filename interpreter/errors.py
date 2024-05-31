@@ -81,3 +81,8 @@ class NotExistingDictKey(Exception):
 class CannotConvertType(Exception):
     def __init__(self, received, desired):
         super().__init__(f'Cannot convert from [{received}] to [{desired}]')
+
+
+class RecursionLimitExceeded(Exception):
+    def __init__(self, recursion_limit):
+        super().__init__(f'Exceeded recursion max limit [{recursion_limit}]')

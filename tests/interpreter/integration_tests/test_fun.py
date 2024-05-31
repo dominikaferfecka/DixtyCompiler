@@ -67,6 +67,7 @@ def test_fun_recursive(setup_interpreter, capsys):
     captured = capsys.readouterr()
     assert (captured.out == "120\n")
 
+
 # return none
 def test_fun_return_empty(setup_interpreter, capsys):
     setup_interpreter(SourceString("fun increase(x){x = x + 1; return;} increase(1);"))

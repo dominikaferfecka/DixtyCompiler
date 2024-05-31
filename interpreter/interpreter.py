@@ -13,11 +13,12 @@ from interpreter.errors import (
     CannotMakeOrOnNotBoolTypes,
     CannotMakeAndOnNotBoolTypes,
     CannotMakeNotOnNotBoolTypes,
-    CannotDivByZero
+    CannotDivByZero,
+    RecursionLimitExceeded
 )
 
 class Interpreter(Visitor):
-    def __init__(self, functions, builtins=BUILTINS):
+    def __init__(self, functions, builtins=BUILTINS, recursion_limit=200):
         self._functions = functions
         self._functions.update(builtins)
         self._last_result = None
@@ -25,6 +26,8 @@ class Interpreter(Visitor):
         self._current_context = Context()
         self._contexts = []
         self._return = False 
+        self._recursion_depth = 0
+        self._recursion_limit = recursion_limit
 
     def add_context(self):
         self._contexts.append(self._current_context)
@@ -359,6 +362,10 @@ class Interpreter(Visitor):
         
     
     def visit_fun_call(self, fun_call, *args):
+        self._recursion_depth += 1
+        if self._recursion_depth > self._recursion_limit:
+            raise RecursionLimitExceeded(self._recursion_limit)
+        
         position = fun_call._position
         # fun_call._left.accept(self, None)
         fun_call._left.accept(self, *args)
@@ -405,6 +412,7 @@ class Interpreter(Visitor):
         self._return = False
         self._current_context.remove_scope()
         self.remove_context()
+        self._recursion_depth -= 1
     
     def visit_fun_embedded(self, fun_def, arguments_parsed, *args):
 

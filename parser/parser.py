@@ -49,7 +49,8 @@ from parser.errors import (
     InvalidReturnStatement,
     InvalidAssignmentStatement,
     FunctionAlreadyExists,
-    DictInvalidElement
+    DictInvalidElement,
+    UsedNotRecognizedStatement
     )
 
 class Parser:
@@ -63,7 +64,10 @@ class Parser:
     def parse_program(self) -> Program:
         statements = []
         while statement := self.parse_statement():
-            statements.append(statement)        
+            statements.append(statement)      
+        if statement is None and self._token.get_token_type() != TokenType.END_OF_TEXT:
+            raise UsedNotRecognizedStatement(self._token.get_position())
+        
         return Program(statements, self._functions)
     
 

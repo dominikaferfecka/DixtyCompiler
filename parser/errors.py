@@ -64,3 +64,9 @@ class DictInvalidElement(Exception):
         super().__init__(f'Elements in Dict must be Pair type. Object with invalid type {element} at {position}')
         self.position = position
         self.element = element
+
+
+class UsedNotRecognizedStatement(Exception):
+    def __init__(self, position):
+        super().__init__(f'Not recognized statement detected at {position}')
+        self.position = position

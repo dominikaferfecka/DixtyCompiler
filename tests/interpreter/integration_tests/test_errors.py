@@ -189,8 +189,12 @@ def test_fun_return_empty(setup_interpreter, capsys):
     assert (captured.out == "3\n2\n")
 
 
-def test_fun_endless_recursive(setup_interpreter, capsys):
+def test_fun_endless_recursive(setup_interpreter):
     with pytest.raises(RecursionLimitExceeded):
         setup_interpreter(SourceString("fun sth(n) { sth(n); } sth(1);"))
-        captured = capsys.readouterr()
-        assert (captured.out == "120\n")
+
+
+# def test_none_statement(setup_interpreter, capsys):
+#     setup_interpreter(SourceString("2+3;"))
+#     captured = capsys.readouterr()
+#     assert (captured.out == 'a')

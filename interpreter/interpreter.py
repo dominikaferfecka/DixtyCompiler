@@ -14,7 +14,8 @@ from interpreter.errors import (
     CannotMakeAndOnNotBoolTypes,
     CannotMakeNotOnNotBoolTypes,
     CannotDivByZero,
-    RecursionLimitExceeded
+    RecursionLimitExceeded,
+    VariableNotExists
 )
 
 class Interpreter(Visitor):
@@ -97,6 +98,7 @@ class Interpreter(Visitor):
 
 
     def visit_assign_statement(self, assign_statement, *args):
+        #self._last_result = None # in case if for example 2+3 were before
         assign_statement._object_access.accept(self, *args)
         object_access = self.get_last_result()
         assign_statement._expression.accept(self, *args)
@@ -393,6 +395,8 @@ class Interpreter(Visitor):
             argument.accept(self, *args)
             argument_parsed = self.get_last_result()
             argument_parsed = self.evaulate(argument_parsed)
+            if argument_parsed is None and argument is not None:
+                raise VariableNotExists(argument._name, position)
             arguments_parsed.append(argument_parsed)
             self._current_context.set_scope_variable(parameter, argument_parsed)
         
@@ -423,7 +427,6 @@ class Interpreter(Visitor):
 
         else:
         # fun_def.run(self, object)
-
             returned = fun_def._action(arguments_parsed)
         if returned is not None:
             self._last_result = returned

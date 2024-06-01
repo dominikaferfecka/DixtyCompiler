@@ -63,6 +63,7 @@ class Parser:
     # program :== {statement};     
     def parse_program(self) -> Program:
         statements = []
+    
         while statement := self.parse_statement():
             statements.append(statement)      
         if statement is None and self._token.get_token_type() != TokenType.END_OF_TEXT:

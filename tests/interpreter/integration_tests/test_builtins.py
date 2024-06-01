@@ -38,9 +38,8 @@ def test_len_list(setup_interpreter, capsys):
     assert (captured.out == "5\n")
 
 
-
 def test_comment(setup_interpreter, capsys):
-    setup_interpreter(SourceString("#comment;"))
+    setup_interpreter(SourceString("a=1; #comment;"))
     captured = capsys.readouterr()
     assert (captured.out == "")
 
@@ -49,7 +48,18 @@ def test_empty(setup_interpreter, capsys):
     captured = capsys.readouterr()
     assert (captured.out == "")
 
+def test_enter_after_statement(setup_interpreter, capsys):
+    setup_interpreter(SourceString("a=2; \n"))
+    captured = capsys.readouterr()
+    assert (captured.out == "")
+
 def test_enter(setup_interpreter, capsys):
     setup_interpreter(SourceString("\n"))
+    captured = capsys.readouterr()
+    assert (captured.out == "")
+
+
+def test_two_enters(setup_interpreter, capsys):
+    setup_interpreter(SourceString("\n\n"))
     captured = capsys.readouterr()
     assert (captured.out == "")

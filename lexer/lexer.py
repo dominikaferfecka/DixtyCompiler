@@ -39,7 +39,7 @@ class Lexer:
 
    def skip_whites(self):
       character = self._reader.get_character()
-      while character.isspace():
+      while character.isspace() or character == '':
          character = self._reader.next_character()
 
    def build_number(self):

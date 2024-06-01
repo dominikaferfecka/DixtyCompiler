@@ -11,7 +11,7 @@ from parser.syntax_tree import (
 )
 
 def test_while_identifier():
-    #source = SourceString("while (x) { a = 2; };")
+    #source = SourceString("while (x) { a = 2; }")
     tokens = LexerMock([
         Token(TokenType.WHILE, Position()),
         Token(TokenType.BRACKET_OPENING, Position()),
@@ -23,7 +23,6 @@ def test_while_identifier():
         Token(TokenType.INT, Position(), 2),
         Token(TokenType.SEMICOLON, Position()),
         Token(TokenType.BRACE_CLOSING, Position()),
-        Token(TokenType.SEMICOLON, Position()),
         Token(TokenType.END_OF_TEXT, Position())
         ])
     parser = Parser(tokens)
@@ -49,7 +48,7 @@ def test_while_identifier():
 
 
 def test_while_identifier_equals():
-    #source = SourceString("while (x == 1) { a = 2; };")
+    #source = SourceString("while (x == 1) { a = 2; }")
     tokens = LexerMock([
         Token(TokenType.WHILE, Position()),
         Token(TokenType.BRACKET_OPENING, Position()),
@@ -63,7 +62,6 @@ def test_while_identifier_equals():
         Token(TokenType.INT, Position(), 2),
         Token(TokenType.SEMICOLON, Position()),
         Token(TokenType.BRACE_CLOSING, Position()),
-        Token(TokenType.SEMICOLON, Position()),
         Token(TokenType.END_OF_TEXT, Position())
         ])
     parser = Parser(tokens)

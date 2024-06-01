@@ -163,7 +163,7 @@ def test_too_less_arguments_number(setup_interpreter):
 
 
 def test_for_string_empty(setup_interpreter, capsys):
-    setup_interpreter(SourceString("text = ""; for element in text {print(element);}"))
+    setup_interpreter(SourceString("text = \"\"; for element in text {print(element);}"))
     captured = capsys.readouterr()
     assert (captured.out == "")
 

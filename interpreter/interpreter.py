@@ -176,10 +176,10 @@ class Interpreter(Visitor):
         not_term._comparison_term.accept(self, *args)
         comparison_term = self.get_last_result()
         
-        if self.check_types(not_term, bool, [bool]):
+        if self.check_types(comparison_term, comparison_term, [bool]):
             self._last_result = not comparison_term
         else:
-            raise CannotMakeNotOnNotBoolTypes(not_term, position) 
+            raise CannotMakeNotOnNotBoolTypes(comparison_term, position) 
 
     def visit_equal_term(self, equal_term, *args):
         position = equal_term._position

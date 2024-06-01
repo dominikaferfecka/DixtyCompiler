@@ -131,9 +131,9 @@ def test_assign_add_strings(setup_interpreter):
 # RZUTOWANIE
 def test_assign_arithmetic_float_to_int(setup_interpreter):
     # b = 2.0; a = b.ToInt();
-    nodes = [Assignment(Identifier("b", 1), Number(2.0, 5), 3), Assignment(Identifier("a",1), IndexAccess(Identifier("b", 5), 5, FunCall(Identifier("ToInt", 5), 9, [])), 1)]
+    nodes = [Assignment(Identifier("b", 1), Number(2.0, 5), 3), Assignment(Identifier("a",1),   ObjectAccess(Identifier("b", 5), 5, FunCall(Identifier("ToInt", 5), 9, []))      , 1)]
     interpreter = setup_interpreter(nodes)
-    assert( interpreter._current_context._scopes[0]._variables == {'a' : 2} )
+    assert( interpreter._current_context._scopes[0]._variables == {'a' : 2, 'b' : 2.0} )
 
 
 # COMPARISON

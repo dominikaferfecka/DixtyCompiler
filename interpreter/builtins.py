@@ -2,7 +2,9 @@
 from interpreter.errors import (
     AlreadyExistingDictKey,
     NotExistingDictKey,
-    CannotConvertType
+    CannotConvertType,
+    NotExistingListValue,
+    AttributeError
 )
 
 class FunEmbedded:
@@ -20,30 +22,47 @@ def display(arguments_parsed):
     print(message)
 
 def length(arguments_parsed, object):
+    if not isinstance(object, list) and not isinstance(object, dict) and not isinstance(object, str):
+        raise AttributeError("len", type(object))
+    
     return len(object)
 
 def append_list(arguments_parsed, object):
+    if not isinstance(object, list):
+        raise AttributeError("append_list", type(object))
+    
     value = arguments_parsed[0]
     object.append(value)
 
 def remove_list(arguments_parsed, object):
-    index = arguments_parsed[0]
-    object.remove(index)
+    if not isinstance(object, list):
+        raise AttributeError("remove_list", type(object))
+    
+    value = arguments_parsed[0]
+    if value not in object:
+        raise NotExistingListValue(value)
+    object.remove(value)
 
 def insert_list(arguments_parsed, object):
+    if not isinstance(object, list):
+        raise AttributeError("insert_list", type(object))
+    
     index = arguments_parsed[0]
     value = arguments_parsed[1]
     object.insert(index, value)
 
 def contains_key(arguments_parsed, object):
+    if not isinstance(object, dict):
+        raise AttributeError("contains_key", type(object))
+    
     value = arguments_parsed[0]
+    return value in object.keys()
 
-    if value in object.keys():
-        return True
-    else:
-        return False
 
 def add_item(arguments_parsed, object):
+    if not isinstance(object, dict):
+        raise AttributeError("add_item", type(object))
+    
     key = arguments_parsed[0]
     value = arguments_parsed[1]
     
@@ -53,6 +72,9 @@ def add_item(arguments_parsed, object):
         raise AlreadyExistingDictKey(key)
 
 def remove_item(arguments_parsed, object):
+    if not isinstance(object, dict):
+        raise AttributeError("remove_item", type(object))
+
     key = arguments_parsed[0]
     
     if not key in object.keys():
@@ -94,7 +116,7 @@ BUILTINS = {
     "print" : FunEmbedded("print", ["message"], display),
     "len" : FunEmbedded("len", [], length),
     "append" : FunEmbedded("append", ["value"], append_list),
-    "remove" : FunEmbedded("remove", ["index"], remove_list),
+    "remove" : FunEmbedded("remove", ["value"], remove_list),
     "insert" : FunEmbedded("insert", ["index", "value"], insert_list),
     "contains_key" : FunEmbedded("contains_key", ["value"], contains_key),
     "add_item" : FunEmbedded("add_item", ["key", "value"], add_item),

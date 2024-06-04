@@ -1,4 +1,4 @@
-from interpreter.errors import VariableNotExists
+from interpreter.errors import VariableNotExists, NotExistingDictKey
 
 class IdentifierEvaulation:
     def __init__(self, interpreter, object):
@@ -24,5 +24,7 @@ class IndexAcccesEvaulation:
         else:
             key = [indexes[-1]]
             key = interpreter.evaulate(key[0])
+            if key not in left.keys():
+                raise NotExistingDictKey(key)
             self._value = left[key]
 

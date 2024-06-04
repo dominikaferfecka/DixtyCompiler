@@ -20,7 +20,11 @@ from interpreter.errors import (
     CannotMakeAndOnNotBoolTypes,
     CannotMakeOrOnNotBoolTypes,
     CannotDivByZero,
-    RecursionLimitExceeded
+    RecursionLimitExceeded,
+    AlreadyExistingDictKey,
+    NotExistingDictKey,
+    NotExistingListValue,
+    AttributeError
 )
 
 
@@ -183,13 +187,46 @@ def test_int_to_int(setup_interpreter):
         setup_interpreter(SourceString("a = 1; a.ToInt();"))
 
 
+def test_fun_endless_recursive(setup_interpreter):
+    with pytest.raises(RecursionLimitExceeded):
+        setup_interpreter(SourceString("fun sth(n) { sth(n); } sth(1);"))
+    
 
 def test_fun_endless_recursive(setup_interpreter):
     with pytest.raises(RecursionLimitExceeded):
         setup_interpreter(SourceString("fun sth(n) { sth(n); } sth(1);"))
 
 
-# def test_none_statement(setup_interpreter, capsys):
-#     setup_interpreter(SourceString("2+3;"))
-#     captured = capsys.readouterr()
-#     assert (captured.out == 'a')
+def test_add_already_existing_item_in_dict(setup_interpreter):
+    with pytest.raises(AlreadyExistingDictKey):
+        setup_interpreter(SourceString("a = {(1, 1)}; a.add_item(1, 2);"))
+
+
+def test_remove_not_existing_item_from_dict(setup_interpreter):
+    with pytest.raises(NotExistingDictKey):
+        setup_interpreter(SourceString("a = {(1, 1)}; a.remove_item(2);"))
+
+
+def test_print_not_existing_item_from_dict(setup_interpreter):
+    with pytest.raises(NotExistingDictKey):
+        setup_interpreter(SourceString("a = {(1, 1)}; print(a[2]);"))
+
+
+def test_modify_not_existing_item_from_dict(setup_interpreter):
+    with pytest.raises(NotExistingDictKey):
+        setup_interpreter(SourceString("a = {(1, 1)}; a[2] = 1;"))
+
+
+def test_remove_not_in_list(setup_interpreter):
+    with pytest.raises(NotExistingListValue):
+        setup_interpreter(SourceString("a = [1]; a.remove(2);"))
+
+
+def test_append_on_int(setup_interpreter):
+    with pytest.raises(AttributeError):
+        setup_interpreter(SourceString("a = 1; a.append(2);"))
+
+
+def test_len_on_int(setup_interpreter):
+    with pytest.raises(AttributeError):
+        setup_interpreter(SourceString("a = 1; a.len();"))

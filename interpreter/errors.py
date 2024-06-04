@@ -12,11 +12,11 @@ class FunctionNotDeclared(Exception):
         self._postion = position
 
 
-class FunctionAlreadyDeclared(Exception):
-    def __init__(self, name, position):
-        super().__init__(f'Tried to declare already existing function: [{name}] at {position}')
-        self._name = name
-        self._postion = position
+# class FunctionAlreadyDeclared(Exception):
+#     def __init__(self, name, position):
+#         super().__init__(f'Tried to declare already existing function: [{name}] at {position}')
+#         self._name = name
+#         self._postion = position
 
 
 class IncorrectArgumentsNumber(Exception):
@@ -89,8 +89,15 @@ class AlreadyExistingDictKey(Exception):
 
 class NotExistingDictKey(Exception):
     def __init__(self, name):
-        super().__init__(f'Tried to remove key which not exist in dict: [{name}]')
+        super().__init__(f'Tried to access key which not exist in dict: [{name}]')
         self._name = name
+
+
+class NotExistingListValue(Exception):
+    def __init__(self, name):
+        super().__init__(f'Tried to remove value which not exist in list: [{name}]')
+        self._name = name
+
 
 class CannotConvertType(Exception):
     def __init__(self, received, desired):
@@ -98,7 +105,15 @@ class CannotConvertType(Exception):
         self._received = received
         self._desired = desired
 
+
 class RecursionLimitExceeded(Exception):
     def __init__(self, recursion_limit):
         super().__init__(f'Exceeded recursion max limit [{recursion_limit}]')
         self._recursion_limit = recursion_limit
+
+
+class AttributeError(Exception):
+    def __init__(self, attribute_name, object_type):
+        super().__init__(f'Tried to access attribute [{attribute_name}] not available in object type [{object_type}]')
+        self._attribute_name = attribute_name
+        self._object_type = object_type

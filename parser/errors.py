@@ -54,7 +54,7 @@ class InvalidAssignmentStatement(MissingExpectedStatement):
 
 class FunctionAlreadyExists(Exception):
     def __init__(self, name, position):
-        super().__init__(f'Function with name {name} is already defined. Tried to define again at position: {position}')
+        super().__init__(f'Function with name [{name}] is already defined. Tried to define again at position: {position}')
         self.position = position
         self.name = name
 

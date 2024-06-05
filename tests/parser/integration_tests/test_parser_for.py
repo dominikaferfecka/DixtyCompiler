@@ -12,7 +12,7 @@ from parser.syntax_tree import (
 )
 
 def test_for_in_identifier():
-    source = SourceString("for i in list { a = 2; };")
+    source = SourceString("for i in list { a = 2; }")
     filter = Filter(source)
     parser = Parser(filter)
     program = parser.parse_program()
@@ -40,7 +40,7 @@ def test_for_in_identifier():
 
 
 def test_for_in_list():
-    source = SourceString("for i in [1, 2, 3] { a = 2; };")
+    source = SourceString("for i in [1, 2, 3] { a = 2; }")
     filter = Filter(source)
     parser = Parser(filter)
     program = parser.parse_program()
@@ -72,7 +72,7 @@ def test_for_in_list():
 
 
 def test_for_in_string():
-    source = SourceString("for i in \"abc\" { a = 2; };")
+    source = SourceString("for i in \"abc\" { a = 2; }")
     filter = Filter(source)
     parser = Parser(filter)
     program = parser.parse_program()

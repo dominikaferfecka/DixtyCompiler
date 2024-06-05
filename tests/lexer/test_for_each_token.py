@@ -201,6 +201,13 @@ def test_equal():
     token = lexer.get_next_token()
     assert (token.get_token_type() == TokenType.EQUAL)
 
+
+def test_not_equal():
+    lexer = Lexer(SourceString("!="))
+    token = lexer.get_next_token()
+    assert (token.get_token_type() == TokenType.NOT_EQUAL)
+
+
 # brackets
 
 
@@ -296,10 +303,6 @@ def test_tokens_in_two_rows():
     assert (token.get_position().get_row() == 1)
     assert (token.get_position().get_column() == 1)
 
-    # token = lexer.get_next_token()
-    # assert (token.get_token_type() == TokenType.SEMICOLON)
-    # assert (token.get_position().get_row() == 1)
-    # assert (token.get_position().get_column() == 3)
 
     token = lexer.get_next_token()
     assert (token.get_token_type() == TokenType.INT)

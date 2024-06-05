@@ -10,7 +10,8 @@ from lexer.errors import (
    IdentifierLimitExceeded,
    StringNotFinished,
    TokenNotRecognized,
-   UnexpectedEscapeCharacter
+   UnexpectedEscapeCharacter,
+   NotFinishedOperator
 )
 from lexer.standards import ETX, EOL
 
@@ -148,7 +149,7 @@ class Lexer:
    def build_one_or_two_chars_operators(self):
       character = self._reader.get_character()
 
-      if character not in ("<", ">", "="):
+      if character not in ("<", ">", "=", "!"):
          return None
 
       position = Position(self._reader.get_position()[0], self._reader.get_position()[1])
@@ -160,6 +161,8 @@ class Lexer:
          _ = self._reader.next_character()
          return Token(OPERATORS[first_character + "="], position)
       else:
+         if first_character == "!":
+            raise NotFinishedOperator(position, character)
          return Token(OPERATORS[first_character], position)
 
    def build_one_char_operators(self):

@@ -70,6 +70,10 @@ class Visitor(ABC):
         pass
 
     @abstractmethod
+    def visit_not_equal_term(self, equal_term):
+        pass
+
+    @abstractmethod
     def visit_less_term(self, less_term):
         pass
 

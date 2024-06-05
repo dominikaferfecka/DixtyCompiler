@@ -37,3 +37,10 @@ class TokenNotRecognized(Exception):
         super().__init__(f"Token starting with character [{not_recognized}] was not recognized \nInvalid token position: {position}")
         self.position = position
         self.not_recognized = not_recognized
+
+
+class NotFinishedOperator(Exception):
+    def __init__(self, position, not_recognized):
+        super().__init__(f"Operator != started but not finished, after '!' expected '=', received [{not_recognized}] \nInvalid token position: {position}")
+        self.position = position
+        self.not_recognized = not_recognized

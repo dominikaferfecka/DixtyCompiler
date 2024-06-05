@@ -19,7 +19,8 @@ from parser.syntax_tree import (
     List,
     Pair,
     Dict,
-    SelectTerm
+    SelectTerm,
+    NotEqualsTerm
 )
 
 def test_assign_number():
@@ -511,6 +512,24 @@ def test_assign_comparison_equals():
     assert ( expression._left_additive_term._name == "x")
     assert ( expression._right_additive_term._value == 1)
 
+def test_assign_comparison_not_equals():
+    source = SourceString("result = x != 1;")
+    filter = Filter(source)
+    parser = Parser(filter)
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    assert ( isinstance(program._statements[0], Assignment) )
+
+    object_access = program._statements[0]._object_access
+    assert ( isinstance(object_access, Identifier) )
+    assert ( object_access._name == "result")
+
+    expression = program._statements[0]._expression
+    assert ( isinstance(expression, NotEqualsTerm) )
+    assert ( expression._left_additive_term._name == "x")
+    assert ( expression._right_additive_term._value == 1)
+
+
 
 def test_assign_comparison_less_or_equals():
     source = SourceString("result = x <= 1;")
@@ -598,7 +617,7 @@ def test_assign_fun_call():
 
     expression = program._statements[0]._expression
     assert ( isinstance(expression, Item) )
-    assert (expression._parameters == None)
+    assert (expression._arguments == None)
 
 
 def test_assign_fun_call_param():
@@ -615,7 +634,7 @@ def test_assign_fun_call_param():
 
     expression = program._statements[0]._expression
     assert ( isinstance(expression, Item) )
-    assert (expression._parameters[0]._value == 1)
+    assert (expression._arguments[0]._value == 1)
 
 
 def test_assign_fun_call_dot():

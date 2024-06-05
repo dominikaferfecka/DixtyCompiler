@@ -45,7 +45,7 @@ class TokenType(Enum):
     LESS_OR_EQUAL = auto()              # <=
     MORE_OR_EQUAL = auto()              # >=
     EQUAL = auto()                      # ==
-    # NOT_EQUAL = auto()                  # !=
+    NOT_EQUAL = auto()                  # !=
 
     # brackets
     BRACKET_OPENING = auto()            # (

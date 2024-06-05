@@ -8,7 +8,8 @@ from lexer.errors import (
    IdentifierLimitExceeded,
    StringNotFinished,
    TokenNotRecognized,
-   UnexpectedEscapeCharacter
+   UnexpectedEscapeCharacter,
+   NotFinishedOperator
 )
 
 
@@ -167,3 +168,9 @@ def test_invalid_token_exc_info():
     assert exception.not_recognized == '$'
     assert exception.position.get_row() == 1
     assert exception.position.get_column() == 1
+
+
+def test_invalid_not_equal():
+    with pytest.raises(NotFinishedOperator):
+        lexer = Lexer(SourceString("! a"))
+        lexer.get_next_token()

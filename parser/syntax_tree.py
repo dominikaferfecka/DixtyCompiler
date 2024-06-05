@@ -140,6 +140,15 @@ class EqualsTerm(ComparisonTerm):
 
     def accept(self, visitor, *args):
         visitor.visit_equal_term(self, *args)
+    
+
+class NotEqualsTerm(ComparisonTerm):
+    def __init__(self, left_additive_term, position, right_additive_term):
+        super().__init__(left_additive_term, position, right_additive_term)
+
+    def accept(self, visitor, *args):
+        visitor.visit_not_equal_term(self, *args)
+
 
 class LessTerm(ComparisonTerm):
     def __init__(self, left_additive_term, position, right_additive_term):

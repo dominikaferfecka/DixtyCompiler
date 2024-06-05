@@ -34,7 +34,8 @@ from parser.syntax_tree import (
     Dict,
     Block,
     FunCall,
-    SelectTerm
+    SelectTerm,
+    NotEqualsTerm
 )
 
 from parser.errors import (
@@ -438,10 +439,11 @@ class Parser:
     def parse_comparison_term(self):
         left_additive_term = self.parse_additive_term()
 
-        if (self._token.get_token_type() in (TokenType.EQUAL,TokenType.LESS, TokenType.MORE, TokenType.LESS_OR_EQUAL, TokenType.MORE_OR_EQUAL)):
+        if (self._token.get_token_type() in (TokenType.EQUAL, TokenType.NOT_EQUAL, TokenType.LESS, TokenType.MORE, TokenType.LESS_OR_EQUAL, TokenType.MORE_OR_EQUAL)):
 
             comparison = {
                 TokenType.EQUAL : EqualsTerm,
+                TokenType.NOT_EQUAL : NotEqualsTerm,
                 TokenType.LESS : LessTerm,
                 TokenType.MORE : MoreTerm,
                 TokenType.LESS_OR_EQUAL : LessOrEqualTerm,

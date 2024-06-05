@@ -151,6 +151,24 @@ def test_assign_arithmetic_brackets(setup_interpreter, capsys):
     assert (captured.out == "True\n")
 
 
+def test_assign_arithmetic_equals(setup_interpreter, capsys):
+    setup_interpreter(SourceString("a = 1 == 1; print(a);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "True\n")
+
+
+def test_assign_arithmetic_not_equals(setup_interpreter, capsys):
+    setup_interpreter(SourceString("a = 1 != 1; print(a);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "False\n")
+
+
+def test_assign_arithmetic_less_equal(setup_interpreter, capsys):
+    setup_interpreter(SourceString("a = \"ab\"; c = a.len() <= 1 + 1; print(c);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "True\n")
+
+
 def test_assign_arithmetic_less(setup_interpreter, capsys):
     setup_interpreter(SourceString("a = \"ab\"; c = a.len() < 1 + 1; print(c);"))
     captured = capsys.readouterr()

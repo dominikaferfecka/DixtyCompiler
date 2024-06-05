@@ -206,8 +206,23 @@ class Interpreter(Visitor):
             self._last_result = left_additive_term == right_additive_term
         else:
             raise CannotCompareUnsupportedTypes(left_additive_term, right_additive_term, position) 
+    
 
-        self._last_result = left_additive_term == right_additive_term
+    def visit_not_equal_term(self, equal_term, *args):
+        position = equal_term._position
+        equal_term._left_additive_term.accept(self, *args)
+        left_additive_term = self.get_last_result()
+        equal_term._right_additive_term.accept(self, *args)
+        right_additive_term = self.get_last_result()
+
+        left_additive_term = self.evaulate(left_additive_term)
+        right_additive_term = self.evaulate(right_additive_term)
+
+        if self.check_types(left_additive_term, right_additive_term, [int, float, str, bool]):
+            self._last_result = left_additive_term != right_additive_term
+        else:
+            raise CannotCompareUnsupportedTypes(left_additive_term, right_additive_term, position) 
+
 
     def visit_less_term(self, less_term, *args):
         position = less_term._position

@@ -6,6 +6,7 @@ OPERATORS = {
     "<=": TokenType.LESS_OR_EQUAL,
     ">=": TokenType.MORE_OR_EQUAL,
     "==": TokenType.EQUAL,
+    "!=": TokenType.NOT_EQUAL,
 
     "=": TokenType.ASSIGN,
 

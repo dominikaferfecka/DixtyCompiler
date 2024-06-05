@@ -83,6 +83,11 @@ class Printer(Visitor):
         print(f"{indent}EqualTerm - memory: [{hex(id(equal_term))}], position [{equal_term._position}]") 
         equal_term._left_additive_term.accept(self, indent + self._new_indent)
         equal_term._right_additive_term.accept(self, indent + self._new_indent)
+    
+    def visit_not_equal_term(self, equal_term, indent=""):
+        print(f"{indent}NotEqualTerm - memory: [{hex(id(equal_term))}], position [{equal_term._position}]") 
+        equal_term._left_additive_term.accept(self, indent + self._new_indent)
+        equal_term._right_additive_term.accept(self, indent + self._new_indent)
 
     def visit_less_term(self, less_term, indent=""):
         print(f"{indent}LessTerm - memory: [{hex(id(less_term))}], position [{less_term._position}]") 
@@ -119,6 +124,13 @@ class Printer(Visitor):
     
     def visit_fun_call(self, call_access, indent=""):
         print(f"{indent}FunCall - memory: [{hex(id(call_access))}], position [{call_access._position}]") 
+        call_access._left.accept(self, indent + self._new_indent)
+        if call_access._arguments is not None:
+            for parameter in call_access._arguments:
+                parameter.accept(self, indent + self._new_indent)
+    
+    def visit_fun_embedded(self, call_access, indent=""):
+        print(f"{indent}FunEmbedded - memory: [{hex(id(call_access))}], position [{call_access._position}]") 
         call_access._left.accept(self, indent + self._new_indent)
         if call_access._arguments is not None:
             for parameter in call_access._arguments:

@@ -233,7 +233,7 @@ def test_len_on_int(setup_interpreter):
 
 
 # VARIABLES SCOPE
-def test_for_list_variable_outside(setup_interpreter, capsys):
+def test_for_list_variable_outside(setup_interpreter):
     with pytest.raises(VariableNotExists):
         setup_interpreter(SourceString("for element in [1, 2, 3, 4] {print(element);} print(element);"))
     
@@ -241,5 +241,10 @@ def test_for_list_variable_outside(setup_interpreter, capsys):
 def test_while_variable_outside(setup_interpreter):
     with pytest.raises(VariableNotExists):
         setup_interpreter(SourceString("i = 3; while (i > 0) {a = 2; i = i - 1;} print(a);"))
+
+
+def test_fun_scopes_nested_for(setup_interpreter):
+    with pytest.raises(VariableNotExists):
+        setup_interpreter(SourceString("fun run(x){for i in [1, 2, 3, 4] {b = 3; print(b);} print(b);} a = run(1); print(a);"))
 
 

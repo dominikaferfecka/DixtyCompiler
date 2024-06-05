@@ -79,3 +79,45 @@ def test_fun_outside(setup_interpreter, capsys):
     setup_interpreter(SourceString("x=2; fun change() { x = 3;} change(); print(x);"))
     captured = capsys.readouterr()
     assert (captured.out == "2\n")
+
+
+def test_fun_modify_list(setup_interpreter, capsys):
+    setup_interpreter(SourceString("fun run(x){x.append(4); return x;} a = [1, 2, 3]; run(a); print(a);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "[1, 2, 3]\n")
+
+# return
+def test_fun_return_variable(setup_interpreter, capsys):
+    setup_interpreter(SourceString("fun run(x){x = x + 1; return x;} a = run(1); print(a);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "2\n")
+
+
+def test_fun_return_list(setup_interpreter, capsys):
+    setup_interpreter(SourceString("fun run(x){x.append(4); return x; print(\"NOT\");} a = run([1, 2, 3]); print(a);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "[1, 2, 3, 4]\n")
+
+
+def test_fun_return_nested_if(setup_interpreter, capsys):
+    setup_interpreter(SourceString("fun run(x){x = x + 1; if (1 == 1) { if (1 == 1) {return 1; print(\"NOT\");} print(\"NOT\");} print(\"NOT\");} a = run(1); print(a);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "1\n")
+
+
+def test_fun_return_nested_while(setup_interpreter, capsys):
+    setup_interpreter(SourceString("fun run(x){i = 10; while (i > 0) {i = i - 1; return 1; print(i);} return 1;} a = run(1); print(a);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "1\n")
+
+
+def test_fun_return_nested_while_some(setup_interpreter, capsys):
+    setup_interpreter(SourceString("fun run(x){i = 10; while (i > 0) { while (i > 0) {return 1; print(\"NOT\"); i = i - 1;} print(\"NOT\"); i = i - 1;} print(\"NOT\"); i = i - 1;} a = run(1); print(a);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "1\n")
+
+
+def test_fun_return_nested_for(setup_interpreter, capsys):
+    setup_interpreter(SourceString("fun run(x){for i in [1, 2, 3, 4] {print(1); return 1; print(i);} } a = run(1); print(a);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "1\n1\n")

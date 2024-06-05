@@ -89,8 +89,12 @@ class Interpreter(Visitor):
             for statement in while_statement._block._statements:
                 if not self._return:
                     statement.accept(self, *args)
-            while_statement._expression.accept(self, *args)
-            expression = self.get_last_result()
+            if not self._return:
+                while_statement._expression.accept(self, *args)
+                expression = self.get_last_result()
+            else:
+                expression = False
+
         self._current_context.remove_scope()
 
 

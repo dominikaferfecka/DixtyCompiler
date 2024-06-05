@@ -33,12 +33,13 @@ def test_if_else_if(setup_interpreter, capsys):
     assert (captured.out == "less\n")
 
 
-def test_if_else(setup_interpreter, capsys):
-    setup_interpreter(SourceString("a = 3; if (a == 2) {print(\"two\");} else_if (a < 2) {print(\"less\");} else {print(\"more\");}"))
+def test_if_else_only(setup_interpreter, capsys):
+    setup_interpreter(SourceString("a = 3; if (a == 2) {print(\"two\");} else {print(\"more\");}"))
     captured = capsys.readouterr()
     assert (captured.out == "more\n")
 
+
 def test_if_else_if_some(setup_interpreter, capsys):
-    setup_interpreter(SourceString("a = 4; if (a == 2) {print(\"two\");} else_if (a == 3) {print(\"three\");} else_if (a == 4) {print(\"four\");} else {print(\"other\");}"))
+    setup_interpreter(SourceString("a = 4; if (a == 2) {print(\"two\");} else_if (a == 3) {print(\"three\");} else_if (a == 4) {print(\"four\");}"))
     captured = capsys.readouterr()
     assert (captured.out == "four\n")

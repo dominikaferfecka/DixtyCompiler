@@ -24,7 +24,8 @@ class IndexAcccesEvaulation:
         else:
             key = [indexes[-1]]
             key = interpreter.evaulate(key[0])
-            if key not in left.keys():
-                raise NotExistingDictKey(key)
+            if isinstance (left, dict):
+                if key not in left.keys():
+                    raise NotExistingDictKey(key)
             self._value = left[key]
 

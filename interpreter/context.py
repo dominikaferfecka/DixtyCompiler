@@ -30,9 +30,6 @@ class Context:
             raise VariableNotExists(name)
         return variable
 
-    # def set_scope_variable(self, name, value):
-    #     self._scopes[-1].set_variable(name, value)
-
     def set_scope_variable(self, name, value):
         # check if exists
         changed = False

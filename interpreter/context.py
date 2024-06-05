@@ -1,4 +1,5 @@
-from interpreter.scope import Scope, IdentifierEvaulation
+from interpreter.scope import Scope
+from interpreter.assign import IdentifierEvaulation
 from interpreter.errors import VariableNotExists
 import copy
 

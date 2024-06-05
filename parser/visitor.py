@@ -109,10 +109,6 @@ class Visitor(ABC):
     def visit_fun_embedded(self, call_access):
         pass
 
-    # @abstractmethod
-    # def visit_literal(self, literal):
-    #     pass
-
     @abstractmethod
     def visit_number(self, number):
         pass

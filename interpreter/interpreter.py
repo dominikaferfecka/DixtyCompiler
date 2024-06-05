@@ -106,7 +106,6 @@ class Interpreter(Visitor):
 
 
     def visit_assign_statement(self, assign_statement, *args):
-        #self._last_result = None # in case if for example 2+3 were before
         assign_statement._object_access.accept(self, *args)
         object_access = self.get_last_result()
         assign_statement._expression.accept(self, *args)

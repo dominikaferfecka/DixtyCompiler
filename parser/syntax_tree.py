@@ -230,17 +230,6 @@ class SignedFactor(Node):
     def accept(self, visitor, *args):
         visitor.visit_signed_factor(self, *args)
 
-
-# class Literal(Node):
-#     def __init__(self, factor, position):
-#         super().__init__()
-#         self._factor = factor
-#         self._position = position
-    
-#     def accept(self, visitor, *args):
-#         visitor.visit_literal(self, *args)
-
-
 class Number(Node):
     def __init__(self, value, position):
         super().__init__()

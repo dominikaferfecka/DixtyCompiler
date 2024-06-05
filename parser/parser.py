@@ -254,10 +254,6 @@ class Parser:
             right_item = self.parse_item()
             self.not_none(right_item, MissingExpectedStatement, "right_item")
 
-            # if isinstance(right_item, FunCall):
-            #     left_item = MethodCall(left, name, position, arguments)
-            # else:
-            #     left_item = ObjectAccess(left_item, position, right_item)
             left_item = ObjectAccess(left_item, position, right_item)
         
         return left_item
@@ -402,7 +398,7 @@ class Parser:
         left_not_term = self.parse_not_term()
 
         if left_not_term is None:
-            return None # ?? maybe it should be error?
+            return None
         
         while (self._token.get_token_type() == TokenType.AND):
             position = self._token.get_position()

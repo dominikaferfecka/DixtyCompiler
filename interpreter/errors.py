@@ -12,13 +12,6 @@ class FunctionNotDeclared(Exception):
         self._postion = position
 
 
-# class FunctionAlreadyDeclared(Exception):
-#     def __init__(self, name, position):
-#         super().__init__(f'Tried to declare already existing function: [{name}] at {position}')
-#         self._name = name
-#         self._postion = position
-
-
 class IncorrectArgumentsNumber(Exception):
     def __init__(self, function_name, expected, received, position):
         super().__init__(f'Got incorrect number of parameters for function [{function_name}], expected: [{expected}], received: [{received}] - at {position}')

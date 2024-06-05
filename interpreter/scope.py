@@ -1,4 +1,4 @@
-from interpreter.assign import IdentifierEvaulation, IndexAcccesEvaulation
+from interpreter.assign import IndexAcccesEvaulation
 
 class Scope:
     def __init__(self):

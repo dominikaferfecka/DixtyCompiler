@@ -128,3 +128,11 @@ def test_list_method_on_index_access(setup_interpreter, capsys):
     setup_interpreter(SourceString("a = [1, [2]]; print(a[1].len());"))
     captured = capsys.readouterr()
     assert (captured.out == "1\n")
+
+
+def test_list_with_function(setup_interpreter, capsys):
+    setup_interpreter(SourceString("a = 3; b = 5; text = \"some_text\"; fun increase(a) { return a + 1; } list = [a, b, text, 1, increase(2)]; print(list);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "[3, 5, 'some_text', 1, 3]\n")
+
+

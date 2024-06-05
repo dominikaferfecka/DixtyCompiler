@@ -99,3 +99,26 @@ def test_list_in_list_index_access(setup_interpreter, capsys):
     setup_interpreter(SourceString("a = 1; b = 5; my_list = [[a, 2, 3], [4, b, 6], [7, 8, 9]]; print(my_list[0][0]);"))
     captured = capsys.readouterr()
     assert (captured.out == "1\n")
+
+def test_list_nested_print(setup_interpreter, capsys):
+    setup_interpreter(SourceString("a = 1; b = 5; my_list = [[a, 2, 3],[4, b, 6],[7, 8, 9]]; print(my_list[1]);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "[4, 5, 6]\n")
+
+
+def test_list_nested_remove(setup_interpreter, capsys):
+    setup_interpreter(SourceString("a = 1; b = 5; my_list = [[a, 2, 3],[4, b, 6],[7, 8, 9]]; my_list.remove([7, 8, 9]); print(my_list);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "[[1, 2, 3], [4, 5, 6]]\n")
+
+
+def test_list_nested_remove_index(setup_interpreter, capsys):
+    setup_interpreter(SourceString("a = 1; b = 5; my_list = [[a, 2, 3],[4, b, 6],[7, 8, 9]]; my_list[1].remove(5); print(my_list);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "[[1, 2, 3], [4, 6], [7, 8, 9]]\n")
+
+
+def test_list_nested_iterate(setup_interpreter, capsys):
+    setup_interpreter(SourceString("a = 1; b = 5; my_list = [[a, 2, 3],[4, b, 6],[7, 8, 9]]; for list in my_list { for element in list { print(element);  } }"))
+    captured = capsys.readouterr()
+    assert (captured.out == "1\n2\n3\n4\n5\n6\n7\n8\n9\n")

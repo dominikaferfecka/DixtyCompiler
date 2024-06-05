@@ -20,7 +20,7 @@ def setup_interpreter():
     return _setup
 
 
-def test_assign_pair(setup_interpreter, capsys):
+def test_print_pair(setup_interpreter, capsys):
     setup_interpreter(SourceString("pair = (\"value\", 2); print(pair[0]); print(pair[1]); print(pair);"))
     captured = capsys.readouterr()
     assert (captured.out == "value\n2\n('value', 2)\n")

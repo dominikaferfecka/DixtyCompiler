@@ -519,7 +519,7 @@ class Parser:
         factor = self.parse_factor()
         
         if unary_negation:
-            self.not_none(factor, MissingExpectedStatement, "factor", position)
+            self.not_none(factor, MissingExpectedStatement, "factor")
             return SignedFactor(factor, position)
         return factor
         

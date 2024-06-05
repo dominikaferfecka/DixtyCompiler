@@ -364,7 +364,7 @@ class Interpreter(Visitor):
     def visit_signed_factor(self, signed_factor, *args):
         signed_factor._factor.accept(self, *args)
         signed_factor = self.get_last_result()
-        self._last_result = signed_factor
+        self._last_result = - signed_factor
 
     def visit_object_access(self, object_access, *args):
         object_access._left_item.accept(self, *args)

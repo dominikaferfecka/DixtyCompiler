@@ -84,6 +84,19 @@ def test_assign_arithmetic_brackets(setup_interpreter, capsys):
     captured = capsys.readouterr()
     assert (captured.out == "2\n")
 
+
+def test_assign_arithmetic_negative(setup_interpreter, capsys):
+    setup_interpreter(SourceString("a = -2 - 2; print(a);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "-4\n")
+
+
+def test_assign_arithmetic_negative_add(setup_interpreter, capsys):
+    setup_interpreter(SourceString("a = 2 - (-2); print(a);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "4\n")
+
+
 def test_assign_arithmetic_float(setup_interpreter, capsys):
     setup_interpreter(SourceString("a = 10.5 + 2.0 + 3.0 + 5.0 - 8.0 - 2.0; print(a);"))
     captured = capsys.readouterr()

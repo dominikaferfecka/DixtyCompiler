@@ -75,19 +75,23 @@ class Interpreter(Visitor):
         
         iterating = self.evaulate(iterating)
         for value in iterating:
+            self._current_context.add_scope()
             self._current_context.set_scope_variable(variable, value )
             for_statement._block.accept(self, *args)
+            self._current_context.remove_scope()
     
     def visit_while_statement(self, while_statement, *args):
         while_statement._expression.accept(self, *args)
         expression = self.get_last_result()
 
+        self._current_context.add_scope()
         while expression:
             for statement in while_statement._block._statements:
                 if not self._return:
                     statement.accept(self, *args)
             while_statement._expression.accept(self, *args)
             expression = self.get_last_result()
+        self._current_context.remove_scope()
 
 
     def visit_return_statement(self, return_statement, *args):
@@ -114,7 +118,9 @@ class Interpreter(Visitor):
 
         self._if_done = False
         if expression:
+            self._current_context.add_scope()
             if_statement._block.accept(self, *args)
+            self._current_context.remove_scope()
             self._if_done = True
         else:
             else_if_list = if_statement._else_if_statement
@@ -132,20 +138,21 @@ class Interpreter(Visitor):
         expression = self.get_last_result()
 
         if expression:
+            self._current_context.add_scope()
             else_if_statement._block.accept(self, *args)
+            self._current_context.remove_scope()
             self._if_done = True
     
     def visit_else_statement(self, else_statement, *args):
+        self._current_context.add_scope()
         else_statement._block.accept(self, *args)
+        self._current_context.remove_scope()
         self._if_done = True
 
     def visit_block(self, block, *args):
-        self._current_context.add_scope()
         for statement in block._statements:
             if not self._return:
                 statement.accept(self, *args)
-        self._current_context.remove_scope()
-    
 
     def visit_or_term(self, or_term, *args):
         position = or_term._position
@@ -411,7 +418,9 @@ class Interpreter(Visitor):
         if isinstance(fun_def, FunEmbedded):
             fun_def.accept(self, arguments_parsed, *args)
         else:
+            self._current_context.add_scope()
             fun_def._block.accept(self, *args)
+            self._current_context.remove_scope()
 
         self._return = False
         self._current_context.remove_scope()

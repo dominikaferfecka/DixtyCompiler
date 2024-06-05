@@ -43,17 +43,8 @@ from parser.syntax_tree import (
 )
 import pytest
 
-@pytest.fixture
-def setup_interpreter():
-    def _setup(nodes):
-        interpreter = Interpreter({}, BUILTINS)
-        for node in nodes:
-            node.accept(interpreter)
-        return interpreter
-    return _setup
 
-
-def test_while_less(setup_interpreter):
+def test_while_less():
     # i = 0; while (i < 3) { print(i); i = i + 1; }
     nodes = [
         Assignment(Identifier("i",1), Number(0, 3), 1),
@@ -70,12 +61,14 @@ def test_while_less(setup_interpreter):
             1
         )
     ]
-    interpreter = setup_interpreter(nodes)
+    interpreter = Interpreter({}, BUILTINS)
+    interpreter.visit_assign_statement(nodes[0])
+    assert( interpreter._current_context._scopes[0]._variables == {'i' : 0} )
+    interpreter.visit_while_statement(nodes[1])
     assert( interpreter._current_context._scopes[0]._variables == {'i' : 3} )
 
 
-
-def test_while_less_equal(setup_interpreter):
+def test_while_less_equal():
     # i = 0; while (i <= 3) { print(i); i = i + 1; }
     nodes = [
         Assignment(Identifier("i",1), Number(0, 3), 1),
@@ -92,12 +85,15 @@ def test_while_less_equal(setup_interpreter):
             1
         )
     ]
-    interpreter = setup_interpreter(nodes)
+    interpreter = Interpreter({}, BUILTINS)
+    interpreter.visit_assign_statement(nodes[0])
+    assert( interpreter._current_context._scopes[0]._variables == {'i' : 0} )
+    interpreter.visit_while_statement(nodes[1])
     assert( interpreter._current_context._scopes[0]._variables == {'i' : 4} )
 
 
 
-def test_while_more(setup_interpreter):
+def test_while_more():
     # i = 9; while (i > 5) { print(i); i = i - 1; }
     nodes = [
         Assignment(Identifier("i", 1), Number(9, 3), 1),
@@ -114,11 +110,14 @@ def test_while_more(setup_interpreter):
             1
         )
     ]
-    interpreter = setup_interpreter(nodes)
+    interpreter = Interpreter({}, BUILTINS)
+    interpreter.visit_assign_statement(nodes[0])
+    assert( interpreter._current_context._scopes[0]._variables == {'i' : 9} )
+    interpreter.visit_while_statement(nodes[1])
     assert( interpreter._current_context._scopes[0]._variables == {'i' : 5} )
 
 
-def test_while_more_equal(setup_interpreter):
+def test_while_more_equal():
     # i = 9; while (i >= 5) { print(i); i = i - 1; }
     nodes = [
         Assignment(Identifier("i", 1), Number(9, 3), 1),
@@ -135,6 +134,9 @@ def test_while_more_equal(setup_interpreter):
             1
         )
     ]
-    interpreter = setup_interpreter(nodes)
+    interpreter = Interpreter({}, BUILTINS)
+    interpreter.visit_assign_statement(nodes[0])
+    assert( interpreter._current_context._scopes[0]._variables == {'i' : 9} )
+    interpreter.visit_while_statement(nodes[1])
     assert( interpreter._current_context._scopes[0]._variables == {'i' : 4} )
 

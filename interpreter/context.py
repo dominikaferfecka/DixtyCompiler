@@ -1,4 +1,4 @@
-from interpreter.scope import Scope
+from interpreter.scope import Scope, IdentifierEvaulation
 from interpreter.errors import VariableNotExists
 import copy
 
@@ -30,7 +30,23 @@ class Context:
             raise VariableNotExists(name)
         return variable
 
+    # def set_scope_variable(self, name, value):
+    #     self._scopes[-1].set_variable(name, value)
+
     def set_scope_variable(self, name, value):
-        self._scopes[-1].set_variable(name, value)
+        # check if exists
+        changed = False
+        for idx, scope in enumerate(reversed(self._scopes)):
+            if changed is False:
+                if isinstance(name, IdentifierEvaulation):
+                    variable = scope.get_variable(name._name)
+                else:
+                    variable = scope.get_variable(name)
+                if variable is not None:
+                    index = len(self._scopes) - idx - 1
+                    self._scopes[index].set_variable(name, value)
+                    changed = True
+        if changed is False:
+            self._scopes[-1].set_variable(name, value)
 
 

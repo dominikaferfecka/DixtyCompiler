@@ -73,3 +73,9 @@ def test_fun_return_empty(setup_interpreter, capsys):
     setup_interpreter(SourceString("fun increase(x){x = x + 1; return;} increase(1);"))
     captured = capsys.readouterr()
     assert (captured.out == "")
+
+# variable scopes
+def test_fun_outside(setup_interpreter, capsys):
+    setup_interpreter(SourceString("x=2; fun change() { x = 3;} change(); print(x);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "2\n")

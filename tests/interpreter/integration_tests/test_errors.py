@@ -230,3 +230,16 @@ def test_append_on_int(setup_interpreter):
 def test_len_on_int(setup_interpreter):
     with pytest.raises(AttributeError):
         setup_interpreter(SourceString("a = 1; a.len();"))
+
+
+# VARIABLES SCOPE
+def test_for_list_variable_outside(setup_interpreter, capsys):
+    with pytest.raises(VariableNotExists):
+        setup_interpreter(SourceString("for element in [1, 2, 3, 4] {print(element);} print(element);"))
+    
+
+def test_while_variable_outside(setup_interpreter):
+    with pytest.raises(VariableNotExists):
+        setup_interpreter(SourceString("i = 3; while (i > 0) {a = 2; i = i - 1;} print(a);"))
+
+

@@ -26,6 +26,13 @@ def test_for_list(setup_interpreter, capsys):
     captured = capsys.readouterr()
     assert (captured.out == "1\n2\n3\n4\n")
 
+# variable scopes
+def test_for_list_outside(setup_interpreter, capsys):
+    setup_interpreter(SourceString("a = 5; for element in [1, 2, 3, 4] {a = a - 1;} print(a);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "1\n")
+
+
 
 def test_for_list_variable(setup_interpreter, capsys):
     setup_interpreter(SourceString("list = [1, 2, 3, 4]; for element in list {print(element);}"))

@@ -42,17 +42,8 @@ from parser.syntax_tree import (
 )
 import pytest
 
-@pytest.fixture
-def setup_interpreter():
-    def _setup(nodes):
-        interpreter = Interpreter({}, BUILTINS)
-        for node in nodes:
-            node.accept(interpreter)
-        return interpreter
-    return _setup
 
-
-def test_for_list(setup_interpreter):
+def test_for_list():
     # for element in [1, 2, 3, 4] {print(element);}
     nodes = [
         ForStatement(
@@ -65,11 +56,12 @@ def test_for_list(setup_interpreter):
             1
         )
     ]
-    interpreter = setup_interpreter(nodes)
-    assert( interpreter._current_context._scopes[0]._variables == {'element' : 4} )
+    interpreter = Interpreter({}, BUILTINS)
+    interpreter.visit_for_statement(nodes[0])
+    assert( interpreter._current_context._scopes[0]._variables == {} )
 
 
-def test_for_list_variable(setup_interpreter):
+def test_for_list_variable():
     # list = [1, 2, 3, 4]; for element in list {print(element);}
     nodes = [
         Assignment(Identifier("list",1), List([Number(1, 1), Number(2, 1), Number(3, 1), Number(4, 1)], 1), 1),
@@ -83,12 +75,15 @@ def test_for_list_variable(setup_interpreter):
             1
         )
     ]
-    interpreter = setup_interpreter(nodes)
-    assert( interpreter._current_context._scopes[0]._variables == {'element' : 4, 'list' : [1, 2, 3, 4]} )
+    interpreter = Interpreter({}, BUILTINS)
+    interpreter.visit_assign_statement(nodes[0])
+    assert( interpreter._current_context._scopes[0]._variables == {'list' : [1, 2, 3, 4]} )
+    interpreter.visit_for_statement(nodes[1])
+    assert( interpreter._current_context._scopes[0]._variables == {'list' : [1, 2, 3, 4]} )
 
 
 
-def test_for_list_empty(setup_interpreter):
+def test_for_list_empty():
     # list = []; for element in list {print(element);}
     nodes = [
         Assignment(Identifier("list",1), List([], 1), 1),
@@ -102,11 +97,14 @@ def test_for_list_empty(setup_interpreter):
             1
         )
     ]
-    interpreter = setup_interpreter(nodes)
+    interpreter = Interpreter({}, BUILTINS)
+    interpreter.visit_assign_statement(nodes[0])
+    assert( interpreter._current_context._scopes[0]._variables == {'list' : []} )
+    interpreter.visit_for_statement(nodes[1])
     assert( interpreter._current_context._scopes[0]._variables == {'list' : []} )
 
 
-def test_for_string(setup_interpreter):
+def test_for_string():
     # for element in \"abcd\" {print(element);}
     nodes = [
         ForStatement(
@@ -119,11 +117,12 @@ def test_for_string(setup_interpreter):
             1
         )
     ]
-    interpreter = setup_interpreter(nodes)
-    assert( interpreter._current_context._scopes[0]._variables == {'element' : 'd'} )
+    interpreter = Interpreter({}, BUILTINS)
+    interpreter.visit_for_statement(nodes[0])
+    assert( interpreter._current_context._scopes[0]._variables == {} )
 
 
-def test_for_string_variable(setup_interpreter):
+def test_for_string_variable():
     # text = \"abcd\"; for element in text {print(element);}
     nodes = [
         Assignment(Identifier("text",1), String("abcd", 1), 1),
@@ -137,11 +136,14 @@ def test_for_string_variable(setup_interpreter):
             1
         )
     ]
-    interpreter = setup_interpreter(nodes)
-    assert( interpreter._current_context._scopes[0]._variables == {'element' : 'd', 'text' : 'abcd'} )
+    interpreter = Interpreter({}, BUILTINS)
+    interpreter.visit_assign_statement(nodes[0])
+    assert( interpreter._current_context._scopes[0]._variables == {'text' : 'abcd'} )
+    interpreter.visit_for_statement(nodes[1])
+    assert( interpreter._current_context._scopes[0]._variables == {'text' : 'abcd'} )
 
 
-def test_for_dict(setup_interpreter):
+def test_for_dict():
     # for element in {(\"one\",1),(\"two\",2)} {print(element);}
     nodes = [
         ForStatement(
@@ -154,6 +156,7 @@ def test_for_dict(setup_interpreter):
             1
         )
     ]
-    interpreter = setup_interpreter(nodes)
-    assert( interpreter._current_context._scopes[0]._variables == {'element' : 'two'} )
+    interpreter = Interpreter({}, BUILTINS)
+    interpreter.visit_for_statement(nodes[0])
+    assert( interpreter._current_context._scopes[0]._variables == {} )
 

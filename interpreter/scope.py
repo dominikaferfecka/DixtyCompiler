@@ -15,6 +15,7 @@ class Scope:
             current = current[index]
         current[indexes[-1]] = value
 
+
     def set_variable(self, object, value):
         if isinstance(object, IndexAcccesEvaulation):
             name = object._left_object._name
@@ -22,7 +23,6 @@ class Scope:
                 old_values = self._variables[name]
                 indexes = object._index_access_list
                 self.set_nested_value(old_values, indexes, value )
-
                 value = old_values
             self._variables[name] = value
         if isinstance(object, str):

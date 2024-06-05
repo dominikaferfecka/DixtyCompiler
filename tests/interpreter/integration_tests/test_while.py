@@ -38,3 +38,8 @@ def test_while_fun(setup_interpreter, capsys):
     captured = capsys.readouterr()
     assert (captured.out == "0\n1\n2\n")
 
+# variable scopes
+def test_while_iterator_outside(setup_interpreter, capsys):
+    setup_interpreter(SourceString("i = 3; while (i > 0) {a = 2; i = i - 1;} print(i);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "0\n")

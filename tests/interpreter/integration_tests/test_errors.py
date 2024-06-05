@@ -248,3 +248,29 @@ def test_fun_scopes_nested_for(setup_interpreter):
         setup_interpreter(SourceString("fun run(x){for i in [1, 2, 3, 4] {b = 3; print(b);} print(b);} a = run(1); print(a);"))
 
 
+# some strange inputs
+
+def test_print_pair(setup_interpreter):
+    with pytest.raises(AttributeError):
+        setup_interpreter(SourceString("pair = (\"value\", 2); pair.append(1);"))
+
+
+def test_invalid_convert(setup_interpreter):
+    with pytest.raises(CannotConvertType):
+        setup_interpreter(SourceString("b = 1; a = b.ToInt();"))
+
+
+def test_invalid_object_access(setup_interpreter):
+    with pytest.raises(VariableNotExists):
+        setup_interpreter(SourceString("a = [1, 2]; print(a.b);"))
+
+
+def test_invalid_object_index_access(setup_interpreter):
+    with pytest.raises(VariableNotExists):
+        setup_interpreter(SourceString("a = [1, 2]; print(b[0]);"))
+
+
+def test_invalid_object_index_access_more(setup_interpreter):
+    with pytest.raises(VariableNotExists):
+        setup_interpreter(SourceString("a = [1, 2]; print(b[0][1][2]);"))
+

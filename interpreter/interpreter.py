@@ -422,7 +422,10 @@ class Interpreter(Visitor):
             argument_parsed = self.get_last_result()
             argument_parsed = self.evaulate(argument_parsed)
             if argument_parsed is None and argument is not None:
-                raise VariableNotExists(argument._name, position)
+                if hasattr(argument, '_name'):
+                        raise VariableNotExists(argument._name, position)
+                else:
+                    raise VariableNotExists("", position)
             arguments_parsed.append(argument_parsed)
             self._current_context.set_scope_variable(parameter, argument_parsed)
         

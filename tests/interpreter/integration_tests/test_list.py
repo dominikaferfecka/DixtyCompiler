@@ -122,3 +122,9 @@ def test_list_nested_iterate(setup_interpreter, capsys):
     setup_interpreter(SourceString("a = 1; b = 5; my_list = [[a, 2, 3],[4, b, 6],[7, 8, 9]]; for list in my_list { for element in list { print(element);  } }"))
     captured = capsys.readouterr()
     assert (captured.out == "1\n2\n3\n4\n5\n6\n7\n8\n9\n")
+
+
+def test_list_method_on_index_access(setup_interpreter, capsys):
+    setup_interpreter(SourceString("a = [1, [2]]; print(a[1].len());"))
+    captured = capsys.readouterr()
+    assert (captured.out == "1\n")

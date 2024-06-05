@@ -231,3 +231,7 @@ def test_assign_logical_not(setup_interpreter, capsys):
     assert (captured.out == "False\n")
 
 
+def test_assign_logical_not_true(setup_interpreter, capsys):
+    setup_interpreter(SourceString("a = Not True; print(a);"))
+    captured = capsys.readouterr()
+    assert (captured.out == "False\n")

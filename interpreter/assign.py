@@ -18,6 +18,9 @@ class IndexAcccesEvaulation:
 
         self._index_access_list = indexes
         left = interpreter.evaulate(left_object)
+
+        if left is None:
+            raise VariableNotExists(self._name)
     
         if isinstance(left, list) or isinstance(left, tuple):
             self._value = left[indexes[-1]]

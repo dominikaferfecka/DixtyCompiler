@@ -20,7 +20,7 @@ class Printer(Visitor):
         fun_def_statement._block.accept(self, indent + self._new_indent)
 
     def visit_return_statement(self, return_statement, indent=""):
-        print(f"{indent}ReturnStatement - memory: [{hex(id(return_statement))}], name: [{return_statement._name._name}], position [{return_statement._position}]")
+        print(f"{indent}ReturnStatement - memory: [{hex(id(return_statement))}], position [{return_statement._position}]")
         return_statement._expression.accept(self, indent + self._new_indent)
     
     def visit_assign_statement(self, assign_statement, indent=""):
@@ -32,9 +32,11 @@ class Printer(Visitor):
         print(f"{indent}IfStatement - memory: [{hex(id(if_statement))}], position [{if_statement._position}]") 
         if_statement._expression.accept(self, indent + self._new_indent)
         if_statement._block.accept(self, indent + self._new_indent)
-        for else_if in if_statement.else_if_statement:
-            else_if.accept(self, indent + self._new_indent)
-        if_statement._else_statement.accept(self, indent + self._new_indent)
+        if if_statement._else_if_statement is not None:
+            for else_if in if_statement._else_if_statement:
+                else_if.accept(self, indent + self._new_indent)
+        if if_statement._else_statement is not None:
+            if_statement._else_statement.accept(self, indent + self._new_indent)
     
     def visit_else_if_statement(self, else_if_statement, indent=""):
         print(f"{indent}ElseIfStatement - memory: [{hex(id(else_if_statement))}], position [{else_if_statement._position}]") 
@@ -58,7 +60,6 @@ class Printer(Visitor):
     def visit_not_term(self, not_term, indent=""):
         print(f"{indent}NotTerm - memory: [{hex(id(not_term))}], position [{not_term._position}]") 
         not_term._comparison_term.accept(self, indent + self._new_indent)
-        not_term._rcomparison_term.accept(self, indent + self._new_indent)
     
     def visit_add_term(self, add_term, indent=""):
         print(f"{indent}AddTerm - memory: [{hex(id(add_term))}], position [{add_term._position}]") 
@@ -82,6 +83,11 @@ class Printer(Visitor):
     
     def visit_equal_term(self, equal_term, indent=""):
         print(f"{indent}EqualTerm - memory: [{hex(id(equal_term))}], position [{equal_term._position}]") 
+        equal_term._left_additive_term.accept(self, indent + self._new_indent)
+        equal_term._right_additive_term.accept(self, indent + self._new_indent)
+    
+    def visit_not_equal_term(self, equal_term, indent=""):
+        print(f"{indent}NotEqualTerm - memory: [{hex(id(equal_term))}], position [{equal_term._position}]") 
         equal_term._left_additive_term.accept(self, indent + self._new_indent)
         equal_term._right_additive_term.accept(self, indent + self._new_indent)
 
@@ -121,15 +127,19 @@ class Printer(Visitor):
     def visit_fun_call(self, call_access, indent=""):
         print(f"{indent}FunCall - memory: [{hex(id(call_access))}], position [{call_access._position}]") 
         call_access._left.accept(self, indent + self._new_indent)
-        if call_access._parameters is not None:
-            for parameter in call_access._parameters:
+        if call_access._arguments is not None:
+            for parameter in call_access._arguments:
+                parameter.accept(self, indent + self._new_indent)
+    
+    def visit_fun_embedded(self, call_access, indent=""):
+        print(f"{indent}FunEmbedded - memory: [{hex(id(call_access))}], position [{call_access._position}]") 
+        call_access._left.accept(self, indent + self._new_indent)
+        if call_access._arguments is not None:
+            for parameter in call_access._arguments:
                 parameter.accept(self, indent + self._new_indent)
 
     def visit_signed_factor(self, signed_factor, indent=""):
         print(f"{indent}SignedFactor - memory: [{hex(id(signed_factor))}], position [{signed_factor._position}], factor: [{signed_factor._factor}]") 
-
-    def visit_literal(self, literal, indent=""):
-        print(f"{indent}Literal - memory: [{hex(id(literal))}], position [{literal._position}], factor: [{literal._factor}]") 
 
     def visit_number(self, number, indent=""):
         print(f"{indent}Number - memory: [{hex(id(number))}], position [{number._position}], value: [{number._value}]") 
@@ -142,8 +152,9 @@ class Printer(Visitor):
 
     def visit_list(self, list, indent=""):
         print(f"{indent}List - memory: [{hex(id(list))}], position [{list._position}]") 
-        for value in list._values:
-            value.accept(self,indent + self._new_indent)
+        if list._values is not None:
+            for value in list._values:
+                value.accept(self,indent + self._new_indent)
 
     def visit_pair(self, pair, indent=""):
         print(f"{indent}Pair - memory: [{hex(id(pair))}], position [{pair._position}]") 
@@ -152,16 +163,14 @@ class Printer(Visitor):
 
     def visit_dict(self, dict, indent=""):
         print(f"{indent}Dict - memory: [{hex(id(dict))}], position [{dict._position}]") 
-        for value in dict._values:
-            value.accept(self,indent + self._new_indent)
+        if dict._values is not None:
+            for value in dict._values:
+                value.accept(self,indent + self._new_indent)
         
     def visit_object_access(self, object_access, indent=""):
         print(f"{indent}Object access - memory: [{hex(id(object_access))}], position [{object_access._position}]") 
         object_access._left_item.accept(self, indent + self._new_indent)
         object_access._right_item.accept(self, indent + self._new_indent)
-
-    def visit_item(self, item, indent=""):
-        print(f"{indent}Item - memory: [{hex(id(item))}], position [{item._position}], value: [{item._name}]") 
 
     def visit_identifier(self, identifier, indent=""):
         print(f"{indent}Identifier - memory: [{hex(id(identifier))}], position [{identifier._position}], name [{identifier._name}]") 
@@ -179,4 +188,3 @@ class Printer(Visitor):
             select_term._where_expression.accept(self, indent + self._new_indent)
         if select_term._order_by_expression is not None:   
             select_term._order_by_expression.accept(self, indent + self._new_indent)
-            select_term._asc_desc.accept(self, indent + self._new_indent)

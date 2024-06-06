@@ -34,7 +34,8 @@ from parser.syntax_tree import (
     Dict,
     Block,
     FunCall,
-    SelectTerm
+    SelectTerm,
+    NotEqualsTerm
 )
 
 from parser.errors import (
@@ -49,7 +50,8 @@ from parser.errors import (
     InvalidReturnStatement,
     InvalidAssignmentStatement,
     FunctionAlreadyExists,
-    DictInvalidElement
+    DictInvalidElement,
+    UsedNotRecognizedStatement
     )
 
 class Parser:
@@ -62,9 +64,13 @@ class Parser:
     # program :== {statement};     
     def parse_program(self) -> Program:
         statements = []
+    
         while statement := self.parse_statement():
-            statements.append(statement)        
-        return Program(statements, self._functions) # functions
+            statements.append(statement)      
+        if statement is None and self._token.get_token_type() != TokenType.END_OF_TEXT:
+            raise UsedNotRecognizedStatement(self._token.get_position())
+        
+        return Program(statements, self._functions)
     
 
     def consume_token(self):
@@ -191,7 +197,7 @@ class Parser:
         self.consume_token()
         
         expression = self.parse_expression()
-        self.not_none(expression, InvalidReturnStatement, "Expression")
+        #self.not_none(expression, InvalidReturnStatement, "Expression")
         
         self.must_be(TokenType.SEMICOLON, SemicolonMissing)
 
@@ -206,6 +212,10 @@ class Parser:
         if isinstance(object_access, FunCall):
             self.must_be(TokenType.SEMICOLON, SemicolonMissing)
             return object_access
+        elif isinstance(object_access, ObjectAccess):
+            if isinstance(object_access._right_item, FunCall):
+                self.must_be(TokenType.SEMICOLON, SemicolonMissing)
+                return object_access
 
         statement = self.parse_assignment(object_access)
 
@@ -243,7 +253,7 @@ class Parser:
 
             right_item = self.parse_item()
             self.not_none(right_item, MissingExpectedStatement, "right_item")
-            
+
             left_item = ObjectAccess(left_item, position, right_item)
         
         return left_item
@@ -388,7 +398,7 @@ class Parser:
         left_not_term = self.parse_not_term()
 
         if left_not_term is None:
-            return None # ?? maybe it should be error?
+            return None
         
         while (self._token.get_token_type() == TokenType.AND):
             position = self._token.get_position()
@@ -425,10 +435,11 @@ class Parser:
     def parse_comparison_term(self):
         left_additive_term = self.parse_additive_term()
 
-        if (self._token.get_token_type() in (TokenType.EQUAL,TokenType.LESS, TokenType.MORE, TokenType.LESS_OR_EQUAL, TokenType.MORE_OR_EQUAL)):
+        if (self._token.get_token_type() in (TokenType.EQUAL, TokenType.NOT_EQUAL, TokenType.LESS, TokenType.MORE, TokenType.LESS_OR_EQUAL, TokenType.MORE_OR_EQUAL)):
 
             comparison = {
                 TokenType.EQUAL : EqualsTerm,
+                TokenType.NOT_EQUAL : NotEqualsTerm,
                 TokenType.LESS : LessTerm,
                 TokenType.MORE : MoreTerm,
                 TokenType.LESS_OR_EQUAL : LessOrEqualTerm,
@@ -504,7 +515,7 @@ class Parser:
         factor = self.parse_factor()
         
         if unary_negation:
-            self.not_none(factor, MissingExpectedStatement, "factor", position)
+            self.not_none(factor, MissingExpectedStatement, "factor")
             return SignedFactor(factor, position)
         return factor
         
@@ -615,8 +626,7 @@ class Parser:
         expression = self.parse_expression()
 
         if self._token.get_token_type() != TokenType.COMMA:
-            if self._token.get_token_type() != TokenType.BRACKET_CLOSING:
-                raise SyntaxError("Missing ')' to close expression in brackets")
+            self.must_be(TokenType.BRACKET_CLOSING, MissingExpectedStatement)
             return expression
     
         self.consume_token()
@@ -669,13 +679,15 @@ class Parser:
         from_expression = self.parse_expression()
         self.not_none(from_expression, MissingExpectedStatement, "FROM_expression")
 
-        if self._token.get_token_type() != TokenType.WHERE:
+        if self._token.get_token_type() != TokenType.WHERE and self._token.get_token_type() != TokenType.ORDER_BY:
             return SelectTerm(select_expression, from_expression, position)
         
-        self.consume_token()
+        where_expression = None
+        if self._token.get_token_type() == TokenType.WHERE:
+            self.consume_token()
 
-        where_expression = self.parse_expression()
-        self.not_none(where_expression, MissingExpectedStatement, "WHERE_expression")
+            where_expression = self.parse_expression()
+            self.not_none(where_expression, MissingExpectedStatement, "WHERE_expression")
 
         if self._token.get_token_type() != TokenType.ORDER_BY:
             return SelectTerm(select_expression, from_expression, position, where_expression)

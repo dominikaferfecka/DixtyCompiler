@@ -11,7 +11,9 @@ from parser.errors import (
     InvalidWhileLoop,
     InvalidForLoop,
     FunctionAlreadyExists,
-    DictInvalidElement
+    DictInvalidElement,
+    InvalidIfStatement,
+    UsedNotRecognizedStatement
 )
 
 def test_semicolon_assign():
@@ -172,3 +174,26 @@ def test_assign_to_fun_call():
         parser = Parser(filter)
         parser.parse_program()
 
+
+def test_assign_instead_equal():
+    with pytest.raises(InvalidIfStatement):
+        source = SourceString("if (2 = 2) {}")
+        filter = Filter(source)
+        parser = Parser(filter)
+        parser.parse_program()
+
+
+def test_missing_FROM():
+    with pytest.raises(MissingExpectedStatement):
+        source = SourceString("result = SELECT (Key,Value) WHERE (Key.Length() == 3);")
+        filter = Filter(source)
+        parser = Parser(filter)
+        parser.parse_program()
+
+
+def test_unrecognized_statement():
+    with pytest.raises(UsedNotRecognizedStatement):
+        source = SourceString("2 + 3;")
+        filter = Filter(source)
+        parser = Parser(filter)
+        parser.parse_program()

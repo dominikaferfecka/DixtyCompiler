@@ -5,7 +5,7 @@ class Node(ABC):
         pass
 
     @abstractmethod
-    def accept(self, visitor, arg=""):
+    def accept(self, visitor, *args):
         pass    
 
 class Program(Node):
@@ -14,8 +14,8 @@ class Program(Node):
         self._statements = statements
         self._functions = functions
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_program(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_program(self, *args)
 
 class ForStatement(Node):
     def __init__(self, identifier, expression, block, position):
@@ -25,8 +25,8 @@ class ForStatement(Node):
         self._block = block
         self._position = position
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_for_statement(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_for_statement(self, *args)
 
 
 class WhileStatement(Node):
@@ -35,8 +35,8 @@ class WhileStatement(Node):
         self._block = block
         self._position = position
 
-    def accept(self, visitor, arg=""):
-        visitor.visit_while_statement(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_while_statement(self, *args)
 
 
 class FunStatement(Node):
@@ -47,8 +47,8 @@ class FunStatement(Node):
         self._block = block
         self._position = position
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_fun_def_statement(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_fun_def_statement(self, *args)
         
 
 
@@ -58,8 +58,8 @@ class ReturnStatement(Node):
         self._expression = expression
         self._position = position
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_return_statement(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_return_statement(self, *args)
 
 
 class IfStatement(Node):
@@ -71,8 +71,8 @@ class IfStatement(Node):
         self._else_statement = else_statement
         self._position = position
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_if_statement(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_if_statement(self, *args)
 
 
 class ElseIfStatement(Node):
@@ -82,8 +82,8 @@ class ElseIfStatement(Node):
         self._block = block
         self._position = position
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_else_if_statement(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_else_if_statement(self, *args)
 
 
 class ElseStatement(Node):
@@ -92,8 +92,8 @@ class ElseStatement(Node):
         self._block = block
         self._position = position
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_else_statement(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_else_statement(self, *args)
 
 
 class OrTerm(Node):
@@ -103,8 +103,8 @@ class OrTerm(Node):
         self._position = position
         self._right_and_term = right_and_term
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_or_term(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_or_term(self, *args)
 
 
 class AndTerm(Node):
@@ -114,18 +114,18 @@ class AndTerm(Node):
         self._position = position
         self._right_not_term = right_not_term
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_and_term(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_and_term(self, *args)
 
 
 class NotTerm(Node):
     def __init__(self, comparison_term, position):
         super().__init__()
-        self._comparision_term = comparison_term
+        self._comparison_term = comparison_term
         self._position = position
 
-    def accept(self, visitor, arg=""):
-        visitor.visit_not_term(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_not_term(self, *args)
 
 class ComparisonTerm(Node):
     def __init__(self, left_additive_term, position, right_additive_term):
@@ -138,36 +138,45 @@ class EqualsTerm(ComparisonTerm):
     def __init__(self, left_additive_term, position, right_additive_term):
         super().__init__(left_additive_term, position, right_additive_term)
 
-    def accept(self, visitor, arg=""):
-        visitor.visit_equal_term(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_equal_term(self, *args)
+    
+
+class NotEqualsTerm(ComparisonTerm):
+    def __init__(self, left_additive_term, position, right_additive_term):
+        super().__init__(left_additive_term, position, right_additive_term)
+
+    def accept(self, visitor, *args):
+        visitor.visit_not_equal_term(self, *args)
+
 
 class LessTerm(ComparisonTerm):
     def __init__(self, left_additive_term, position, right_additive_term):
         super().__init__(left_additive_term, position, right_additive_term)
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_less_term(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_less_term(self, *args)
 
 class MoreTerm(ComparisonTerm):
     def __init__(self, left_additive_term, position, right_additive_term):
         super().__init__(left_additive_term, position, right_additive_term)
 
-    def accept(self, visitor, arg=""):
-        visitor.visit_more_term(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_more_term(self, *args)
 
 class LessOrEqualTerm(ComparisonTerm):
     def __init__(self, left_additive_term, position, right_additive_term):
         super().__init__(left_additive_term, position, right_additive_term)
 
-    def accept(self, visitor, arg=""):
-        visitor.visit_less_or_equal_term(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_less_or_equal_term(self, *args)
 
 class MoreOrEqualTerm(ComparisonTerm):
     def __init__(self, left_additive_term, position, right_additive_term):
         super().__init__(left_additive_term, position, right_additive_term)
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_more_or_equal_term(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_more_or_equal_term(self, *args)
 
 class AddTerm(Node):
     def __init__(self, left_mult_term, position, right_mult_term):
@@ -176,8 +185,8 @@ class AddTerm(Node):
         self._position = position
         self._right_mult_term = right_mult_term
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_add_term(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_add_term(self, *args)
 
 
 class SubTerm(Node):
@@ -187,8 +196,8 @@ class SubTerm(Node):
         self._position = position
         self._right_mult_term = right_mult_term
 
-    def accept(self, visitor, arg=""):
-        visitor.visit_sub_term(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_sub_term(self, *args)
 
 class MultTerm(Node):
     def __init__(self, left_signed_factor, position, right_signed_factor):
@@ -197,8 +206,8 @@ class MultTerm(Node):
         self._position = position
         self._right_signed_factor = right_signed_factor
 
-    def accept(self, visitor, arg=""):
-        visitor.visit_mult_term(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_mult_term(self, *args)
 
 
 class DivTerm(Node):
@@ -208,8 +217,8 @@ class DivTerm(Node):
         self._position = position
         self._right_signed_factor = right_signed_factor
 
-    def accept(self, visitor, arg=""):
-        visitor.visit_div_term(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_div_term(self, *args)
 
 
 class SignedFactor(Node):
@@ -218,19 +227,8 @@ class SignedFactor(Node):
         self._factor = factor
         self._position = position
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_signed_factor(self, arg)
-
-
-class Literal(Node):
-    def __init__(self, factor, position):
-        super().__init__()
-        self._factor = factor
-        self._position = position
-    
-    def accept(self, visitor, arg=""):
-        visitor.visit_literal(self, arg)
-
+    def accept(self, visitor, *args):
+        visitor.visit_signed_factor(self, *args)
 
 class Number(Node):
     def __init__(self, value, position):
@@ -238,8 +236,8 @@ class Number(Node):
         self._value = value
         self._position = position
 
-    def accept(self, visitor, arg=""):
-        visitor.visit_number(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_number(self, *args)
 
 class String(Node):
     def __init__(self, value, position):
@@ -247,8 +245,8 @@ class String(Node):
         self._value = value
         self._position = position
 
-    def accept(self, visitor, arg=""):
-        visitor.visit_string(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_string(self, *args)
 
 
 class Bool(Node):
@@ -257,8 +255,8 @@ class Bool(Node):
         self._value = value
         self._position = position
 
-    def accept(self, visitor, arg=""):
-        visitor.visit_bool(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_bool(self, *args)
 
 
 class List(Node):
@@ -267,8 +265,8 @@ class List(Node):
         self._values = values
         self._position = position
 
-    def accept(self, visitor, arg=""):
-        visitor.visit_list(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_list(self, *args)
 
 
 class Pair(Node):
@@ -278,8 +276,8 @@ class Pair(Node):
         self._second = second
         self._position = position
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_pair(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_pair(self, *args)
 
 
 class Dict(Node):
@@ -288,8 +286,8 @@ class Dict(Node):
         self._values = values
         self._position = position
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_dict(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_dict(self, *args)
 
 
 class ObjectAccess(Node):
@@ -299,8 +297,8 @@ class ObjectAccess(Node):
         self._right_item = right_item
         self._position = position
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_object_access(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_object_access(self, *args)
 
 
 class Item(Node):
@@ -309,8 +307,8 @@ class Item(Node):
         self._left = left
         self._position = position
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_item_statement(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_item_statement(self, *args)
 
 
 class IndexAccess(Item):
@@ -318,17 +316,17 @@ class IndexAccess(Item):
         super().__init__(left, position)
         self._index_object = index_object
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_index_access(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_index_access(self, *args)
 
 
 class FunCall(Item):
-    def __init__(self, left, position, parameters):
+    def __init__(self, left, position, arguments):
         super().__init__(left, position)
-        self._parameters = parameters
+        self._arguments = arguments
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_fun_call(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_fun_call(self, *args)
 
 
 class Identifier(Node):
@@ -337,8 +335,8 @@ class Identifier(Node):
         self._name = name
         self._position = position
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_identifier(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_identifier(self, *args)
 
 
 class Assignment(Node):
@@ -348,8 +346,8 @@ class Assignment(Node):
         self._expression = expression
         self._position = position
 
-    def accept(self, visitor, arg=""):
-        visitor.visit_assign_statement(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_assign_statement(self, *args)
 
 
 class Block(Node):
@@ -358,8 +356,8 @@ class Block(Node):
         self._statements = statements
         self._position = position
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_block(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_block(self, *args)
 
 
 class SelectTerm(Node):
@@ -372,5 +370,5 @@ class SelectTerm(Node):
         self._order_by_expression = order_by_expression
         self._asc_desc = asc_desc
     
-    def accept(self, visitor, arg=""):
-        visitor.visit_select_term(self, arg)
+    def accept(self, visitor, *args):
+        visitor.visit_select_term(self, *args)

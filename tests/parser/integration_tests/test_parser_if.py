@@ -13,7 +13,7 @@ from parser.syntax_tree import (
 )
 
 def test_if_identifier():
-    source = SourceString("if (x) { a = 2; };")
+    source = SourceString("if (x) { a = 2; }")
     filter = Filter(source)
     parser = Parser(filter)
     program = parser.parse_program()
@@ -38,7 +38,7 @@ def test_if_identifier():
 
 
 def test_if_bool():
-    source = SourceString("if (True) { a = 2; };")
+    source = SourceString("if (True) { a = 2; }")
     filter = Filter(source)
     parser = Parser(filter)
     program = parser.parse_program()

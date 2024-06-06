@@ -70,6 +70,10 @@ class Visitor(ABC):
         pass
 
     @abstractmethod
+    def visit_not_equal_term(self, equal_term):
+        pass
+
+    @abstractmethod
     def visit_less_term(self, less_term):
         pass
 
@@ -102,7 +106,7 @@ class Visitor(ABC):
         pass
 
     @abstractmethod
-    def visit_literal(self, literal):
+    def visit_fun_embedded(self, call_access):
         pass
 
     @abstractmethod
@@ -131,10 +135,6 @@ class Visitor(ABC):
 
     @abstractmethod
     def visit_object_access(self, object_access):
-        pass
-
-    @abstractmethod
-    def visit_item(self, item):
         pass
 
     @abstractmethod

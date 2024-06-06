@@ -7,7 +7,7 @@ class Filter:
 
     def get_next_token(self):
         token = self._lexer.get_next_token()
-        if token.get_token_type() != TokenType.COMMENT:
-            return token
-        else:
-            return None
+        while token.get_token_type() == TokenType.COMMENT:
+            token = self._lexer.get_next_token()
+        return token
+

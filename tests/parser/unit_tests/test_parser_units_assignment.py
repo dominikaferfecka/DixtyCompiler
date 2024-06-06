@@ -450,6 +450,41 @@ def test_assign_mult_div():
     assert ( expression._right_signed_factor._value == 3)
 
 
+def test_assign_bracket():
+    #source = SourceString("result = 3 * (10 + 2);")
+    tokens = LexerMock([
+        Token(TokenType.IDENTIFIER, Position(),"result"),
+        Token(TokenType.ASSIGN, Position()),
+        Token(TokenType.INT, Position(), 3),
+        Token(TokenType.ASTERISK, Position()),
+        Token(TokenType.BRACKET_OPENING, Position()),
+        Token(TokenType.INT, Position(), 10),
+        Token(TokenType.PLUS, Position()),
+        Token(TokenType.INT, Position(), 2),
+        Token(TokenType.BRACKET_CLOSING, Position()),
+        Token(TokenType.SEMICOLON, Position()),
+        Token(TokenType.END_OF_TEXT, Position())
+        ])
+    parser = Parser(tokens)
+
+    program = parser.parse_program()
+    assert ( len(program._statements) == 1 )
+    # assert ( isinstance(program._statements[0], Assignment) )
+
+    # object_access = program._statements[0]._object_access
+    # assert ( isinstance(object_access, Identifier) )
+    # assert ( object_access._name == "result")
+
+    # expression = program._statements[0]._expression
+    # assert ( isinstance(expression, DivTerm) )
+    
+    # left = expression._left_signed_factor
+    # assert ( isinstance(left, MultTerm) )
+    # assert ( left._left_signed_factor._value == 1)
+    # assert ( left._right_signed_factor._value == 2)
+
+    # assert ( expression._right_signed_factor._value == 3)
+
 def test_assign_comparison_equals():
     tokens = LexerMock([
         Token(TokenType.IDENTIFIER, Position(),"result"),
@@ -523,7 +558,7 @@ def test_assign_fun_call():
 
     expression = program._statements[0]._expression
     assert ( isinstance(expression, Item) )
-    assert (expression._parameters == None)
+    assert (expression._arguments == None)
 
 
 def test_assign_fun_call_dot():

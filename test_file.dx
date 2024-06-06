@@ -1,74 +1,222 @@
+a = 2 + 2 + 3;
+b = 10 - 5 + 3;
+c = 5 * 8;
+d = 10 /  5;
+e = 2 * 5 / 2; 
+f = (2 * (3 + 3) - 6) / 3; 
+
+g = 2 == 2;
+h = 3 >= 1;
+i = 6 < 10;
+
+j = True Or False;
+k = False Or False;
+l = False And True;
+m = True And True;
+n = Not True;
+o = Not False;
+
+p = 1 + 3 == 1 + 6 / 2;
+r = 9 / 3 + 1 <= 4 And 3 > 2;
+s = "a" + "b" + "c";
+
+
+if (2 == 2)
+{
+    a = 3;
+}
+
+
+if (1 > 2)
+{
+    b = 4;
+}
+else_if (2 < 3)
+{
+    b = 5;
+}
+else {
+    c = 6;
+}
+
+
+if (1 > 2)
+{
+    b = 4;
+}
+else_if (2 > 3)
+{
+    b = 5;
+}
+else {
+    c = 6;
+    d = 7;
+}
+
+listA = [1, 2, 3];
+listB = [1.0, 2.0, 3.0];
+listC = ["a", "b", "c"];
+listD = [1, 1.0, "a"];
+list_empty = [];
+
+pairA = ("one", 1);
+pairB = (3, 2.0);
+
+dictA = {};
+dictB = { ("one", 1), ("two", 2)};
+
+e = {("one", 1)};
+f = e["one"];
+
+e = [1, 2, 3, 4];
+f = e[1];
+
+g = f;
+
 a = 1;
-b = 2;
-list = [1, 2, 3];
-dict_inside = {
-   (a, "one"),
-   (b, "two")
-};
-
-dict_inside2 = {
-   (a, "one2"),
-   (b, "two")
-};
-
-dict =
+b = [1, 2];
+for i in [1,2]
 {
-    (a, 1),
-    ("two", b),
-    (list, 3),
-    ("four", dict_inside)
-};
-
-result_select = SELECT Key FROM dict;
-
-print(result_select);
-
-pair = ("value", 2);
-
-print(pair.Key);
-print(pair.Value); 
-
-print(pair);
-
-pair.Key = "new_value";
-print(pair.Key);
-
-pair.Value = 3;
-print(pair.Value); 
-
-b = a[1];
-
-b = a["a"]["b"];
-
-c();
-
-b = a();
-
-x = 10;
-
-fun display()
-{
-     x = 20;
-     print(x);
+    c = a;
 }
 
-display();
+a = 1;
+b = a + 1;
 
-for element in list
-{
-   print(element);
-}
+a = [ [1, 2, 3], [4, 5, 6]];
+
 
 i = 0;
-while (i < 3)
+while (i < 5)
 {
-   print(i);
-   i = i + 1;
-   for element in list
-   {
-      print(element);
-   }
+    i = i + 1;
 }
 
-b = a[1][2][3];
-print(x);
+a = [1, 2, 3];
+a[0] = 5;
+
+a = [ [1, 2, 3], [4, 5, 6]];
+b = a[1][2];
+
+a = [1, 2, 3];
+a[1] = 10;
+
+
+a = [[1, 2, 3], [[7, 8, 9], 5, 6]];
+a[1][0][2] = [11,12];
+
+dictD = { ("one", 1), ("two", 2)};
+dictD["one"] = 11;
+
+a = "three";
+dictE = { ("one", 1), (a, 2)};
+
+a = "three";
+b = 4;
+dictE = { ("one", 1), (a, 2)};
+dictE["three"] = b;
+
+fun A()
+{
+    g = 15;
+}
+A();
+
+c = 5;
+
+fun B(a, b)
+{
+    d = 3;
+}
+
+B(1, 2);
+
+
+d = 6;
+
+fun increase(a)
+{
+    a = 3;
+    return a;
+}
+
+b = 2;
+c = increase(b);
+
+fun add(x, y)
+{
+    return x + y;
+}
+
+a =  3;
+b = 2;
+c = add(a, b);
+
+
+fun iter(a)
+{
+    for i in [1,2,3,4,5]
+    {
+        a = i;
+        if (a == 3)
+        {
+            return a;
+        }
+    }
+}
+
+b = 2;
+c = iter(b);
+
+print("testing");
+
+a = [1, 2, 3];
+b = a.len();
+
+a = [1, 2, 3];
+a.append(4);
+b = 6;
+
+a = [ [1, 2], [3, 4] ];
+a[1].append(5);
+b = 3;
+
+a = [ [1, 2], [3, 4] ];
+a.append([5,6]);
+b = 3;
+
+a = [1, 2, 3, 4];
+a.remove(2);
+b = 7;
+
+a = [1, 2, 3, 4];
+a.insert(2, 10);
+b = 7;
+
+a = { ("one",1), ("two",2)};
+b = a.contains_key("one");
+
+a = 1;
+
+a = "b";
+print(a == "b");
+
+a = { ("one", 1), ("two", 2)};
+fun increase2(x)
+{
+    return x + 2;
+}
+b = SELECT increase2(Value) FROM a;
+c = 2;
+
+
+a = { ("one", 2), ("two", 5), ("three", 6), ("four", 4)};
+
+b = SELECT increase2(Value) FROM a WHERE 2 == 2 ORDER_BY Value DESC;
+c = 2;
+
+b = SELECT (Key, Value) FROM a WHERE Value == 2 ORDER_BY Value DESC;
+c = 2;
+
+b = SELECT (Key, Value) FROM a WHERE Key[0] == "t" ORDER_BY Value DESC;
+c = 2;

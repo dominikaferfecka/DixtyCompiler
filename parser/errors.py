@@ -54,7 +54,7 @@ class InvalidAssignmentStatement(MissingExpectedStatement):
 
 class FunctionAlreadyExists(Exception):
     def __init__(self, name, position):
-        super().__init__(f'Function with name {name} is already defined. Tried to define again at position: {position}')
+        super().__init__(f'Function with name [{name}] is already defined. Tried to define again at position: {position}')
         self.position = position
         self.name = name
 
@@ -64,3 +64,9 @@ class DictInvalidElement(Exception):
         super().__init__(f'Elements in Dict must be Pair type. Object with invalid type {element} at {position}')
         self.position = position
         self.element = element
+
+
+class UsedNotRecognizedStatement(Exception):
+    def __init__(self, position):
+        super().__init__(f'Not recognized statement detected at {position}')
+        self.position = position

@@ -11,7 +11,7 @@ from parser.syntax_tree import (
 )
 
 def test_while_identifier():
-    source = SourceString("while (x) { a = 2; };")
+    source = SourceString("while (x) { a = 2; }")
     filter = Filter(source)
     parser = Parser(filter)
     program = parser.parse_program()
@@ -36,7 +36,7 @@ def test_while_identifier():
 
 
 def test_while_identifier_equals():
-    source = SourceString("while (x == 1) { a = 2; };")
+    source = SourceString("while (x == 1) { a = 2; }")
     filter = Filter(source)
     parser = Parser(filter)
     program = parser.parse_program()
